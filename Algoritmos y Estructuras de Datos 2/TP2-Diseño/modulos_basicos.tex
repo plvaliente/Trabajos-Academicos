@@ -1,0 +1,74 @@
+\section{M\'odulos Simples}
+
+
+\subsection{nombreTabla}
+  \servUsados{String}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{nombreTabla}[String]
+    \end{Estructura} 
+
+\subsection{campo}
+  \servUsados{String}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{campo}[String]
+    \end{Estructura} 
+    
+\subsection{itTablas}
+  \servUsados{itConj}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{itTablas}[itConj]
+    \end{Estructura} 
+
+\subsection{minMax}
+  \servUsados{Tupla, dato}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{minMax}[tupla(Min:dato, Max:Dato)]
+    \end{Estructura} 
+    
+\subsection{ContenedorReg}
+  \servUsados{Tupla, DiccStr, DiccNat, String, Nat, Conj, ItConj, reg }
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{ContenedorReg}[estrCont]
+	  \begin{Tupla}[estrCont]
+        \tupItem{IndiceString}{DiccStr<DatoString: String, ConjRegistros: Conj<Tupla(Reg: ItConj, OtroIndice: ItConj)> $>$}
+        
+        \tupItem{IndiceNat}{DiccNat<DatoNat: Nat, ConjRegistros: Conj<Tupla(Reg: ItConj, OtroIndice: ItConj)> $>$}
+        
+        \tupItem{Registros}{Conj<reg>}
+      \end{Tupla}
+    \end{Estructura} 
+
+      
+\subsection{Join}
+  \servUsados{Tupla, campo, ContenedorReg, Conj, Modificacion}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{Join}[estrJoin]
+       \begin{Tupla}[estrJoin]
+        \tupItem{Campo}{campo}
+        \tupItem{Modificaciones}{Conj<Modificacion>}
+        \tupItem{ConjJoin}{ContenedorReg}
+      \end{Tupla}
+    \end{Estructura}
+    
+\subsection{datosTabla}
+  \servUsados{Tupla, Tabla, Join, DiccStr, nombreTablaf}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{datosTabla}[estrDT]
+         \begin{Tupla}[estrDT]
+        \tupItem{Tabla}{Tabla}
+        \tupItem{Joins}{DiccStr<tablaJoin: nombreTabla, Join: Join>}
+      \end{Tupla}
+    \end{Estructura}
+
+\subsection{Modificacion}
+  \servUsados{Tupla, Bool, Registro}
+  \Encabezado{Representaci\'on}
+    \begin{Estructura}{Modificacion}[estrMod]
+         \begin{Tupla}[estrMod]
+        \tupItem{Inserto?}{Bool}
+        \tupItem{Reg}{reg}
+      \end{Tupla}
+    \end{Estructura} 
+    
+
+    

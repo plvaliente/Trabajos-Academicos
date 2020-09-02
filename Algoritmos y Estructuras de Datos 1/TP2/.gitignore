@@ -1,0 +1,7 @@
+*.o
+fatFood
+tpi
+**/*.*.gz
+**/*.dvi
+**/*.log
+**/*.aux

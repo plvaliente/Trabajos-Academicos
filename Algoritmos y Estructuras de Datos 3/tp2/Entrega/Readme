@@ -1,0 +1,6 @@
+Para compilar correr el makefile. Los ejecutables quedan cada uno en su respectiva carpeta.
+Se encuentran tambien los archivos usados para correr los experimentos.
+
+En Problema 2:
+Testeo.py corre los test de rendimiento y los coloca en Resultados
+Para valores de n grandes usé ulimit -s unlimited sino no andaba

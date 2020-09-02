@@ -1,0 +1,169 @@
+\subsection{Algoritmo}
+En la búsqueda local intentaremos mejorar una solución inicial moviéndonos en una vecindad chica de esta solución, es decir, analizaremos soluciones que distan a lo sumo un nodo de la solución original buscando encontrar una clique de máxima frontera local.
+
+Para ello, se le aplicarán 3 operaciones a una solución, las cuales consisten en:
+
+\begin{enumerate}
+\item Agregar un nodo vecino a la clique a la solución 
+\item Eliminar un nodo de la clique solución
+\item Intercambiar un nodo de la solución por un nodo vecino a la clique
+\end{enumerate}
+
+Para cada una de estas operaciones, siempre se elegirá modificar la solución de forma que se maximice la CMF obtenida de entre las posibles modificaciones a realizar.
+
+A continuación se detallarán las operaciones mencionadas anteriormente para una mejor comprensión.
+
+Mejorar la solución agregando un nodo consiste en ver para cada nodo vecino de la clique si al agregarlo a la solución, ésta sigue siendo una clique. En caso de ser una clique se calculará su frontera y se verá si mejora la frontera con respecto a la solución inicial y con los nodos vecinos que se verificó anteriormente. Luego se quitará el nodo agregado para seguir probando con el resto de los vecinos. Finalmente se agregará el nodo vecino que más mejore la frontera de la clique, de no existir ninguno que la mejore no se agregará nada.
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Mejora la solución agregando un nodo vecino}
+	\Function{mejorarAgregando}{Matriz de adyacencias, n, cliqueMF, maxFront}
+		\State{}\\
+		vecinos $\leftarrow$ dameVecinosClique(Matriz de adyacencias, n, cliqueMF)\\
+		\For{i entre 0 y tamaño de vecinos}{
+			\State{}\\
+			Agregar $vecinos_i$ a la cliqueMF
+			\If{Sigue siendo una clique y tiene mayor frontera que maxFront}{
+				\State{}\\
+				Actualizar(maxFront)\\
+				mejorNodo $\leftarrow$ $vecinos_i$
+			}
+			Eliminar $vecinos_i$ de la cliqueMF
+		}
+		\If{Si agregar algun nodo mejora la frontera}{
+			\State{}\\
+			Agregar $mejorNodo$ a la clique
+		}
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+Mejorar la solución eliminando un nodo toma un nodo de la clique y lo elimina de la solución, calcula la frontera de esa nueva clique y ve si mejora con respecto a la mejor solución obtenida hasta el momento. Luego vuelve a agregar el nodo eliminado para verificar el resto. Finalmente se elimina el nodo que más mejora la frontera al eliminarlo, si no existe ninguno que mejore no se eliminará ningún nodo.
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Mejora la solución eliminando un nodo de la clique}
+	\Function{mejorarEliminando}{Matriz de adyacencias, n, cliqueMF, maxFront}
+		\State{}\\
+		\For{i entre 0 y tamaño de cliqueMF}{
+			\State{}\\
+			nodoEliminado $\leftarrow$ cliqueMF[0]
+			Eliminar primer elemento de cliqueMF
+			\If{tiene mayor frontera que maxFront}{
+				\State{}\\
+				Actualizar(maxFront)\\
+				mejorNodo $\leftarrow$ $nodoEliminado$
+			}
+			Agregar atras $nodoEliminado$ a la cliqueMF
+		}
+		\If{Si eliminar algun nodo mejora la frontera}{
+			\State{}\\
+			Eliminar $nodoEliminado$ de la clique
+		}
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Mejorar la solución intercambiando un nodo por otro puede considerarse una combinación de las operaciones anteriores dado que en primer lugar se elimina un nodo de la clique y luego se busca cuál es el nodo vecino a la clique que más mejora la frontera al agregarlo. Luego se vuelve a agregar el nodo eliminado y se repite el mismo procedimiento eliminando a cada nodo de la clique. Finalmente se aplicará la operacion de eliminar un nodo de la clique y agregar un nodo vecino que más mejore la frontera, si no hay operación que mejore no se hará nada.
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Mejora la solución intercambiando un nodo de la clique por un vecino}
+	\Function{mejorarIntercambiando}{Matriz de adyacencias, n, cliqueMF, maxFront}
+		\State{}\\
+		\For{i entre 0 y tamaño de cliqueMF}{
+			\State{}\\
+			nodoEliminado $\leftarrow$ cliqueMF[0]\\
+			Eliminar primer elemento de cliqueMF\\
+			vecinos $\leftarrow$ dameVecinosClique(Matriz de adyacencias, n, cliqueMF)\\
+			\For{j entre 0 y tamaño de vecinos}{
+				agregar $vecinos_i$ a la clique\\
+				\If{es clique y tiene mayor frontera que maxFront}{
+					\State{}\\
+					Actualizar(maxFront)\\
+					mejorNodo $\leftarrow$ $vecinos_i$\\
+				}
+				Eliminar $vecinos_i$ de la clique\\
+			}
+			Agregar atras $nodoEliminado$ a la cliqueMF\\
+		}
+		\If{Si intercambiar algun nodo mejora la frontera}{
+			\State{}\\
+			Eliminar $nodoEliminado$ de la clique\\
+			Agregar $mejorNodo$ a la clique\\
+		}
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Ahora nos queda describir cómo usa la búsqueda local estas operaciones, el comportamiento es bastante sencillo, primero se obtiene una solución inicial mediante el algoritmo greedy LFS descripto en la sección de heurísticas golosas. Luego, se ingresará a un ciclo que continuará mientras se siga mejorando la solución. En este ciclo se aplicarán las 3 operaciones de agregar, eliminar e intercambiar nodos a la solución obtenida hasta el momento pero solo se mantendrá la operación que mas mejoró la solución, si ninguna operación pudo mejorar la solución se considera que se llegó a una solución óptima local por lo que se saldrá del ciclo finalizando el algoritmo.
+
+Se puede ver de forma más clara el funcionamiento de búsqueda local en el siguiente pseudocódigo:
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Búsqueda local}
+	\Function{BusqLocal}{Matriz de adyacencias, n, cliqueMF}
+		\State{}\\
+		res $\leftarrow$ maxFronCliqueLFS(Matriz de adyacencias, n, cliqueMF)\\
+		CMFAgregar $\leftarrow$ Vacio\\
+		CMFEliminar $\leftarrow$ Vacio\\
+		CMFIntercambiar $\leftarrow$ Vacio\\
+		\While{Sigue mejorando la solución}{
+			\State{}\\
+			CMFAgregar $\leftarrow$ cliqueMF
+			CMFEliminar $\leftarrow$ cliqueMF
+			CMFIntercambiar $\leftarrow$ cliqueMF
+			resAgregar $\leftarrow$ mejorarAgregando(Matriz de adyacencias, n, CMFAgregar, res)\\
+			resEliminar $\leftarrow$ mejorarEliminando(Matriz de adyacencias, n, CMFEliminar, res)\\
+			resIntercambiar $\leftarrow$ mejorarIntercambiando(Matriz de adyacencias, n, CMFIntercambiar, res)\\
+			Actualizar $res$ y $cliqueMF$ con la operación que más mejore la solución\\
+			Si ninguna operación mejora, se sale del ciclo
+		}
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Complejidad}
+
+Para calcular la complejidad del algoritmo podemos dividirlo en 3 partes: la complejidad del \textit{set up}, la complejidad del ciclo y retornar el resultado.
+
+En el \textit{set up} se crean 3 vectores vacíos con costo $O(1)$ y se ejecuta el algoritmo $maxFronCliqueLFS$ que como ya se demostro tiene complejidad $O(n^2)$. Por lo tanto está parte tiene complejidad $O(n^2)$.
+
+En la segunda parte, que es el ciclo del algoritmo podemos analizar primero la complejidad de las operaciones dentro del mismo.
+
+En primer lugar se copia la CMF a 3 vectores auxiliares con costo $O(n)$ para cada uno.
+
+Se ejecuta $mejorarAgregando$ que utiliza la funcion $dameVecinosClique$ con costo $O(n^3)$. Luego se inicia un ciclo que realizará n iteraciones en el peor caso donde en cada iteración se ve si agregar un nodo a la clique hace que ésta siga siendo una clique con costo $O(n)$ y se calcula su frontera con costo $O(n^2)$. Por lo tanto la complejidad del algoritmo es $O(n^3)$ + $O(n)$ * ($O(n)$ + $O(n^2)$) = $O(n^3)$
+
+Se ejecuta mejorarEliminando que comienza con un ciclo que realizará n iteraciones en el peor caso, dentro del ciclo se eliminará el primer elemnto de un vector con costo $O(n)$ y se calculará su frontera con costo $O(n^2)$. Una vez fuera del ciclo se buscará el nodo a eliminar en el vector con costo $O(n)$ y luego se lo eliminará también con costo $O(n)$. Entonces, la complejidad del algoritmo queda como $O(n)$ * ($O(n^2)$ + $O(n)$) + $O(n)$ * $O(n)$ = $O(n^3)$
+
+También se ejecuta mejorarIntercambiando que tiene 2 ciclos anidados con una particularidad: el peor ciclo de uno de los ciclos garantiza que el otro ciclo está en su mejor caso. 
+
+En el caso de que el ciclo externo realice $n$ iteraciones significa que la clique es de tamaño $n$, dentro de este ciclo se eliminará el primer elemento de la clique con costo $O(n)$ y se calcularán sus vecinos con costo $O(n^3)$. Ahora, como la clique tiene tamaño $n$ no puede tener vecinos que no pertenezcan a la clique por lo que este vector estará vació. Debido a esto el ciclo interno no realizará ninguna iteración y luego se agregará el nodo eliminado nuevamente con costo $O(1)$. La complejidad de esto será entonces $O(n)$ * ($O(n)$ + $O(n^3)$) = $O(n^4)$
+
+En el caso contrario de que la clique sea lo más chica posible, es decir, de tamaño 2 ya que sino al eliminar un nodo queda una clique vacía, el ciclo externo realizará 2 iteraciónes. Eliminará el primer nodo con costo $O(1)$ y calculará sus vecinos con costo $O(n^3)$, la cantidad de vecinos puede ser a lo sumo $n-1$ por lo que el ciclo interno puede llegar a realizar $n-1$ iteraciones. Dentro del ciclo interno se agrega un nodo con costo $O(1)$, se verifica que siga siendo clique al agregarlo con costo $O(n)$ y se calcula su frontera con costo $O(n^2)$. Luego se elimina el último elemento agregado con costo $O(1)$. La complejidad de esto será entonces $O(2)$ * ($O(n^3)$ + $O(n)$ * $O(n)$ + $O(n^2)$) = $O(n^3)$
+
+Finalmente luego de estos ciclos anidados en el caso de que exista algun intercambio que mejore la solución se busca el nodo que hay que eliminar y se lo elimina con costo $O(n^2)$ y luego se agrega otro nodo con costo $O(1)$.
+
+La complejidad de $mejorarIntercambiando$ será entonces $O(n^4)$ + $O(n^3)$ $O(n^2)$ = $O(n^4)$
+
+Luego de ejecutadas las 3 operaciones, se elegirá cual es la que conviene con costo $O(1)$ y se actualizará la clique con costo $O(n)$. Por lo tanto la complejidad interna del ciclo es $O(n)$ + $O(n^3)$ + $O(n^3)$ + $O(n^4)$ + $O(n)$ = $O(n^4)$
+
+Ahora nos queda ver cuantas iteraciones realiza el ciclo. Dado que depende de que la solución continúe mejorando para seguir ejecutando el ciclo analizaremos hasta cuando puede mejorar la solución. Un grafo siempre tiene una frontera mayor o igual a 0 y menor o igual a la cantidad de aristas $m$. Como $m$ $\leq$ $n^2$ una cota para la cantidad de mejoras que se pueden hacer a una solución es $n^2$. Sin embargo, como las operaciones de mejora trabajan sobre nodos y no sobre aristas veremos que esta cota nunca se alcanza.
+
+Si se partiera de una clique de tamaño 1 y la solución óptima fuera el grafo completo, se agregarán $n-1$ nodos por lo que el ciclo realizará $n-1$ iteraciones.
+
+Si se parte de una clique que es el grafo completo y la clique óptima tuviera tamaño 1, se eliminarán n-1 nodos por lo que el ciclo también realizará $n-1$ iteraciones.
+
+De forma más global se puede ver que si un nodo fue agregado a la solución no puede ser eliminado en las proximas iteraciones dado que no mejoraría la solución. Lo mismo sucede si se eliminó un nodo, al vovler a agregarlo se estaría empeorando la misma. Como el intercambio es una combinación de agregar y eliminar también se ve que no se podrían realizar varias operaciones sobre un nodo.
+
+De este razonamiento podemos concluir que a cada nodo del grafo se le puede aplicar a lo sumo 1 operación de las 3 mencionadas de forma que mejore la solución. Entonces, a lo sumo se realizan $n$ mejoras a la ssolución. Por lo tanto el ciclo realizará a lo sumo $n$ iteraciones.
+
+Entonces la complejidad del ciclo sera $O(n)$ * $O(n^4)$ = $O(n^5)$
+
+La tercera y última parte es retornar los resultados. Esto no tiene costo significativo ya que copiar el tamaño máximo de la frontera es constante, y la clique se devuelve por referencia.
+
+Podemos concluir entonces que la complejidad de la búsqueda local será entonces $O(n^2)$ + $O(n^5)$ + $O(1)$ = $O(n^5)$

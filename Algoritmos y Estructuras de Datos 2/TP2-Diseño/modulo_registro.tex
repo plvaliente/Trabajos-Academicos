@@ -1,0 +1,277 @@
+\section{Modulo Registro}
+
+\begin{Interfaz}
+  
+	\seExplicaCon{Registro}
+
+	\generos{\tipo{reg}}
+  
+	\servUsados{string, dato, campo, Dicc, itDicc, conj($\alpha$)}	
+
+	\tadExtiende{{Dicc(campo, dato)}}
+    
+    \tadTitulo{otras operaciones (exportadas)}
+    
+    \tadAlinearFunciones{coincidenTodosAux}{campo \ $c$, {{reg}} \ $d$, conj({{reg}}) \ $cd$}
+
+    \tadOperacion{campos}{registro}{conj(campo)}{}
+
+    \tadOperacion{borrar?}{registro /$crit$, registro}{bool}{$\#$campos($crit$) $\equiv$ 1}
+
+    \tadOperacion{agregarCampos}{registro \ $r_1$, registro \ $r_2$}{registro}{}
+
+    \tadOperacion{copiarCampos}{conj(campo) \ $cc$, registro \ $r_1$ , registro \ $r_2$}{registro}{$cc$ $\in$ campos($r_2$)}
+
+    \tadOperacion{coincideAlguno}{registro \ $r_1$, conj(campo) \ $cc$, registro \ $r_2$}{bool}{$cc$ $\subseteq$ campos($r_1$) $\cap$ campos($r_2$)}
+
+    \tadOperacion{coincidenTodos}{registro \ $r_1$, conj(campo) \ $cc$, registro \ $r_2$}{bool}{$cc$ $\subseteq$ campos($r_1$) $\cap$ campos($r_2$)}
+
+    \tadOperacion{coincidenTodosAux}{registro \ $r_1$, conj(campo) \ $cc$, registro \ $r_2$}{bool}{$cc$ $\subseteq$ campos($r_1$)}
+
+    \tadOperacion{enTodos}{campo \ $c$, conj(registro) \ $cr$}{bool}{}
+
+    \tadOperacion{combinarTodos}{campo \ $c$, registro \ $r$, conj(registro) \ $cr$}{conj(registro)}{$c$ $\in$ campos($r_1$) $\land$ enTodos($c$,$cd$)}
+
+    \tadAxiomas[\paratodo{registro}{r, r_1, r_2, crit}, \paratodo{conj(reg)}{cr}, \paratodo{conj(campo)}{cc}, \paratodo{campo}{c} ]
+
+    \tadAlinearAxiomas{coicidenTodosAux($r_1$, $cc$, $r_2$)cccc}
+
+    \tadAxioma{campos($r$)}{claves($r$)}
+
+    \tadAxioma{borrar?($crit$, $r$)}{coincidenTodos($crit$, campos($crit$), $r$)}
+
+    \tadAxioma{agregarCampos($r_1$, $r_2$)}{copiarCampos(campos($r_2$) - campos($r_1$), $r_1$, $r_2$)}
+
+    \tadAxioma{copiarCampos($cc$, $r_1$, $r_2$)}{
+    $\textbf{if}$ ($\emptyset$?($cc$)) $\emph{then}$ \\
+        $\hspace*{10px}$ $r_1$ \\
+    $\textbf{else}$ \\
+        $\hspace*{10px}$ copiarCampos(sinUno($cc$), definir(dameUno($cc$), \\
+        $\hspace*{10px}$ obtener(dameUno($cc$), $r_2$),$r_1$), $r_2$ ) \\
+    $\textbf{fi}$}
+
+    \tadAxioma{coincideAlguno($r_1$, $cc$, $r_2$)}{$\neg \emptyset$?($cc$) $\yluego$ ((obtener(dameUno($cc$),$r_1$) $=$ obtener(dameUno($cc$), $r_2$)) $\lor$ \\ coincideAlguno($r_1$, sinUno($cc$), $r_2$))} 
+
+    \tadAxioma{coincidenTodos($r_1$, $cc$, $r_2$)}{$\emptyset$?($cc$) $\oluego$ ((obtener(dameUno($cc$),$r_1$) $=$ obtener(dameUno($cc$), $r_2$)) $\land$ \\ coincidenTodos($r_1$, sinUno($cc$), $r_2$))}
+
+
+    \tadAxioma{coincidenTodosAux($r_1$, $cc$, $r_2$)}{$\emptyset$?($cc$) $\oluego$ def?(dameUno($cc$),$r_2$) $\yluego$ ((obtener(dameUno($cc$),$r_1$) $=$ obtener(dameUno($cc$), $r_2$)) $\land$ \\ coincidenTodos($r_1$, sinUno($cc$), $r_2$))}
+
+\newpage
+
+    \tadAxioma{enTodos($c$, $cr$)}{$\emptyset$?($cr$) $\oluego$ ($c$ $\in$ campos(dameUno($cr$)) $\land$ enTodos($c$, sinUno($cr$)))}
+
+    \tadAxioma{combinarTodos($c$, $r$, $cr$)}{
+    $\textbf{if}$ ($\emptyset$?($cr$)) $\emph{then}$ \\
+        $\hspace*{10px}$ $\emptyset$ \\
+    $\textbf{else}$ \\
+        $\hspace*{10px}$ combinarTodos($c$, $r$, sinUno($cr$)) $\cup$ $\textbf{if}$ (obtener($c$, dameUno($cr$)) $=$ \\
+        $\hspace*{10px}$ obtener($c$, $r$)) $\textbf{\emph{then}}$ 	$\{$agregarCampos($r$, dameUno($cr$)) $\}$ $\textbf{else}$ $\emptyset$ $\textbf{fi}$ \\
+    $\textbf{fi}$}
+    
+\Encabezado{Funciones Extendidas}   
+  
+  \InterfazFuncion{Campos}{\In{r}{reg}}{conj(campo)}
+  [true] % Pre
+  {$res$ $\igobs$ campos($r$)} % Pos
+  [$O(\#Claves(r)*copy(campo))$] % Complejidad
+  [Devuelve el conjunto de campos del registro] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Borrar?}{\In{crit}{reg}, \In{r}{reg}}{bool}
+  [$\#$ campos($crit$) $\equiv$ 1] % Pre
+  {$res$ $\igobs$ borrar?($crit$,$r$)} % Pos
+  [$O(\sum_{k' \in K}equal(c,k') + equal(g_{crit},g_r))$] % Complejidad
+  [Devuelve verdadero si $r$ es Borrable segun el criterio crit(que matchee el significado en $r$ y $crit$ para el campo(unico) de $crit$ ] % Descripción
+  [] % Aliasing
+  
+   \InterfazFuncion{AgregarCampos}{\In{r_1}{reg}, \In{r_2}{reg}}{reg}
+  [true] % Pre
+  {$res$ $\igobs$ agregarCampos($r_1$,$r_2$)} % Pos
+  [$O(\#cc*\sum_{k' \in K}(equal(k,k') + copy(sc) + copy(\text{significado}(sc,r_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($r_1$), $sc$ $\in$ Claves($res$), $l$ $\in$ Claves($r_2$) y $g$ $=$ Significado($r_2$,$l$)  ] % Complejidad
+  [devuelve un registro con los campos de $r_1$ y su respectivo dato, mas los campos que posee $r_2$ y no $r_1$, con su respectivo significado] % Descripción
+  [] % Aliasing
+  
+   \InterfazFuncion{CopiarCampos}{\In{cc}{conj(campo)}, \In{r_1}{reg}, \In{r_2}{reg}}{reg}
+  [$cc$ $\subseteq$ campos($r_2$)] % Pre
+  {$res$ $\igobs$ copiarCampos($cc$,$r_1$,$r_2$)} % Pos
+  [$O(\#Claves(r_2)*\sum_{k' \in K}(equal(k,k') + copy(k) + copy(\text{significado}(k,r_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($r_1$), $l$ $\in$ Claves($r_2$) y $g$ $=$ Significado($r_2$,$l$)  ] % Complejidad
+  [Devuelve un regsitro con los campos de $r_1$ y su respectivo significado, mas los campos pertenecientes a $cc$ con el significado que tienen en $r_2$] % Descripción
+  [] % Aliasing
+  
+   \InterfazFuncion{CoincideAlguno}{\In{r_1}{reg}, \In{cc}{conj(campo)}, \In{r_2}{reg}}{bool}
+  [$cc$ $\subseteq$ (campos($r_1$) $\cap$ campos($r_2$))] % Pre
+  {$res$ $\igobs$ coincideAlguno($r_1$,$cc$,$r_2$)} % Pos
+  [$O(\#cc*(Sig_1 + Sig_2 + equal(g_{r_1},g_{r_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(k,k')$ K $=$ Claves($r_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$  ] % Complejidad
+  [Devuelve Verdadero si algun campo perteneciente a $cc$ tiene el mismo significado en $r_1$ y en $r_2$ ] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{CoincidenTodos}{\In{r_1}{reg}, \In{cc}{conj(campo)}, \In{r_2}{reg}}{bool}
+  [$cc$ $\subseteq$ (campos($r_1$) $\cap$ campos($r_2$))] % Pre
+  {$res$ $\igobs$ coincidenTodos($r_1$,$cc$,$r_2$)} % Pos
+  [$O(\#cc*(Sig_1 + Sig_2 + equal(g_{r_1},g_{r_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($r_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ ] % Complejidad
+  [Devuelve Verdadero si para todo campo perteneciente a $cc$ tiene el mismo significado en $r_1$ y en $r_2$ ] % Descripción
+  [] % Aliasing
+
+ \InterfazFuncion{CoincidenTodosAux}{\In{r_1}{reg}, \In{cc}{conj(campo)}, \In{r_2}{reg}}{bool}
+  [$cc$ $\subseteq$ campos($r_1$)] % Pre
+  {$res$ $\igobs$ coincidenTodosAux($r_1$,$cc$,$r_2$)} % Pos
+  [$O(\#cc*(Sig_1 + def_2 + Sig_2 + equal(g_{r_1},g_{r_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($r_i$), $def_2$ $=$ $Sig_2$ y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ ] % Complejidad
+  [Devuelve Verdadero si para todo campo perteneciente a $cc$ tiene el mismo significado en $r_1$ y en $r_2$ ] % Descripción
+  [] % Aliasing
+
+  \InterfazFuncion{enTodos}{\In{c}{$campo$}, \In{cr}{conj(reg)}}{bool}
+  [true] % Pre
+  {$res$ $\igobs$ enTodos($c$,$cr$)} % Pos
+  [$O(\#cr*\sum_{k' \in K}(equal(c,k')))$, K $=$ Claves($r$) $r$ $\in$ $cr$ ] % Complejidad
+  [Devuelve Verdadero si $c$ es campo de cada registro de $cr$ ] % Descripción
+  [] % Aliasing
+
+  \InterfazFuncion{CombinarTodos}{\In{c}{campo}, \In{r}{reg}, \In{cr}{conj(reg)}}{conj(reg)}
+  [$c$ $\in$ campos($r_1$) $\land$ enTodos($c$,$cr$)] % Pre
+  {$res$ $\igobs$ combinarTodos($c$,$r$,$cr$)} % Pos
+  [$O(Sig_d + \#cr*(Sig_r + equal(sc,g_{r}) + Ag))$] % Complejidad
+  [Devuelve un Conjunto que posee por elementos a registros con los campos $r$ y su respectivo significado, mas los campos que posee $r_i$ y no $r$, tambien con el significado que poseia en $r_i$, donde $r_i$ son los diccionarios pertenecientes a $cr$ tales que coicidan en su significado con $r$ para el campo $c$] % Descripción
+  [] % Aliasing
+
+\InterfazFuncion{Sub?}{\In{r_1}{reg}, \In{r_2}{reg}}{bool}
+  [true] % Pre
+  {$res$ $\igobs$ coincidenTodos($r_1$,campos($r_1$),$r_2$)} % Pos
+  [$O(\#claves(r_1)*(def_1 + Sig_2 + equal(g_{r_1},g_{r_2})))$, donde $def_1$ es $\sum_{t' \in T}(equal(c,t')$ T $=$ claves($r_1$),$Sig_2$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ claves($r_2$) y $g_i$ $=$ Significado($i$,$c$), $c$ $\in$ claves($r_1$)] % Complejidad
+  [Devuelve Verdadero si para todo campo perteneciente a $claves(r_1)$,existe esta en $r_2$  y tiene el mismo significado que en $d_1$] % Descripción
+  [] % Aliasing
+
+\end{Interfaz}
+
+\begin{Algoritmos}
+
+$\textbf{NOTA:}$ $\emph{Terminamos poniendo reg en cada algoritmo, porque no necesitabamos acceder a la representacion interna,}$
+$\hspace*{30px}$
+$\emph{si bien teniamos la duda que te expresamos en el mail, ya que la extension de modulos no esta documentada,}$
+$\hspace*{30px}$
+$\emph{creimos que era mas correcto esto que quizas acceder a una estructura que la catedra concidera que es ajena.}$
+$\\$
+\begin{algoritmo}{iCampos}{\In{d}{reg}}{conj(campo)}
+	$it \gets CrearIt(d) $ \com*{$\Theta(1)$}
+    $res \gets Vacio() $ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(it)$)}{
+     	$AgregarRapido(res, SiguienteClave(it))$ \com*{$\Theta(copy(sigCl(it)))$}
+		$Avanzar(it)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#Claves(d)*copy(campo))$
+    \end{algoritmo}
+
+\begin{algoritmo}{iBorrar?}{\In{crit}{reg}, \Inout{d}{reg}}{bool}
+	$itcrit \gets CrearIt(crit) $ \com*{$\Theta(1)$}
+    $c \gets SiguienteClave(itcrit) $ \com*{$\Theta(1)$}
+    $res \gets Significado(crit,c) = Significado(d,c)$ \com*{$\Theta(\sum_{k' \in K}equal(c,k') + equal(g_{crit},g_d))$}
+	\medskip
+	\underline{Complejidad:} $O(\sum_{k' \in K}equal(c,k') + equal(g_{crit},g_d))$, donde $K$ $=$ claves($d$), y $g_i$ $=$ Significado($i$,$c$)  
+\end{algoritmo}
+
+\begin{algoritmo}{iAgregarCampos}{\In{d_1}{reg}, \Inout{d_2}{reg}}{reg}
+    % lo hago asi porque no tengo la operacion resta de conjuntos, ni se su complejidad
+    $it2 \gets CrearIt(d_2) $ \com*{$\Theta(1)$}
+    $res \gets Copiar(d_1) 	$ \com*{$\Theta(\sum_{k \in K}(copy(k) + copy(\text{significado}(k,d_1)))$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(it2)$)}{
+    	\If(\com*[f]{$\Theta(\sum_{k' \in K}equal(SigCl(it2),k'))$}){$\lnot Definido?(res,SiguienteClave(it2))$}{
+			$DefinirRapido(res, SiguienteClave(it2), SiguienteSignificado(it2))$ \com*{$\Theta(copy(k) + copy(s))$}
+		}
+     	$Avanzar(it2)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#Claves(d_2)*\sum_{k' \in K}(equal(k,k') + copy(k) + copy(\text{significado}(k,d_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($d_1$), $l$ $\in$ Claves($d_2$) y $g$ $=$ Significado($d_2$,$l$) 
+\end{algoritmo}
+
+\begin{algoritmo}{iCopiarCampos}{\In{cc}{conj(campo)}, \In{d_1}{reg}, \In{d_2}{reg}}{reg}
+    $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+    $res \gets Copiar(d_1) 	$ \com*{$\Theta(\sum_{k \in K}(copy(k) + copy(\text{significado}(k,d_1)))$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc)$)}{
+     	\If(\com*[f]{$\Theta(\sum_{k' \in K}equal(sigCl(itc),k'))$}){$\lnot Definido?(res,SiguienteClave(itc))$}{
+			$DefinirRapido(res, SiguienteClave(itc), SiguienteSignificado(itc))$ \com*{$\Theta(copy(sc) + copy(s))$}
+		}
+     	$Avanzar(it2)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#cc*\sum_{k' \in K}(equal(k,k') + copy(sc) + copy(\text{significado}(sc,d_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($d_1$), $sc$ $\in$ Claves($res$), $l$ $\in$ Claves($d_2$) y $g$ $=$ Significado($d_2$,$l$) 
+\end{algoritmo}
+
+\begin{algoritmo}{iCoincideAlguno}{\In{d_1}{reg}, \In{cc}{conj(campo)}, \In{d_2}{reg}}{bool}
+    $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+    $res \gets false $ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc) \land \neg res$)}{
+    	$res \gets Significado(d_1,Siguiente(itc)) = Significado(d_2,Siguiente(itc))$ \com*{$\Theta(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2}))$}
+	$Avanzar(itc)$ \com*{$\Theta(1)$}
+    }
+    \medskip
+	\underline{Complejidad:} $O(\#cc*(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(k,k')$ K $=$ Claves($d_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ 
+\end{algoritmo}
+
+\begin{algoritmo}{iCoincidenTodos}{\In{d_1}{reg}, \In{cc}{conj(campo)}, \In{d_2}{reg}}{bool}
+    $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+    $res \gets true $ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc) \wedge res$)}{
+    	$res \gets Significado(d_1,Siguiente(itc)) = Significado(d_2,Siguiente(itc))$ \com*{$\Theta(Sig_1 + Sig_2 + 		equal(g_{d_1},g_{d_2}))$}
+		$Avanzar(itc)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#cc*(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($d_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ 
+\end{algoritmo}
+
+\begin{algoritmo}{iCoincidenTodosAux}{\In{d_1}{reg}, \In{cc}{conj(campo)}, \In{d_2}{reg}}{bool}
+    $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+    $res \gets true $ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc) \wedge res$)}{
+    	\eIf(\com*[f]{$\Theta(\sum_{k' \in claves(d_2)}equal(sigCl(itc),k'))$}){$Definido?(d_2,SiguienteClave(itc))$}{
+		$res \gets Significado(d_1,Siguiente(itc)) = Significado(d_2,Siguiente(itc))$ \com*{$\Theta(Sig_1 + Sig_2 + 		equal(g_{d_1},g_{d_2}))$}
+		}{
+        $res \gets false $ \com*{$\Theta(1)$}
+        }
+    	$Avanzar(itc)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#cc*(Sig_1 + def_2 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($d_i$), $def_2$ $=$ $Sig_2$ y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ 
+\end{algoritmo}
+
+\begin{algoritmo}{ienTodos}{\In{c}{$campo$}, \In{cr}{conj(reg)}}{bool}
+    $itcr \gets CrearIt(cr) $ \com*{$\Theta(1)$}
+    $res \gets true $ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itcr) \wedge res$)}{
+    	$res \gets Definido?(Siguiente(itcr), c)$\com*{$\Theta(\sum_{k' \in K}(equal(c,k')))$}
+		$Avanzar(itc)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#cr*\sum_{k' \in K}(equal(c,k')))$, K $=$ Claves($r$) $r$ $\in$ $cr$
+\end{algoritmo}
+
+\begin{algoritmo}{iCombinarTodos}{\In{c}{$campo$}, \In{d}{reg}, \In{cr}{conj(reg)}}{conj(reg)}
+    $itcr \gets CrearIt(cr) $ \com*{$\Theta(1)$}
+    $res \gets Vacio() $ \com*{$\Theta(1)$}
+    $sc  \gets Significado(d,c)$ \com*{$O(Sig_d)$} 
+   \While(\com*[f]{$\Theta(\#cr)$}){($HaySiguiente(itcr)$)}{
+    	\If(\com*[f]{$O(Sig_{Sig(itcr)} + equal(sc,g_{r}))$}){($sc = Significado(Siguiente(itcr),c)$)}{
+			$Agregar(res, AgregarCampos(d, Siguiente(itcr)))$ \com*{$\Theta(\sum_{d' \in res}(equal(d,d')))$}
+		}
+     	$Avanzar(itcr)$ \com*{$\Theta(1)$}	
+   }
+    \medskip
+	\underline{Complejidad:} $O(Sig_d + \#cr*(Sig_r + equal(sc,g_{r}) + Ag))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$, $r$ $\in$ $cr$, K $=$ Claves($i$), $g_i$ $=$ Significado($i$,$c$), $d$ $=$ AgregarCampos($d$,$r$) y $Ag$ es $\sum_{d' \in res}(equal(d,d'))$
+\end{algoritmo}
+
+\begin{algoritmo}{iSub?}{\In{d_1}{reg}, \In{d_2}{reg}}{bool}
+    $itd1 \gets CrearIt(d_1) $ \com*{$\Theta(1)$}
+    $res \gets true $ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itd1) \land res$)}{
+    	\eIf(\com*[f]{$\Theta(\sum_{k \in K}equal(SigCl(itd1),k'))$}){$\lnot Definido?(d_2,SiguienteClave(itd1))$}{
+			$res \gets SiguienteSignificado(itd1) = Significado(d_2,SiguienteClave(itd1))$ \com*{$\Theta(Sig_2 + 		equal(SigSdo(itd1),g_{d_2}))$}
+		}{
+        	$res \gets false $ \com*{$\Theta(1)$}
+        }
+		$Avanzar(itd1)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#claves(d_1)*(def_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $def_1$ es $\sum_{t' \in T}(equal(c,t')$ T $=$ claves($d_1$),$Sig_2$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ claves($d_2$) y $g_i$ $=$ Significado($i$,$c$), $c$ $\in$ claves($d_1$)
+\end{algoritmo}
+
+\end{Algoritmos}

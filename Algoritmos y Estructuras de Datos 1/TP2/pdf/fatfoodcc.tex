@@ -1,0 +1,79 @@
+\documentclass[a4paper]{article}
+
+\usepackage[spanish]{babel} % Le indicamos a LaTeX que vamos a escribir en español.
+\usepackage[latin1]{inputenc} % Permite utilizar tildes y eñes normalmente
+\usepackage{pdfpages}
+\usepackage{listings}
+\usepackage{xcolor}
+\setlength{\parindent}{0cm}
+\lstset { %
+    language=C++,
+    backgroundcolor=\color{black!10}, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+    linewidth=\textwidth{},
+    showstringspaces=false,
+    breakatwhitespace=true,
+    breaklines=true 
+}
+
+\input{Algo1Macros}% Macros especificas para especificar problemas en AyEDI
+
+\newcommand{\comen}[2]{%
+\begin{framed}
+\noindent \textsf{#1:} #2
+\end{framed}
+}
+
+
+\begin{document} 
+
+\includepdf{caratula}
+\newpage %Salto de página
+
+\section{Implementación}
+
+\subsection{combo.cpp}
+\input{implementacion/combocpp}
+\newpage %Salto de página
+
+\subsection{combo.h}
+\input{implementacion/comboh}
+\newpage %Salto de página
+
+\subsection{pedido.cpp}
+\input{implementacion/pedidocpp}
+\newpage %Salto de página
+
+\subsection{pedido.h}
+\input{implementacion/pedidoh}
+\newpage %Salto de página
+
+\subsection{local.cpp}
+\input{implementacion/localcpp}
+\newpage %Salto de página
+
+\subsection{local.h}
+\input{implementacion/localh}
+\newpage %Salto de página
+
+
+\section{Demostraciones} %Demostraciones
+
+\subsection{candidatosAEmpleadosDelMesL}
+\input{demos/candidatosAEmpleadosDelMesL}
+
+\newpage %Salto de página
+
+\subsection{elVagonetaL}
+\input{demos/elVagonetaL}
+
+\newpage %Salto de página
+
+\subsection{agregarComboAlPedidoL}
+\input{demos/agregarComboAlPedidoL}
+
+\newpage %Salto de página
+
+
+\end{document} %Terminé!
+

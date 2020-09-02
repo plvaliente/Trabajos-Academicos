@@ -1,0 +1,14 @@
+Problema:
+
+Tienen implementado un algoritmo de sorting que toma C*N*ln(N) segundos para ordenar N enteros. 
+Si se tiene T segundos disponibles de tiempo de cómputo. Cúal es la máxima cantidad de enteros que podemos ordenar?
+
+
+INPUT:
+
+Cada archivo de input tiene dos números reales C y T. Cada número real tiene exactamente dos decimales.
+
+
+OUTPUT:
+
+Un solo entero que indique la cantidad máxima de enteros que se pueden ordenar.

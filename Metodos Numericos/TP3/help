@@ -1,0 +1,7 @@
+La metrica de jugadores corresponde a la de la carpeta MetricasJyE1
+
+La metrica de equipos corresponde a la de la carpeta MetricasJyE2
+
+En results estan los graficos, en tools estan los scripts obtener*2.sh que son un mod de los de la catedra y en instrucciones.txt estan alguna de las instrucciones para ejecutarlos. Aunque algunos experimentos se ejecutan con su respectivos scripts, dependiendo del caso.
+
+Ademas para graficar se usa plot.py, que segun que se quiera hacer hay que comentar ciertas partes del codigo.

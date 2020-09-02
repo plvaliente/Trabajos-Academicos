@@ -1,0 +1,123 @@
+Crear un nuevo proyecto en Eclipse con el nombre Imperativo1
+
+Importar los archivos auxiliares.h y main.cpp al proyecto, que están en la carpeta Imperativo1 del 
+código provisto por la cátedra.
+
+Función simple y su correctitud.
+	* mostrar la relación entre especificación e implementación
+		-> primero viendo el código, y luego ejecutandolo
+		Punto de entrada: main
+			int main()
+			int main(int argc, char** argv)
+			* hacer operaciones dentro de main
+			* es solo una función más, pero es el punto de entrada.
+			* por qué el int como tipo de resultado?
+			* para qué son argn y argv?
+	* hacer enfasis en la evolución de estados
+	* mostrar relación entre evolución de estado y código con debug
+	
+	/**
+	problema cuadruple(a : Int) = res : Int
+		asegura res == 4 * a;
+	*/
+	int cuadruple(int a)
+	{
+		int b;
+		// Estado E1
+		// vale a == pre(a)
+		b = a + a;
+		// Estado E2
+		// vale b == a@E1 + a@E1
+		//	implica b == 2 * pre(a)
+		b = b + b;
+		// Estado E3
+		// vale b == b@E2 + b@E2
+		//	implica b == 2 * a@E1 + 2 * a@E1
+		//	implica b == 4 * pre(a)
+		return b;
+		// vale res == b@E3
+		//  implica res == 4 * pre(a)
+	}
+
+De forma análoga al anterior, crear el proyecto Ejemplos usando el código de la carpeta con el mismo nombre.  
+Este proyecto contiene las funciones sumaX y swap.
+Pasaje de parámetros: valor/referencia
+	* primero dar las funciones swapA, swapB, swapC sin especificación
+	* luego ver que si dice modifica, tiene que tener pasaje por referencia.
+	* Recordar: swapC tiene problemas de aliasing, pero solucionables
+	* Usar debug para mostrar los cambios de estado. Hacer enfasis en variables
+	locales, globales y pasajes por referencia.
+
+		/**
+		problema swap(x, y : Int)
+			modifica x, y;
+			asegura x == pre(y) && y == pre(x);
+		*/	
+
+		// mal pasado de la especificacion al código
+		void swapA(int x, int y)
+		{
+			int t;
+			t= x;
+			x= y;
+			y= t;
+		}
+		
+		void swapB(int &x, int &y)
+		{
+			int t;
+			t= x;
+			x= y;
+			y= t;
+		}
+		
+		void swapC(int &x, int &y)
+		{
+			x= x + y;
+			y= x - y;
+			x= x - y;
+		}
+
+		
+Conceptos:
+- Qué clase de errores hay? 
+	1- De compilación -> Nos enteramos con un mensaje de error del compilador
+	De código ->
+		2- De ejecución   -> Nos enteramos con un mensaje de error al correr el programa
+		3- De implementación -> Nos llama la atención que el programa no hace lo que debería hacer, aunque no se rompe.
+
+Por 2 y 3, hay que testear el código, pero eso no alcanza. !Para estar seguros hay que demostrar que es correcto!
+
+Ahora les damos un proyecto con estos errores: 
+
+- Crear un proyecto AlgoAndaMal usando el código de la carpeta del mismo nombre.
+
+El objetivo de este ejercicio es encontrar y en lo posible corregir errores.
+	
+	
+	*) Errores de compilación
+		- asignar mal: 3 = x; o doble 3 = x;
+		- modificar un const
+		- olvidarse el ;
+		- no declarar en el .h
+		- declarar en el .h pero no poner el codigo en el cpp
+		- usar una variable que no declaraste
+		- llamada a función pasando mal los parámetros
+		- siguiente codigo: (Faltan las llaves en la primer parte)
+			if(guarda)
+			inst 1
+			inst 2
+			else
+			inst 3
+		- olvidarse del return
+		- errores de tipo
+
+
+	*) Errores de código
+		- pasar por referencia algo que no queríamos modificar y modificarlo dentro de la función
+		- al reves, pasar por copia algo que queríamos modificar, como en swapA
+		- errarle en un +1/-1 a la guarda de un while, haciendo que no se ejecute un ciclo o se ejecute uno de más
+		- modifico valores que después necesito
+
+
+	

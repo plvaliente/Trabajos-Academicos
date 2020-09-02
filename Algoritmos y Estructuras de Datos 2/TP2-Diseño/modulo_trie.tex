@@ -1,0 +1,381 @@
+\section{Modulo DiccionarioString($\alpha $)}
+
+\Encabezado{Notas Preliminares}
+  En todos los casos, al indicar las complejidades de los algoritmos, las variables que se utilizan corresponden a:
+  \vspace{-0.5em}\begin{itemize}
+    \item $L$: Longitud del string en el Diccionario String pasado por par\'ametro.
+
+  \end{itemize}
+  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Interfaz}
+  
+  \textbf{parametros formales} \hangindent=2 \parindent \\
+  \parbox{1.7cm}{\textbf{generos}} $\alpha$
+  
+  \textbf{se explica con}: \tadNombre{dicc(string, $\alpha$)}.
+ 
+  \textbf{generos}: \TipoVariable{diccStr(string, $\alpha$)}.
+  
+   \servUsados{string}
+
+\subsubsection{Operaciones basicas}
+  
+  \InterfazFuncion{Vacio{}}{}{diccStr(string, $\alpha)$}
+  [true]
+  {$res$ $\igobs$ vacio}%
+  [$O(1)$]
+  [Crea un Diccionario Vacio]
+  []
+
+  \InterfazFuncion{Definido?}{\In{s}{string}, \In{d}{diccStr(string, $\alpha$)})}{bool}
+  [true]
+	{$res$ $\igobs$ def?($s$, $d$)}
+	[$O(Longitud(s))$]
+	[Retorna si la Clave esta definida]
+	[]
+  
+
+  \InterfazFuncion{Definir}{\In{s}{string} , \In{a}{$\alpha$}, \Inout{d}{diccStr(string, $\alpha)$}}{}
+  [$ d \igobs d_0 $]
+  {$ d \igobs$ definir($s, a, d_0$)}
+  [$O$($Longitud(s)$ + copy(a))]
+  [Define la Clave $s$ y el Significado $a$ en $d$]
+  []
+  
+  \InterfazFuncion{Obtener}{\In{s}{string}, \In{d}{diccStr(string, $\alpha$)}}{$\alpha$}
+  [def?($s$, $d$)]
+  {alias($res$ $\igobs$ obtener($s$, $d$))}
+  [$O(Longitud(s))$]
+  [Retorna el Significado de la Clave $s$]
+  [$res$ es modificable si y solo si $d$ es modificable]
+  
+    \InterfazFuncion{Borrar}{\Inout{d}{diccStr(string, $\alpha$)}, \In{c}{string}}{}
+  [($d$ = $d_0$) $\wedge$ def?($s$, $d$)]
+  {d $\igobs$ borrar($d_0$ , s)}
+  [$O(Longitud(s))$]
+  [Retorna el Significado de la Clave s]
+  [Elimina la clave c y su significado de d]
+ 
+  \InterfazFuncion{minimaClave}{\In{d}{diccStr(string, $\alpha$)}}{string}
+  [Cardinal(claves(d)) > 0]
+  {res $\igobs$ minimo(claves(d))}
+  [$O(L)$]
+  [Retorna la minima clave de mi diccionario]
+  [$res$ es modificable si y solo si $d$ es modificable]
+  
+  ~
+  
+  \InterfazFuncion{maximaClave}{\In{d}{diccStr(string, $\alpha$)}}{string}
+  [Cardinal(claves(d))]
+  {res $\igobs$ maximo(claves(d))}
+  [$O(L)$]
+  [Retorna la maxima clave de mi diccionario]
+  [$res$ es modificable si y solo si $d$ es modificable]
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Representacion}
+
+	\begin{Estructura}{diccStr$(string, \alpha)$}[dStr donde dStr es puntero(nodo)]
+		\begin{Tupla}[nodo]
+			\tupItem{significado}{puntero$(\alpha)$}
+			\tupItem{prefijos}{arreglo[256] (puntero(nodo))}
+		\end{Tupla}
+	\end{Estructura}
+
+\subsubsection{Invariante de Representacion}
+
+\begin{enumerate}
+\item La raiz representa al prefijo $" "$, su significado es siempre NULL
+%\item Todas las posiciones de prefijos estan definidas (apuntan a NULL o a otro nodo)
+\item No hay ninguna rama del trie que tenga Ciclos
+\item Todas las hojas tienen su significado distinto a NULL, salvo que el arbol este vacio.
+
+
+\end{enumerate}
+
+\Rep[dStr][d]{\\
+	(d.significado = NULL) $\wedge$ \\
+    %todosDefinidos(d) $\yluego$ \\
+	esArbValido(d) $\yluego$ \\
+   % ($\forall$ (p $\in$ damePunteros(d))) p.vive = false $\impluego$ hijosNoViven(p, 256))
+   $\textbf{if} \ esHoja?(d) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} HojasConSignificado(d) \\  \textbf{fi}$
+  }
+
+
+\textbf{Funciones Auxiliares:}
+% \tadOperacion{hijosNoViven}{puntero(nodo) /$p$, nat /$n$}{bool}{}
+% \tadAxioma{hijosNoViven(p, n)}{$\textbf{if} \ p = NULL \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ n = 0 \ \emph{then} \\ \hspace*{20px} true \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px}  \\ (p.prefijos[n-1].vive = false $\yluego$ hijosNoViven(p.prefijos[n-1], 256)) $\yluego$ hijosNoViven(p, n-1 ) \textbf{fi} \\  \textbf{fi}$ }
+
+
+
+% \tadOperacion{todosDefinidos}{dStr /$d$}{bool}{}
+% \tadAxioma{todosDefinidos(d)}{$\textbf{if} \ d = NULL \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} todosDefinidosAux(d.prefijos, 256) \yluego todosHijosDefinidos(d, 256) \\  \textbf{fi}$}
+
+% \tadOperacion{todosHijosDefinidos}{dStr /$d$, nat /$n$}{bool}{d $\neq$ NULL $\yluego$ $n = tam(d.prefijos)$}
+% \tadAxioma{todosHijosDefinidos(d,n)}{$\textbf{if} \ n = 0 \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} todosDefinidos(d.prefijos[n-1] \yluego todosHijosDefinidos(d.prefijos, n-1) \\  \textbf{fi}$}
+
+% \tadOperacion{todosDefinidosAux}{ad($\alpha$) /$a$, nat /$n$}{bool}{$n = tam(a)$}
+% \tadAxioma{todosDefinidosAux(a,n)}{$\textbf{if} \ n = 0 \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} definido?(a, n-1) \yluego todosDefinidosAux(a, n-1) \\  \textbf{fi}$}
+\tadAlinearFunciones{TodasMisHojasConSignificado}{ad($\alpha$) /$a$, nat /$n$, conj($\alpha$) /$c$}
+\tadAlinearAxiomas{TodasMisHojasConSignificado(d,n)}
+\tadOperacion{Loopea}{dStr /$d$, conj(dStr) /$cd$}{bool}{}
+\tadAxioma{Loopea(d, cd)}{$\textbf{if} \ d = NULL \ \emph{then} \\ \hspace*{10px} false \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ perteneceAlguno (d.prefijos, 256, cd) \ \emph{then} \\ \hspace*{20px} true \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} loopeaAlguno(d.prefijos, 256, cd) \\ \hspace*{10px}  \textbf{fi} \\  \textbf{fi}$}
+
+\tadOperacion{perteneceAlguno}{ad($\alpha$) /$a$, nat /$n$, conj($\alpha$) /$c$}{bool}{($n = tam(a)$) $\yluego$ todosDefinidos(a,n)}
+\tadAxioma{perteneceAlguno(a, n, c)}{$\textbf{if} \ n = 0 \ \emph{then} \\ \hspace*{10px} false \\ \textbf{else} \\ \hspace*{10px} (a[n-1] \in c) \yluego perteneceAlguno(a, n-1, c) \\  \textbf{fi}$}
+
+\tadOperacion{loopeaAlguno}{ad($\alpha$) /$a$, nat /$n$, conj($\alpha$) /$c$}{bool}{$n = tam(a)$) $\yluego$ todosDefinidos(a,n)}
+\tadAxioma{loopeaAlguno(a, n, c)}{$\textbf{if} \ n = 0 \ \emph{then} \\ \hspace*{10px} false \\ \textbf{else} \\ \hspace*{10px} Loopea(a[n-1], Ag(a[n-1],c)) \yluego loopeaAlguno(a, n-1, c) \\  \textbf{fi}$}
+
+\tadOperacion{HayLoop?}{dStr /$d$}{bool}{}
+\tadAxioma{HayLoop?(d)}{Loopea(d, Ag(d, $\emptyset$))}
+
+\tadOperacion{damePunteros}{dStr /$d$}{multiconj(dStr)}{}
+\tadAxioma{damePunteros(d)}{$\textbf{if} \ d = NULL \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} Ag(d, damePunterosdeTodos(d.prefijos, 256)) \\  \textbf{fi}$}
+
+\tadOperacion{damePunterosdeTodos}{ad($\alpha$) /$a$, nat /$n$}{multiconj(dStr)}{$n = tam(a)$) $\yluego$ todosDefinidos(a,n)}
+\tadAxioma{damePunterosdeTodos(a,n)}{$\textbf{if} \ n = 0 \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} damePunteros(a[n-1]) \cup damePunterosdeTodos(d.prefijos, n-1) \\  \textbf{fi}$}
+
+\tadOperacion{NoHayRepetidos}{multiconj($\alpha$) /$m$}{bool}{}
+\tadAxioma{NoHayRepetidos(m)}{$\textbf{if} \ \emptyset ?(m) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ \# (dameUno(m), m) \neq 1 \ \emph{then} \\ \hspace*{20px} false \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} NoHayRepetidos(sinUno(m)) \\  \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+
+\tadOperacion{esArbValido}{dStr /$d$}{bool}{}
+\tadAxioma{esArbValido(d)}{$\textbf{if} \ HayLoop?(d) \ \emph{then} \\ \hspace*{10px} false \\ \textbf{else} \\ \hspace*{10px} NoHayRepetidos(DamePunteros(d)) \\  \textbf{fi}$}
+
+
+\tadOperacion{HojasConSignificado}{dStr /$d$}{bool}{}
+\tadAxioma{HojasConSignificado(d)}{$\textbf{if} \ esHoja?(d) \ \emph{then} \\ \hspace*{10px} d.significado \neq NULL \\ \textbf{else} \\ \hspace*{10px} TodasMisHojasConSignificado(d, 256) \\  \textbf{fi}$}
+
+\tadOperacion{TodasMisHojasConSignificado}{dStr /$d$, nat /$n$}{bool}{}
+\tadAxioma{TodasMisHojasConSignificado(d,n)}{$\textbf{if} \ n == 0 \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px}   \textbf{if} \ d.prefijos[n-1] == NULL \ \emph{then} \\ \hspace*{20px} true \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} HojasConSignificado(d.prefijos[n-1])  \yluego  \\ \hspace*{20px} TodasMisHojasConSignificado(d, n-1) \\  \hspace*{10px} \textbf{fi} \\ \textbf{fi}$}
+
+\tadOperacion{esHoja?}{dStr /$d$}{bool}{d $\neq$ NULL}
+\tadAxioma{esHoja?(d)}{HijosNull(d,256)}
+
+\tadOperacion{HijosNull}{dStr /$d$, nat /$n$}{bool}{d $\neq$ NULL}
+\tadAxioma{HijosNull(d,n)}{$\textbf{if} \ n == 0 \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} (d.prefijos[n-1] == NULL) \yluego HijosNull(d,n-1) \\  \textbf{fi}$}
+
+
+
+\subsubsection{Funcion de Abstraccion}
+
+\Abs[dStr]{dicc(string, $\alpha$)}[e]{d}{($\forall c$: string)(def?($c, d$) $=$ esClave?($c, e$) $\yluego$ \\
+ (def?($c, d$) \impluego obtener($c, d$) $=$ significado($c, e$)))}
+
+\textbf{Funciones Auxiliares:}
+
+  ~
+    
+\tadOperacion{esClave?}{string /$c$, dStr /$e$}{bool}{}
+\tadAxioma{esClave?(c,e)}{ $\textbf{if} \ vacia?(c) \ \emph{then} $\\$ \hspace*{10px} e.significado \neq NULL $\\$ \textbf{else} \\ \hspace*{10px} e.caracteres[ord(prim(c))] \neq NULL \yluego esClave?(fin(c), e.caracteres[ord(prim(c))]) $\\$  \textbf{fi}$}
+
+
+\tadOperacion{significado}{string /$c$, dStr /$e$}{bool}{esClave?($c, e$)}
+\tadAxioma{significado(c,e)}{ $\textbf{if} \ vacia?(c) \ \emph{then} \\ \hspace*{10px} e.significado \\ \textbf{else} \\ \hspace*{10px} significado(fin(c), e.caracteres[ord(prim(c))]) \\  \textbf{fi}$}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{Algoritmos}
+
+
+
+\begin{algoritmo}{\textbf{iVacio}}{}{dStr}
+    	     (res.significado) $\gets$ NULL \com*{$O(1)$}
+			 (res.prefijos) $\gets$ CrearArreglo(256) \com*{$O(1)$}
+			 \For (\com*[f]{$O(256)$}) {i $\leftarrow$ 0 to 255}{
+				(res.prefijos[i]) $\gets$ NULL \com*{$O(1)$}
+			 }
+    	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Por algebra de ordenes $O(1)$ + $O(1)$ + ($O(256)$ * $O(1)$) = $O(1)$} % Justificación
+  
+\begin{algoritmo}{\textbf{iDefinido?}}{\In{s}{string}, \In{d}{dStr($\alpha$)})}{bool}
+			 i $\gets$ 0 \com*{$O(1)$}
+			 noesta $\gets$ false \com*{$O(1)$}
+			 actual $\gets$\ d \com*{$O(1)$}
+			 \While(\com*[f]{$O(Longitud(s))$}){ i < Longitud(s) $\wedge$ $\neg$ noesta}{ 
+				\If(\com*[f]{$O(1)$}) {actual.prefijos [ord(s[i])] = NULL}{ 
+					noesta $\gets$ true \com*{$O(1)$}
+				}
+				actual $\gets$ (actual.prefijos[ord(c[i])]) \com*{$O(1)$}
+				i $\gets$ i + 1 \com*{$O(1)$}
+			 }
+			 res $\gets$ ($\neg$ noesta $\wedge$ $\neg$(actual.significado = NULL)) \com*{$O(2)$}
+			    	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L)$} % Complejidad
+  {En este caso $O(Longitud(s))$ = $O(L)$. Por algebra de ordenes $O(1)$ + $O(1)$ + $O(1)$ + ($O(L)$ * ($O(1)$ + $O(1)$ + $O(1)$ + $O(1)$)) + $O(2)$ = $O(L)$} % Justificación
+
+\begin{algoritmo}{\textbf{iDefinir}}{\In{c}{string}, \In{a}{$\alpha$}, \Inout{d}{dStr}}{}
+			 i $\gets$ 0 \com*{$O(1)$}
+			 actual $\gets$\ d \com*{$O(1)$}
+			 \While (\com*[f]{$O(Longitud(c))$}){i < Longitud(c)}{ 
+				\If(\com*[f]{$O(1)$}){ actual.prefijos [ord(c[i])] = NULL}{ 
+					(actual.prefijos[ord(c[i])]) $\gets$ Vacio() \com*{$O(1)$}
+				}
+				actual $\gets$ (actual.prefijos[ord(c[i])]) \com*{$O(1)$}
+				i $\gets$ i + 1 \com*{$O(1)$}
+			 }
+			 actual.significado $\gets$ a \com*{$O(copy(a))$}  	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L) + copy(a)$} % Complejidad
+  {En este caso $O(Longitud(c))$ = $O(L)$. Por algebra de ordenes $O(1)$ + $O(1)$ + ($O(L)$ * ($O(1)$ + $O(1)$ + $O(1)$ + $O(1)$)) + $O(1)$ = $O(L)$} % Justificación
+  
+\begin{algoritmo}{\textbf{iObtener}}{\In {d}{dStr}, \In {c}{string}}{$\alpha$}
+			 i $\leftarrow$ 0 \com*{$O(1)$}
+			 actual $\leftarrow$\ d \com*{$O(1)$}
+			 \While(\com*[f]{$O(Longitud(c))$}) {i < Longitud(c)}{ 
+				actual $\leftarrow$ (actual.prefijos[ord(c[i])]) \com*{$O(1)$}
+				i $\leftarrow$ i + 1 \com*{$O(1)$}
+			 }
+             
+			 res $\leftarrow$ (actual.significado) \com*{$O(1)$}
+			    	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L)$} % Complejidad
+  {En este caso $O(Longitud(c))$ = $O(L)$. Por algebra de ordenes $O(1)$ + $O(1)$ + ($O(L)$ * ($O(1)$ + $O(1)$)) + $O(1)$ = $O(L)$} % Justificación
+  
+\begin{algoritmo}{\textbf{iBorrar}}{\Inout {d}{dStr}, \In {c}{string} }{}
+			 i $\gets$ 0 \com*{$O(1)$}
+             $pila \gets Vacia()$ \com*{$O(1)$}
+			 actual $\gets$\ d \com*{$O(1)$}
+             $Apilar(pila, actual)$ \com*{$O(copy(actual))$}
+			 \While(\com*[f]{$O(Longitud(c))$}) {i < Longitud(c)}{
+             	actual $\gets$ actual.prefijos[ord(c[i])] \com*{$O(1)$}	
+                $Apilar(pila, actual)$ \com*{$O(copy(actual))$}
+             	i $\gets$ i + 1 \com*{$O(1)$}
+			 }
+			 actual.significado $\gets$ NULL \com*{$O(1)$}
+             \If(\com*[f]{$O(1)$}){todoNULL?(actual.prefijos)}{
+             		ant $\gets$\ actual \com*{$O(1)$}
+					\While(\com*[f]{$O(1)$}) {$\neg$ hayHermanos?(actual.prefijos) $\land$ actual.significado = NULL $\land$ $\neg$ EsVacia?(pila)}{
+                		\For (\com*[f]{$O(256)$}) {i $\leftarrow$ 0 to 255}{
+							\If(\com*[f]{$O(1)$}){actual.prefijos[i] $\neq$ NULL }{
+                        		actual.prefijos[i] $\gets$ NULL \com*{$O(1)$}
+			 				}
+                    	}    
+                        ant $\gets$\ actual \com*{$O(1)$}
+						$actual \gets Desapilar(pila)$ \com*{$O(1)$}
+                    }
+                    \If(\com*[f]{$O(1)$}){actual $\neq$ ant }{
+                    	\For (\com*[f]{$O(256)$}) {i $\leftarrow$ 0 to 255}{
+                        	\If(\com*[f]{$O(1)$}){actual.prefijos[i] = ant}{
+                            	actual.prefijos[i] $\gets$ NULL \com*{$O(1)$}
+                          	}
+                      	}
+					}
+                } 	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {En este caso $O(Longitud(c))$ = $O(L)$. Por algebra de ordenes $O(1)$ + ($O(L)$ * $O(1)$) + ($O(1)$ + ($O(L)$ * $O(1)$)) + $O(1)$ = $O(L)$, ya que como prefijos es acotado hayHermanos? y todoNULL? son $O(1)$ y copiar punteros es O($1$)} % Justificación
+
+\begin{algoritmo}{\textbf{iminimaClave}}{\In {d}{dStr}}{string}
+actual $\gets$ d \com*{$O(1)$}
+res $\gets$ Vacia() \com*{$O(1)$}
+tengoPrefijo $\gets$ false \com*{$O(1)$}
+encontreMin $\gets$ false \com*{$O(1)$}
+\While(\com*[f]{$O(L)$}){$\neg$ encontreMin}{
+	\eIf(\com*[f]{$O(1)$}){actual.significado $\neq$ NULL}{
+    	encontreMin $\gets$ true \com*{$O(1)$}
+    }{
+    	i $\gets$ 0 \com*{$O(1)$}
+        \While(\com*[f]{$O(256)$}){i $<$ 256 $\land$ $\neg$ tengoPrefijo}{
+			\If(\com*[f]{$O(1)$}){actual.prefijos[i] $\neq$ NULL}{
+            actual $\gets$ actual.prefijos[i] \com*{$O(1)$}
+            tengoPrefijo $\gets$ true \com*{$O(1)$}
+            res $\gets$ AgregarAtras(res, $ord^{-1}$(i)) \com*{$O(long(res)+ 1)$}
+            }
+            i $\gets$ i + 1 \com*{$O(1)$}
+		}
+        tengoPrefijo $\gets$ false \com*{$O(1)$}
+	}
+}    
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L)$} % Complejidad
+  {El while que recorre los elementos de 0 a 256 es $O(256)$ = $O(1)$. El while externo a lo sumo recorre una rama, es decir $O(L)$} % Justificación
+
+\begin{algoritmo}{\textbf{imaximaClave}}{\In {d}{dStr}}{string}
+actual $\gets$ d \com*{$O(1)$}
+res $\gets$ Vacia() \com*{$O(1)$}
+tengoPrefijo $\gets$ false \com*{$O(1)$}
+encontreMax $\gets$ false \com*{$O(1)$}
+\While(\com*[f]{$O(L)$}){$\neg$ encontreMax}{
+	\eIf(\com*[f]{$O(1)$}){todoNULL?(actual.prefijos)}{
+    	encontreMax $\gets$ true \com*{$O(1)$}
+    }{
+    	i $\gets$ 255 \com*{$O(1)$}
+        \While(\com*[f]{$O(256)$}){i $\geq$ 0 $\land$ $\neg$ tengoPrefijo}{
+			\If(\com*[f]{$O(1)$}){actual.prefijos[i] $\neq$ NULL}{
+            actual $\gets$ actual.prefijos[i] \com*{$O(1)$}
+            tengoPrefijo $\gets$ true \com*{$O(1)$}
+            res $\gets$ AgregarAtras(res, $ord^{-1}$(i)) \com*{$O(long(res)+ 1)$}
+            }
+            i $\gets$ i - 1 \com*{$O(1)$}
+		}
+        tengoPrefijo $\gets$ false \com*{$O(1)$}
+	}
+}      	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L)$} % Complejidad
+  {El while que recorre los elementos de 255 a 0 es $O(256)$ = $O(1)$. El while externo a lo sumo recorre una rama, es decir $O(L)$} % Justificación
+
+\begin{algoritmo}{\textbf{itodoNULL?}}{\In{a}{Arreglo[n](puntero(nodo))}}{bool}
+	$res \gets true $ \com*{$O(1)$}
+    $i \gets 0 $ \com*{$O(1)$}
+	\While(\com*[f]{$O(1)$}){i $<$ Tam(a) $\land$ res}{
+    	  \If(\com*[f]{$O(1)$}){$a[i]$ $\neq$ NULL}{
+      			 $res \gets false $ \com*{$O(1)$}
+  		}
+        $i \gets i + 1$ \com*{$O(1)$}
+     }   
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Itera n $=$ Tam(a) veces y hace operaciones $O(1)$, se cuenta con la operacion Tam que es $O(1)$} % Justificación
+  
+\begin{algoritmo}{\textbf{ihayHermanos?}}{\In{a}{Arreglo[n](puntero(nodo))}}{bool}
+    $j \gets 0 $ \com*{$O(1)$}
+    $i \gets 0 $ \com*{$O(1)$}
+	\While(\com*[f]{$O(1)$}){i $<$ Tam(a) $\land$ (j $<$ 2)}{
+    	  \If(\com*[f]{$O(1)$}){$a[i]$ $\neq$ NULL}{
+      			 $j \gets j + 1$ \com*{$O(1)$}
+  		}
+        $i \gets i + 1$ \com*{$O(1)$}
+     }
+     $res \gets j $=$ 2 $ \com*{$O(1)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Itera n $=$ Tam(a) veces y hace operaciones $O(1)$, se cuenta con la operacion Tam que es $O(1)$} % Justificación
+
+\end{Algoritmos}

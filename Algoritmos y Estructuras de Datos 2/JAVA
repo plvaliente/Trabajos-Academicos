@@ -1,0 +1,20 @@
+en java todas las clases(objeto) heredan los metodos que tienen sus clases padre, por ejemplo OBJECT{
+				boolean	equals
+				int 	hashcode
+				OBJECTtoString()
+			  }
+
+si quisiera definir el {equal} de mi clase podria hacer:
+
+boolean equals (OBJECT e){
+return this.obs_0 == e.obs_0 && ..... && this.obs_n == e.obs_n
+}
+
+
+Standard Library -> JDK
+
+Collection [Aca van todas las clases de cosas Standard]
+
+
+
+

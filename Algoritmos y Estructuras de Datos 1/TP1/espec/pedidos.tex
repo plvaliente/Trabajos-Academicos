@@ -1,0 +1,65 @@
+
+\begin{problema}{nuevoP}{n: \ent, e: Empleado, cs: [Combo]}{Pedido}
+\requiere [numeroPositivo]{n > 0}
+\requiere [hayaPedidoAlgo]{\vert cs \vert > 0}
+\asegura {numero(res) == n}
+\asegura {atendio(res) == e}
+\asegura {combos(res) == cs}
+\end{problema}
+
+\begin{problema}{numeroP}{p: Pedido}{\ent}
+\asegura {res == numero(p)}
+\end{problema}
+
+\begin{problema}{atendioP}{p: Pedido}{Empleado}
+\asegura {res == atendio(p)}
+\end{problema}
+
+\begin{problema}{combosP}{p: Pedido}{[Combo]}
+\asegura {combos(p) == res)}
+\end{problema}
+
+\begin{problema}{agregarComboP}{p: Pedido, c: Combo}{}
+\modifica {p}
+\asegura [mantieneNumero]{numero(p) == numero(pre(p))}
+\asegura [mantieneEmpleado]{atendio(p) == atendio(pre(p))}
+\asegura [agregoUnCombo]{combos(p) == combos(pre(p)) ++ [c]}   
+\end{problema}
+
+\begin{problema}{anularComboP}{p: Pedido, i:\ent}{}
+\requiere {0 \leq i < |combos(p)|}
+\modifica {p}
+\asegura [mantieneNumero]{numero(p) == numero(pre(p))}
+\asegura [mantieneEmpleado]{atendio(p) == atendio(pre(p))}
+\asegura [anuloElComboDelParametro]{combos(p) == (combos(pre(p))_{[0..i)} ++ combos(pre(p))_{(i..|combos(pre(p))|)} )}  
+\end{problema}
+
+
+\begin{problema}{cambiarBebidaComboP}{p: Pedido, b: Bebida, i:\ent} {}
+\requiere {0 \leq i < \vert combos(p) \vert}  
+\modifica {p}
+\asegura [mantieneNumero]{numero(p) == numero(pre(p))}
+\asegura [mantiendoEmpleado]{atendio(p) == atendio(pre(p))}
+\asegura [mantieneCantidadDeCombos]{\vert combos(p) \vert == \vert combos(pre(p)) \vert }
+\asegura [mantieneCombosIguales]{(\forall \ j \leftarrow [0..\vert combos(p) \vert), j \neq i) \ combos(p)_j == combos(pre(p))_j  } 
+\asegura [mantieneSandwich]{sandwich (combos(pre(p)_i) == sandwich (combos(p)_i)}
+\asegura [mantieneDificultad]{dificultad (combos(pre(p)_i) == dificultad (combos(p)_i)} 
+\asegura [cambioLaBebida]{bebida (combos(p)_i) == b}
+
+\end{problema}
+
+\newpage
+
+\begin{problema}{elMezcladitoP}{p: Pedido}{}
+\requiere [hayaPermutacionesSuficientes]{\vert combos(p) \vert \leq \vert bebidasUsadas(p) \vert \times \vert sandwichesUsados(p) \vert }
+\modifica {p}
+\asegura [mantieneNumero]{numero(p) == numero(pre(p))}
+\asegura [mantiendoEmpleado]{atendio(p) == atendio(pre(p))}
+\asegura [mantieneCantidadDeCombos]{\vert combos(p) \vert == \vert combos(pre(p)) \vert }
+\asegura [losCombosSonDistintos]{distintosSyB(combos(p))}
+\asegura [mantieneBebidas]{mismos(bebidasUsadas(p), bebidasUsadas(pre(p))}
+\asegura [mantieneSandwiches]{mismos(sandwichesUsados(p), sandwichesUsados(pre(p))}
+\asegura [usoLaMenorCantidadDeMovimientos]{\\ 
+cantidadMovimientos(combos(p), combos(pre(p)) ==  cantRepeticionesDeCombos(combos(pre(p))
+}
+\end{problema}

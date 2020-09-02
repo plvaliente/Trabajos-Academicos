@@ -1,0 +1,1 @@
+El mejor modelo de los que exploramos es RandomForestClassifier con n_estimators=50 y max_features=sqrt, y obtuvo un AUC ROC estimado de 0.7351. 

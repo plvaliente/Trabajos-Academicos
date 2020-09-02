@@ -1,0 +1,11 @@
+\begin{tipo}{Pedido}
+	\observador{numero}{p: Pedido}{\ent}
+	\observador{atendio}{p: Pedido}{Empleado}
+	\observador{combos}{p: Pedido}{[Combo]}
+	
+	\medskip
+	\invariante[numeroPositivo]{numero(p) > 0}
+	\invariante[pideAlgo]{|combos(p)| > 0}
+\end{tipo}
+
+

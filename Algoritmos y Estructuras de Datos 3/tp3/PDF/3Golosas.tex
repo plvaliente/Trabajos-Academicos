@@ -1,0 +1,136 @@
+\subsection{LFS}
+
+Inspirada en la heurística LFS (\textit{Secualcial Largest First})  esta heurística golosa, o \textit{greedy} funciona de forma iterativa y se basa en la intuición de que un nodo de mayor grado tiene más probabilidades de pertenecer a una clique de frontera maxima. Esto se debe a que como tiene muchas adyacencias, muchas de estas contribuirán al tamaño de la frontera, o en caso de que la mayoría de sus vecinos sean parte de la clique también, será mayor la cantidad de vecinos que aumentan la frontera.
+
+\subsubsection{Algoritmo}
+
+Para implementar esta idea, el primer paso es armar una lista de todos los nodos del grafo, ordenados de mayor a menor según su grado. La solución al problema es una clique representada como un conjunto de nodos.
+
+Comenzando con una clique vacía y por lo tanto de frontera nula como solución parcial, en cada paso iterativo se decide si el próximo nodo es agregado a la solución. Para ser agregado debe cumplir:
+
+\begin{itemize}
+\item La solución anterior más el nuevo nodo forman una clique.
+\item La clique nueva tiene frontera mayor que la solución anterior.
+\end{itemize}
+
+Esta función recorre todos los nodos que pueden ser agregados y devuelve los nodos que forman la clique encontrada y el tamaño de su frontera. El funcionamiento del algoritmo se puede entender mejor viendo el siguiente pseudocódigo:\\
+
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Algoritmo goloso LFS.}
+	\Function{maxFronCliqueLFS}{}
+		\State{}
+		$nodos \gets$ Vector con los nodos y sus grados \;
+		Ordeno $nodos$ de mayor a menor según su grado\;
+		$clique \gets$ Vector vacío\;
+		$maxFront \gets$ 0\;
+		$tamClique \gets$ 0\;
+		
+		\For{cada i desde 1 hasta n, y mientras $nodos_i$ pueda mejorar la solución }{
+			\State{}
+			$clique$.Agregar($nodos_i$) \;
+			\eIf{$clique$ es clique y tiene mayor frontera que antes}{
+				\State{}
+				Actualizar($maxFront$) \;
+				$tamClique \gets tamClique$ + 1
+			}{
+				\State{}
+				$clique$.Remover($nodos_i$) 
+			}
+		}
+		\Return{$clique$ y $maxFront$}
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+
+En este pseudocódigo hay tres operaciones que no son triviales de resolver. Una es verificar que un conjunto de nodos forman efectivamente una clique. Sabiendo que antes de agregar el último nodo ya era una clique, esto se realiza verificando que el último nodo esta conectado con todos los anteriores.
+
+Para entender las otras dos operaciones, que son verificar que $nodos_i$ pueda mejorar la solución y calcular la forntera de $clique$ + $nodos_i$, hace falta demostrar un pequeño lema primero.\\
+
+\textbf{Lema 1:} Sea $C_k$ una clique de $G$ de $k$ nodos, $f(C_k)$ el tamaño de su frontera, y $v'$ un nodo de G tal que $v' \not \in$ $C_k$. Si $C_{k+1} = C_k$ + $v'$ es una clique, $f(C_{k+1}) = f(C_k) + d(v') - 2*k$. \\
+
+\textbf{Demostración:} De forma constructiva podemos ver que al agregar un nodo $v'$ a la clique $C_k$, todas las aristas que unian a $C_k$ con $v'$ dejan de estar en la frontera. Por otro lado, ahora pertenecen a la frontera todas las aristas incidentes a $v'$ que no se conectan con nodos de $C_k$.\\
+Como sabemos que $C_{k+1}$ es una clique, tiene que haber exactamente una arista entre cada nodo de $C_k$ y $v'$, por lo que  $f(C_{k+1}) = (f(C_k) - k) + (d(v') - k) = f(C_k) + d(v') - 2*k$.\\
+
+
+De esta forma es trivial calcular el tamaño de la frontera y, además, se deduce inmediatamente que para que el nodo a añadir agrande la frontera de la clique, debe tener grado mayor a $2*k$. Esto nos ahorra verificar con todo nodo que no cumpla esta condición.
+
+\subsubsection{Complejidad}
+
+En este algoritmo, la complejidad se divide en tres partes: La complejidad del \textit{set up}, la complejidad del ciclo, retornar los resultados.
+
+En la primera parte, inicialmente se genera un vector de pares, donde se coloca cada nodo con su grado. Dado que contruir un par tiene costo $O(1)$, el costo de agregar un par nuevo es el costo de calcular el grado del nodo. Esto se realiza recorriendo la columna de la matriz de adyacencias correspondiente al nodo, contando la cantidad de adyacencias. Al tratarse de una matriz cuadrada de $n x n$, el costo de determinar el grado es $O(n)$. As\'i, como se agrega un par por cada nodo, el costo final de esta operaci\'on es $O(n^2)$.
+
+Una vez obtenido el vector de pares, se lo ordena descendentemente. Debido a que la comparaci\'on entre dos pares se realiza en $O(1)$ (ya que consta en comparar solo la primera componente del par), ordenar los $n$ pares tiene costo $O(n*log(n))$.
+
+En cuanto a la primera parte, solo resta hacer pequeñas asignaciones las cuales no implican un costo adicional. Por lo tanto, el costo total de la primera parte es $O(n^2)$ + $O(n*log(n))$ = $O(n^2)$.
+
+La segunda parte es el cuerpo del algoritmo, el cual está compuesto por un ciclo que, en peor caso, recorre todos los nodos. Determinar si un nodo es candidato para mejorar la solución consiste simplemente en verificar que el grado del nodo es mayor a dos veces tamaño de la clique. Como el grado del nodo ya fue calculado en la primera parte, esta validación tiene costo constante. Así, el ciclo realiza $O(n)$ iteraciones donde el paso de una a otra no implica costo significativo.
+
+En cada iteración primero se agrega un nuevo nodo, lo cual tiene costo $O(1)$, y luego se verifican dos cosas:
+
+\begin{itemize}
+\item Que la nueva tira de nodos es clique luego de agregar al último nodo. Como solo es necesario verificar que el último nodo sea adyacente a los anterior (debido a que ya era clique antes de agregar al último nodo) el costo de esta operación es $O(n)$\footnote{ Ver costo de operación $esClique$ en algoritmo de Backtracking.}. 
+\item Si se cumple que es clique, se verifica si el tamaño de la frontera es mayor. Esto tiene costo constante utilizando la propiedad mencionada previamente.
+\end{itemize}
+
+Una vez realizadas estas verificaciones, el costo restante es constante, independientemente de si se cumple lo anterior o no. De cumplir, solo se guardan los valores nuevos, y si no se cumple, se remueve el nodo agregado, el cual se encuentra siempre en la última posición.
+
+Finalmente, el costo de la segunda parte del algoritmo está dominado por determinar si una tira de nodos es clique en cada iteración, y por lo tanto el costo es $O(n)$ * $O(n)$ = $O(n^2)$.
+
+La tercera y última parte es retornar los resultado. Esto no tiene costo significativo ya que copiar el tamaño máximo de la frontera es constante, y la clique se devuelve por referencia.
+
+Habiendo calculado las tres partes, el costo total en peor caso el la suma de las complejidades de las tres partes. Esto es $O(n^2)$ + $O(n^2)$ + $O(1)$ = $O(n^2)$.
+
+\subsection{Random}
+
+Esta heurística golosa imita la heurística anterior, pero sin considerar ningún orden particular para los nodos. Es claro que, si bien el nodo de mayor grado parece una buena forma de comenzar, éste no siempre formará parte de la solución. Por este motivo, un orden aleatorio resulta una alternativa tentadora a la hora de experimentar.
+
+\subsubsection{Algoritmo}
+
+El algoritmo de esta heurística presenta muy pocas modificaciones con respecto al anterior. La principal es, sin duda, que ya no se ordenan los nodos en base a su grado, sino que se genera una lista con todos los nodos y luego se los mezcla aleatoreamente. Luego, en el cuerpo del algoritmo se busca agregar nodos que mejoren la frontera en el orden provisto por la tira mezclada.
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Algoritmo goloso aleatorio.}
+	\Function{maxFronCliqueRandom}{}
+		\State{}
+		$nodos \gets$ Vector con los nodos\;
+		Mezclar(nodos)\;
+		$clique \gets$ Vector vacío\;
+		$maxFront \gets$ 0\;
+		$tamClique \gets$ 0\;
+		
+		\For{cada i desde 1 hasta n}{
+			$clique$.Agregar($nodos_i$)\;
+			
+			\eIf{$clique$ es clique y tiene mayor frontera que antes}{
+				\State{}
+				Actualizar($maxFront$) \;
+				$tamClique \gets tamClique$ + 1\;
+			}{
+				\State{}
+				$clique$.Remover($nodos_i$) \;
+			}
+		}
+		\Return{$clique$ y $maxFront$} \\
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Complejidad}
+
+Al igual que el algoritmo de LFS, la complejidad se divide en tres partes: La complejidad del \textit{set up}, la complejidad del ciclo, retornar los resultados.
+
+La tercera y última parte se mantiene igual al otro algoritmo, por lo tanto la complejidad es $O(1)$.
+
+En cuanto a las dos primeras partes, ambas sufren algún cambio con respecto a LFS. En la primera parte ya no se calculan todos los grados y luego se ordenan, sino que simplemente se ponen todos los nodos en un vector ($O(n)$) y luego se los mezcla aleatoreamente. Esta última operación tiene orden lineal en la cantidad de elementos del vector, por lo tanto, la complejidad final de la primera parte es $O(n)$ + $O(n)$ = $O(n)$.
+
+En cuanto a la segunda parte, los cambios que se realizan son muy sutiles. El primero es que, al no tener los grados de los nodos calculados, ya no se puede evitar considerar unos de los nodos por tener grado muy bajo. Esto hace que se recorran todos los nodos hasta el final de la lista. De todas formas, en peor caso, esto no altera la complejidad. Se siguen realizando $O(n)$ iteraciones. El segundo cambio que se realiza es a la hora de calcular la nueva frontera de la clique. Como antes se tenían calculados los grados de los nodos, este cálculo resultaba tener costo constante. En este algoritmo, en cambio, hay que calcularlo con costo $O(n)$. De todas formas, como previamente se debe calcular si la tira de nodos es efectivamente una clique en $O(n)$, el costo final de esta parte no se ve afectado. Al igual que en LFS, lo restante es de orden constante. 
+
+ Así, la complejidad del cuerpo del algoritmos $O(n)$ * $O(n)$ = $O(n^2)$, y sumando a esto el costo de la primera parte o \textit{set up}, la complejidad final del algoritmos es $O(n^2)$ + $O(n)$ = $O(n^2)$, al igual que el algoritmo de LFS.
+
+\subsection{Experimentación}

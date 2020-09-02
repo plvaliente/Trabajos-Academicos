@@ -1,0 +1,8 @@
+
+\begin{tipo}{Combo}
+	\observador{bebida}{c: Combo}{Bebida}
+	\observador{sandwich}{c: Combo}{Hamburguesa}
+	\observador{dificultad}{c: Combo}{Energia}
+	\medskip % Dejo un espacio entre los observadores y el invariante
+	\invariante[dificultadHasta100]{energiaEnRango(dificultad(c))}
+\end{tipo}

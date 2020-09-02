@@ -1,0 +1,1 @@
+docker run -v $(pwd):/wd -w /wd fmanco/cpp-build $@

@@ -1,0 +1,54 @@
+\documentclass[a4paper]{article}
+
+\usepackage[spanish]{babel} % Le indicamos a LaTeX que vamos a escribir en español.
+\usepackage[latin1]{inputenc} % Permite utilizar tildes y eñes normalmente
+\usepackage{pdfpages}
+%\usepackage{framed}
+\input{Algo1Macros}% Macros especificas para especificar problemas en AyEDI
+
+\newcommand{\comen}[2]{%
+\begin{framed}
+\noindent \textsf{#1:} #2
+\end{framed}
+}
+% Aca solo vamos a poner el esqueleto del documento, pero no vamos a especificar nada.
+
+\begin{document} % Todo lo que escribamos a partir de aca va a aparecer en el documento.
+
+\includepdf{caratula}
+
+\section{Tipos} %Defino los renombres de tipos básicos.
+
+\input{tipos/tipos}
+
+\section{Combo} %Defino el tipo combo, con su especificación.
+
+\input{tipos/combo} % Aca va la definición del tipo.
+
+\input{espec/combo} % La especificación del tipo combo.
+
+\newpage %Salto de página
+
+
+\section{Pedido} 
+
+\input{tipos/pedidos}
+
+\input{espec/pedidos}
+
+\newpage
+
+\section{Local} 
+
+\input{tipos/local}
+
+\input{espec/local}
+
+\newpage
+
+\section{Funciones Auxiliares}
+
+\input{espec/auxiliares.tex}
+
+\end{document} %Terminé!
+

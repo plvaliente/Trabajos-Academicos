@@ -1,0 +1,11 @@
+Problema:
+
+Dados dos puntos del primer cuadrante de R2. Indicar la distancia mínima que puede tener una linea que va desde uno hacia el otro y toca al menos una vez la recta Y=0.
+
+INPUT:
+
+Cada archivo de input tiene 4 números reales X1, Y1, X2, Y2. Siendo X1 e Y1 las coordenadas X e Y del primer punto y X2 e Y2 las coordenadas X e Y del segundo punto. Cada número real tiene exactamente dos decimales. Se puede asumir que el segundo punto siempre estará a la derecha del primer punto, es decir X1<X2.
+
+OUTPUT:
+
+Un solo número real que indique las distancia mínima indicada.

@@ -1,0 +1,10 @@
+TaskCPU 7
+@2:
+TaskCPU 1
+TaskCPU 2
+@9:
+TaskCPU 3
+TaskCPU 1
+TaskCPU 5
+TaskCPU 2
+TaskCPU 4

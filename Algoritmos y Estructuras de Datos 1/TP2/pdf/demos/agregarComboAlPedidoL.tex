@@ -1,0 +1,44 @@
+\subsubsection{Primer Ciclo}
+\begin{lstlisting}
+void Local::agregarComboAlPedidoL(const Combo c, int n){
+	int i = 0 ;
+	_actualizaStockBebida( c.bebidaC() , -1 ) ;
+	_actualizaStockSandwich( c.sandwichC() , -1 ) ;
+	while( i < _ventas.size() && _ventas.at(i).numeroP() != n ){
+		i++ ;
+	}
+\end{lstlisting}
+
+\hspace{15pt}\textbf{Pc, Qc, I, B, cota y fv.} \\
+Llamo $vN = |ventas(l)| $;\\
+Vale $vN \geq 1$ (por requiere); \\
+Llamo $nr(i) = numero(ventas(l)_i) $; \\
+Ademas por requiere tambien se que n tiene que ser un numero de pedido valido ;\\
+Pc: $i == 0$; \\
+Qc: $nr(i) == n \vee vN == i$ ; \\
+B: $i < vN \wedge nr(i) \neq n$ ; \\
+$\neg$B: $i \geq vN \vee nr(i) == n$ ; \\
+Fv: $vN - i $; \\
+cota: 0 ; \\
+I: $0 \leq i \leq vN $ ; \\
+	
+\hspace{15pt}\textbf{Pc $\wedge$ B $\Rightarrow$ I:} \\
+Pc $\wedge$ B: $i == 0 \wedge i < vN \wedge nr(i) \neq n$ ; \\
+Sabiendo que $i == 0$ verifico que se cumple el invariante: \\
+Reemplazo i = 0 en I:$ 0 \leq 0 \leq vN $ (Verdadero porque $vN \geq 1$ );  \\
+
+\hspace{15pt}\textbf{I $\wedge \neg $ B $\Rightarrow$ Qc:} \\
+I $\wedge \neg$B: $0 \leq i \leq vN \wedge i \geq vN \vee nr(i) == n$ ; \\
+Implica: $vN == i \vee nr(i) == n  $; \\
+Ya que: $0 \leq i \leq vN \wedge i \geq vN \Rightarrow vN == i $; \\
+Y $0 \leq i \leq vN \wedge nr(i) == n$. En particular implica $nr(i) == n$ ; \\
+
+\hspace{15pt}\textbf{I $\wedge$ fv $\leq$ Cota $\Rightarrow \neg$ B:} \\
+I $\wedge$ Fv $\leq$ C: $0 \leq i \leq vN \wedge vN - i \leq 0$ ; \\
+Implica: $ i \leq vN \wedge vN \leq i$ ; \\
+Implica: $i == vN$; \\
+Implica: $i \geq vN \vee nr(i) == n$; \\
+Equivale a $\neg B$; \\
+
+\newpage %Salto de página
+

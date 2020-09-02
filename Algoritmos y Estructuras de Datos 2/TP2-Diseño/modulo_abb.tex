@@ -1,0 +1,347 @@
+\section{M\'odulo Diccionario Rapido Nat}
+
+\Encabezado{Notas Preliminares}
+  En todos los casos, al indicar las complejidades de los algoritmos, las variables que se utilizan corresponden a:
+  \vspace{-0.5em}\begin{itemize}
+    \item $n$: N\'umero de claves en el Diccionario Rapido Nat pasado por par\'ametro.
+
+  \end{itemize}
+  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Interfaz}
+  
+  \textbf{parametros formales} \hangindent=2 \parindent \\
+  \parbox{1.7cm}{\textbf{generos}} $\alpha$
+  
+  \textbf{se explica con}: \tadNombre{dicc(nat, $\alpha$)}.
+ 
+  \textbf{generos}: \TipoVariable{diccNat(nat, $\alpha$)}.
+  
+   \servUsados{nat}
+
+  \subsubsection{Operaciones basicas}
+  
+  \InterfazFuncion{Vacio{}}{}{diccNat(nat, $\alpha)$}
+  [true]
+  {$res$ $\igobs$ vacio}%
+  [$O(1)$]
+  [Crea un Diccionario Vacio]
+  []
+
+  ~
+
+  \InterfazFuncion{Definido?}{\In{n}{nat}, \In{d}{diccNat(nat, $\alpha$)})}{bool}
+ [true]
+{$res$ $\igobs$ def?($n$, $d$)}
+[$O(n)$ en el peor caso, el caso promedio si las claves se insertan con distribucion uniforme es O(lg n)]
+[Retorna si la Clave esta definida]
+[]
+  
+  ~
+
+  \InterfazFuncion{Definir}{\In{n}{nat} , \In{a}{$\alpha$}, \Inout{d}{diccNat(nat, $\alpha)$}}{}
+  [$ d \igobs d_0 $]
+  {$ d \igobs$ definir($n, a, d_0$)}
+  [$O(n + copy(a))$ en el peor caso, el caso promedio si las claves se insertan con distribucion uniforme es O(lg n + copy(a))]
+  [Define la Clave $n$ y el Significado $a$ en $d$]
+  []
+  
+  ~
+  \InterfazFuncion{Obtener}{\In{n}{nat}, \In{d}{diccNat(nat, $\alpha$)}}{$\alpha$}
+  [def?($n$, $d$)]
+  {alias($res$ $\igobs$ obtener($n$, $d$))}
+  [$O(n)$ en el peor caso, el caso promedio si las claves se insertan con distribucion uniforme es O(lg n)]
+  [Retorna el Significado de la Clave $n$]
+  [$res$ es modificable si y solo si $d$ es modificable]
+
+  ~
+  
+    \InterfazFuncion{Borrar}{\Inout{d}{diccNat(nat, $\alpha$)}, \In{n}{nat}}{}
+  [($d$ = $d_0$) $\wedge$ def?($s$, $d$)]
+  {d $\igobs$ borrar($d_0$ , s)}
+  [$O(n)$ en el peor caso, el caso promedio si las claves se insertan con distribucion uniforme es O(lg n)]
+  [Borra la clave n con su significado.]
+  []
+  
+    
+ ~
+ 
+ \InterfazFuncion{minimaClave}{\In{d}{diccNat(nat, $\alpha$)}}{nat}
+  [Cardinal(claves(d)) > 0]
+  {res $\igobs$ minimo(claves(d))}
+  [$O(n)$ en el peor caso, el caso promedio si las claves se insertan con distribucion uniforme es O(lg n)]
+  [Retorna la minima clave de mi diccionario]
+  [$res$ es modificable si y solo si $d$ es modificable]
+  
+       \InterfazFuncion{maximaClave}{\In{d}{diccNat(nat, $\alpha$)}}{nat}
+  [Cardinal(claves(d))]
+  {res $\igobs$ maximo(claves(d))}
+  [$O(n)$ en el peor caso, el caso promedio si las claves se insertan con distribucion uniforme es O(lg n)]
+  [Retorna la maxima clave de mi diccionario]
+  [$res$ es modificable si y solo si $d$ es modificable]
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Representacion}
+
+	\begin{Estructura}{diccNat$(nat, \alpha)$}[estrDN donde estrDN es puntero(nodo)]
+		\begin{Tupla}[nodo]
+        	\tupItem{clave}{nat}
+			\tupItem{significado}{$\alpha$}
+			\tupItem{izq}{puntero(nodo)}
+            \tupItem{der}{puntero(nodo)}
+		\end{Tupla}
+	\end{Estructura}
+
+\subsubsection{Invariante de Representacion}
+\begin{enumerate}
+\item Para todo nodo del ABB, el valor de la clave de su hijo izquierdo es menor que la clave de ese nodo, y la clave del hijo derecho es mayor a la clave de ese nodo
+%\item No hay ninguna rama del ABB que tenga Ciclos, osea que cada rama siempre tiene un nodo final que sus 2 hijos apuntan  a NULL.%
+\end{enumerate}
+
+\Rep[estrDN][e]{
+	respetaMayMen(e)  
+  }
+
+\textbf{Funciones Auxiliares:}
+\tadAlinearFunciones{respetaMayMen}{estrDN e}
+\tadOperacion{respetaMayMen}{estrDN e}{bool}{}
+ \tadAxioma{respetaMayMen(e)}{$
+e \neq NULL \impluego (e.izq \neq NULL \impluego ((e.clave.izq \leq e.clave) \wedge respetaMayMen(e.izq)) \wedge \\
+								(e.der \neq NULL \impluego ((e.clave \leq e.der.clave) \wedge respetaMayMen(e.der))
+              $ }
+
+% \tadOperacion{EsABValido?}{estrDN /$e$}{bool}{}
+% \tadAxioma{EsABValido?(e)}{$\textbf{if} \ HayLoop?(e) \ \emph{then} \\ \hspace*{10px} false \\ \textbf{else} \\ \hspace*{10px} NoHayRepetidos(DamePunteros(e)) \\  \textbf{fi}$}
+
+
+% \tadOperacion{HayLoop?}{estrDN /$e$}{bool}{}
+% \tadAxioma{HayLoop?(e)}{loopea(e, Ag(e, $\emptyset$))}
+
+% \tadOperacion{loopea}{estrDN /$e$, conj(estrDN) /$ce$}{bool}{}
+% \tadAxioma{loopea(c, ce)}{$\textbf{if} \ e = NULL \ \emph{then} \\ \hspace*{10px} false \\ \textbf{else} \\ \hspace*{10px}  \textbf{if} \ (e.izq \in c) \vee (e.der \in c)\ \emph{then} \\ \hspace*{20px} true \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} loopea(e.izq, Ag(e.izq, c) \wedge loopea(e.der, Ag(e.der, c) \\  \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+
+
+% \tadOperacion{DamePunteros}{estrDN /$e$}{multiconj(estrDN)}{}
+% \tadAxioma{DamePunteros(e)}{$\textbf{if} \ e = NULL \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} Ag(e, (DamePunteros(e.izq) \cup (DamePunteros(e.der) )) \\  \textbf{fi}$}
+ 
+%  \newpage
+% \tadOperacion{NoHayRepetidos}{multiconj($\alpha$) /$m$}{bool}{}
+% \tadAxioma{NoHayRepetidos(m)}{$\textbf{if} \ \emptyset ?(m) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ \# (dameUno(m), m) \neq 1 \ \emph{then} \\ \hspace*{20px} false \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} NoHayRepetidos(sinUno(m)) \\  \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+
+
+\subsubsection{Funcion de Abstraccion}
+
+\Abs[estrDN]{dicc(nat, $\alpha$)}[e]{d}{($\forall c$: nat)(def?($c, d$) $=$ esClave?($c, e$) $\yluego$ \\
+ (def?($c, d$) \impluego obtener($c, d$) $=$ significado($c, e$)))}
+
+\textbf{Funciones Auxiliares:}
+
+\tadOperacion{claves}{estrDN /$e$}{conj(nat)}{}
+\tadAxioma{claves(e)}{$\textbf{if} \ e = NULL \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} Ag(e.clave, (claves(e.izq) \cup claves(e.der))) \\  \textbf{fi}$}
+
+\tadOperacion{minimo}{conj(nat) /$c$}{nat}{$Cardinal(c) > 0$}
+\tadAxioma{minimo(c)}{min(dameUno(c), minimo(sinUno(c)))}
+
+%$\textbf{if} \ *** \ \emph{then} \\ \hspace*{10px} *** \\ \textbf{else} \\ \hspace*{10px} *** \\  \textbf{fi}$
+
+\tadOperacion{esClave?}{nat /$c$, estrDN /$e$}{bool}{Rep($e$)}
+\tadAxioma{esClave?(c,e)}{ $\textbf{if} \ e = NULL \ \emph{then} $\\$ \hspace*{10px} false $\\$ \textbf{else} $\\$ \hspace*{10px} \textbf{if} \ e.clave = c \ \emph{then} $\\$ \hspace*{20px} true $\\$ \hspace*{10px} \textbf{else} $\\$ \hspace*{20px}  esClave?(c,e.izq) \vee esClave?(c,e.der)$\\$ \hspace*{10px} \textbf{fi} $\\$ \textbf{fi}$ }
+
+
+
+
+\tadOperacion{significado}{string /$c$, estrDN /$e$}{bool}{esClave?($c, e$) $\wedge$ Rep($e$)}
+\tadAxioma{significado(c,e)}{ $\textbf{if} \ e.clave = c \ \emph{then} \\ \hspace*{10px} e.significado \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ e.clave > c \ \emph{then} $\\$ \hspace*{20px} significado(e.izq) $\\$ \hspace*{10px} \textbf{else} \\ \hspace*{20px}  esignificado(e.der)$\\$ \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{Algoritmos}
+
+\begin{algoritmo}{\textbf{iVacio}}{}{estrDN}
+			res $\leftarrow$ NULL \com*{$O(1)$}    	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Se ejecuta una sola operacion con costo $O(1)$} % Justificación
+
+
+\begin{algoritmo}{\textbf{iDefinido?}}{\In{n}{nat}, \In{d}{estrDN})}{bool}
+			actual $\leftarrow$ d \com*{$O(1)$}
+            \While(\com*[f]{$O(n)$}){actual $\neq$ NULL \yluego actual.clave $\neq$ n}{
+            	\eIf(\com*[f]{$O(1)$}){actual.clave > n}{
+                	actual $\leftarrow$ actual.izq \com*{$O(1)$}
+                }{
+                	actual $\leftarrow$ actual.der \com*{$O(1)$}
+                }
+            }
+            res $\leftarrow$ (actual $\neq$ NULL) \com*{$O(1)$}	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Dado que el resto de las operaciones son elementales con costo $O(1)$, la unica operacion que me suma complejidad es lo que tarde el ciclo de la linea 2 en recorrer las claves hasta llegar o no a la que esta buscando. El peor caso que tengo es si debo buscar una clave en un diccNat al cual se fueron agregando las claves ordenadas (de menor a mayor o de mayor a menor) por lo que para buscar una clave que es un maximo o un minimo debo recorrer todas las claves del arbol en el $while$ de la linea 2 por lo que mi complejidad sera $O(n)$. En el caso de que las claves que se encuentran en el ABB hayan sido insertadas de manera uniforme mi ABB se asemejara a un arbol balanceado. La propiedad que tienen estos arboles es que su altura es lg(n), por lo que si mi ABB es similar a este caso, para buscar si una clave esta definida, en promedio, para recorrer una rama a lo sumo voy a recorrer lg(n) claves (la altura promedio de las ramas de mi arbol). Por lo tanto si las claves fueron insertadas de manera uniforme la complejidad promedio de Definido? es $O(lg(n))$ } % Justificación
+
+\begin{algoritmo}{\textbf{iDefinir}}{\In{n}{nat} , \In{a}{$\alpha$}, \Inout{d}{estrDN}}{}
+			actual $\leftarrow$ d \com*{$O(1)$}
+            \While(\com*[f]{$O(n)$}){actual $\neq$ NULL \yluego actual.clave $\neq$ n}{
+            	\eIf(\com*[f]{$O(1)$}){actual.clave > n}{
+                	actual $\leftarrow$ actual.izq \com*{$O(1)$}
+                }{
+                	actual $\leftarrow$ actual.der \com*{$O(1)$}
+                }
+                }
+            \eIf(\com*[f]{$O(1)$}){actual = NULL}{    
+            actual $\leftarrow$ <n, a, NULL, NULL> \com*{$O(copy(a))$}           
+            }{
+            actual.significado $\leftarrow$ a \com*{$O(copy(a))$}
+            }
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n + copy(a))$} % Complejidad
+  {Dado que el resto de las operaciones son elementales con costo $O(1)$, la unica operacion que me suma complejidad es lo que tarde el ciclo de la linea 2 en recorrer las claves hasta llegar al lugar donde debo definir la clave. El peor caso que tengo es si debo insertar una clave en un diccNat al cual se fueron agregando las claves ordenadas (de menor a mayor o de mayor a menor) por lo que para insertar una clave que es un maximo o un minimo debo recorrer todas las claves del arbol en el $while$ de la linea 2, por lo que mi complejidad sera $O(n)$. En el caso de que las claves que ya se encuentran en el ABB hayan sido insertadas de manera uniforme mi ABB se asemejara a un arbol balanceado. La propiedad que tienen estos arboles es que su altura promedio es lg(n), por lo que si mi ABB es similar a este caso, para buscar el nodo donde debo insertar mi clave o modificar el significado de la clave existente, en promedio, para recorrer una rama voy a pasar por lg(n) claves (la altura promedio de las ramas de mi arbol). Por lo tanto si las claves fueron insertadas de manera uniforme la complejidad promedio de Definir es $O(lg(n))$ } % Justificación
+
+\begin{algoritmo}{iObtener}{\In{n}{nat}, \In{d}{estrDN}}{$\alpha$}
+			actual $\leftarrow$ d \com*{$O(1)$}
+            \While(\com*[f]{$O(n)$}){actual $\neq$ NULL \yluego actual.clave $\neq$ n}{
+            	\eIf(\com*[f]{$O(1)$}){actual.clave > n}{
+                	actual $\leftarrow$ actual.izq \com*{$O(1)$}
+                }{
+                	actual $\leftarrow$ actual.der \com*{$O(1)$}
+                }
+                }
+            res $\leftarrow$ actual.significado \com*{$O(1)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Dado que el resto de las operaciones son elementales con costo $O(1)$, la unica operacion que me suma complejidad es lo que tarde el ciclo de la linea 2 en recorrer las claves hasta llegar al lugar donde se encuentra la clave de la cual debo devolver su significado, esa clave se encuentra definida en mi diccionario por la precondicion. El peor caso que tengo es si debo buscar una clave en un diccNat al cual se fueron agregando las claves ordenadas (de menor a mayor o de mayor a menor) por lo que para buscar una clave que es un maximo o un minimo debo recorrer todas las claves del arbol en el $while$ de la linea 2 por lo que mi complejidad sera $O(n)$. En el caso de que las claves que ya se encuentran en el ABB hayan sido insertadas de manera uniforme mi ABB se asemejara a un arbol balanceado. La propiedad que tienen estos arboles es que su altura promedio es lg(n), por lo que si mi ABB es similar a este caso, para buscar el nodo donde se encuentra la clave que busco, en promedio, para recorrer una rama voy a pasar por lg(n) claves (la altura promedio de las ramas de mi arbol). Por lo tanto si las claves fueron insertadas de manera uniforme la complejidad promedio de Obtener es $O(lg(n))$} % Justificación
+\begin{algoritmo}{iBorrar}{\Inout{d}{estrDN}, \In{n}{nat}}{}
+			actual $\leftarrow$ d \com*{$O(1)$}
+            padre $\leftarrow$ NULL \com*{$O(1)$}
+            \While(\com*[f]{$O(n)$}){actual.clave $\neq$ n}{
+            	padre $\leftarrow$ actual \com*{$O(1)$}
+            	\eIf(\com*[f]{$O(1)$}){actual.clave > n}{
+                	actual $\leftarrow$ actual.izq \com*{$O(1)$}
+                }{
+                	actual $\leftarrow$ actual.der \com*{$O(1)$}
+            }
+            }
+
+	\eIf(\com*[f]{$O(1)$}){actual.izq = NULL}{
+    	\eIf(\com*[f]{$O(1)$}){actual.der = NULL}{
+    		\eIf(\com*[f]{$O(1)$}){padre.izq = actual}{
+            	padre.izq $\leftarrow$ NULL \com*{$O(1)$}
+                actual $\leftarrow$ NULL \com*{$O(1)$}
+            }{
+             	padre.der $\leftarrow$ NULL \com*{$O(1)$}
+                actual $\leftarrow$ NULL \com*{$O(1)$}         
+            }
+    	}{
+    		\eIf(\com*[f]{$O(1)$}){padre.izq = actual}{
+            	padre.izq $\leftarrow$ actual.der \com*{$O(1)$}
+                actual $\leftarrow$ NULL \com*{$O(1)$}
+            }{
+             	padre.der $\leftarrow$ actual.der \com*{$O(1)$}
+                actual $\leftarrow$ NULL \com*{$O(1)$}        
+            }        	
+        }
+    }{
+    	\eIf(\com*[f]{$O(1)$}){actual.der = NULL}{
+    		\eIf(\com*[f]{$O(1)$}){padre.izq = actual}{
+            	padre.izq $\leftarrow$ actual.izq \com*{$O(1)$}
+                actual $\leftarrow$ NULL \com*{$O(1)$}
+            }{
+             	padre.der $\leftarrow$ actual.izq \com*{$O(1)$}
+                actual $\leftarrow$ NULL \com*{$O(1)$}      
+            }               
+        }{
+   			
+				maximo $\leftarrow$ actual \com*{$O(1)$}
+                padreMax $\leftarrow$ padre \com*{$O(1)$}
+                \While(\com*[f]{$O(n)$}){maximo.der $\neq$ NULL}{
+                	padreMax $\leftarrow$ maximo \com*{$O(1)$}
+                	maximo = maximo.der \com*{$O(1)$}
+                }
+                valBorr $\leftarrow$ actual.clave \com*{$O(1)$}
+                actual.clave $\leftarrow$ maximo.clave \com*{$O(1)$}
+                actual.significado $\leftarrow$ maximo.significado \com*{$O(1)$}
+                maximo.clave $\leftarrow$ valBorr \com*{$O(1)$}
+                \eIf(\com*[f]{$O(1)$}){maximo.izq = NULL}{
+                	padreMax $\leftarrow$ NULL \com*{$O(1)$}
+                    maximo $\leftarrow$ NULL \com*{$O(1)$}
+                }{
+                	padreMax.der $\leftarrow$ maximo.izq \com*{$O(1)$}
+                    maximo $\leftarrow$ NULL \com*{$O(1)$}
+                }
+                
+                     	
+        }
+    }
+
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Dado que el resto de las operaciones son de costo $O(1)$, las unicas operaciones que me suman complejidad son los dos ciclos de las lineas 3 y 41. El ciclo de la linea 3 recorre las claves hasta llegar a la que quiero borrar, la clave va a estar definida en mi diccionario por la precondicion . El peor caso que tengo es si debo borrar una clave en un diccNat al cual se fueron agregando las claves ordenadas (de menor a mayor o de mayor a menor) por lo que para borrar una clave que es un maximo o un minimo debo recorrer todas las claves del arbol en el $while$ de la linea 3 por lo que mi complejidad sera $O(n)$. Mi otro peor caso sucede tambien si mis claves fueron insertadas de forma ordenada y si el nodo donde se encuentra la clave a borrar tiene hijo derecho e hijo izquierdo, en este caso buscar esa clave me costara menos que $O(n)$ ya que no recorro toda una rama ,ya que sino el nodo no tendria 2 hijos, pero al tener que buscar el maximo de ese subarbol para intercambiarlos y poder borrar de forma correcta debo recorrer el resto de una rama por lo que mi complejidad tambien sera $O(n)$ . \\ Por otro lado, en el caso de que las claves que se encuentran en el ABB hayan sido insertadas de manera uniforme mi ABB se asemejara a un arbol balanceado. La propiedad que tienen estos arboles es que su altura es lg(n), por lo que si mi ABB es similar a este caso, para buscar una clave , en promedio, voy a recorrer lg(n) claves (la altura promedio de las ramas de mi arbol). En el caso de tener que borrar un nodo con 0 o 1 hijo solo debo recorrer el ABB hasta encontrarlo y borrarlo lo que me terminara costando a lo sumo $O(lg(n))$ (la altura promedio de mi arbol). Si debo borrar un nodo con 2 hijos, encontrarlo me va a costar en promedio menos que $O(lg(n))$ porque no estoy recorriendo una rama hasta el final ya que sino no tendria 2 hijos, pero buscar el maximo para swapearlo con el nodo a borrar me llevara a terminar de recorrer una rama por lo que tambien me terminara costando $O(lg(n))$ en promedio.Por lo tanto si las claves fueron insertadas de manera uniforme la complejidad promedio de borrar es $O(lg(n))$} % Justificación
+
+\begin{algoritmo}{\textbf{iminimaClave}}{\In{d}{estrDN}}{nat}
+			min $\leftarrow$ NULL \com*{$O(1)$}
+            actual $\leftarrow$ d \com*{$O(1)$}
+            \While(\com*[f]{$O(n)$}){d $\neq$ NULL}{
+            	min $\leftarrow$ actual \com*{$O(1)$}
+                actual $\leftarrow$ actual.izq \com*{$O(1)$}
+            }
+            res $\leftarrow$ min \com*{$O(1)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Mi peor caso sucede si las claves del diccionario fueron insertadas de mayor a menor ya que para encontrar el minimo voy a recorrer todas las claves tardando $O(n)$. Si mis claves fueron insertadas de manera uniforme mi arbol se asemejara a un arbol balanceado por lo que recorrer una rama me llevara $O(lg(n))$ por lo que la complejidad de minimaClave sera $O(lg(n))$} % Justificación
+  
+\begin{algoritmo}{\textbf{imaximaClave}}{\In{d}{estrDN}}{nat}
+			max $\leftarrow$ NULL \com*{$O(1)$}
+            actual $\leftarrow$ d \com*{$O(1)$}
+            \While(\com*[f]{$O(n)$}){d $\neq$ NULL}{
+            	max $\leftarrow$ actual \com*{$O(1)$}
+                actual $\leftarrow$ actual.der
+            }
+            res $\leftarrow$ max \com*{$O(1)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n)$} % Complejidad
+  {Mi peor caso sucede si las claves del diccionario fueron insertadas de menor a mayor ya que para encontrar el maximo voy a recorrer todas las claves tardando $O(n)$. Si mis claves fueron insertadas de manera uniforme mi arbol se asemejara a un arbol balanceado por lo que recorrer una rama me llevara $O(lg(n))$ por lo que la complejidad de maximaClave sera $O(lg(n))$} % Justificación
+
+
+
+
+
+\end{Algoritmos}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

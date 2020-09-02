@@ -1,0 +1,10 @@
+El directorio actual incluye una implementacion incremental de un modulo lista que representa una secuencia.  Incluye:
+- test: archivo principal de prueba
+- lista-x.h: archivo incremental, paso x, de la implementacion de la lista
+- print.h y print.cpp: impresion condicional en consola.
+
+Para ejecutar los test hay que compilar de acuerdo a las instrucciones que aparecen en el archivo lista.h, cuya explicacion se entiende junto a la explicacion en test.cpp.  Tambien se puede usar el makefile.  Notar que algunos targets no compilan (esto es adrede), asi que en caso de querer compilar todo hay que incluir el flag de non-stop, i.e., make -k all.  En caso de querer entender cómo compilar un test, ejecutar make clean && make -n test#, donde # es el numero de test.
+
+Vale remarcar que el codigo *debe* ser compilado en GCC, ya que utiliza algunas instrucciones que le son propias (por ejemplo, para imprimir el backtrace de las funciones a fin de enteder cómo funciona la semantica de movimiento).  Ademas, dicho GCC debe ser suficientemente nuevo como para implementar el estandar C++11.  Por ultimo, todo el codigo fue probado en una maquina con Linux y podria no funcionar en otros sistemas operativos.  En principio, todo deberia funcionar, salvo quiza el makefile.
+
+Para ver las diferencias entre cada paso de la implementacion, se sugiere utilizar un visor de diferencias.  A mi me gusta meld, pero puede ser cualquier otro (para los amantes de consola, alcanza un diff).

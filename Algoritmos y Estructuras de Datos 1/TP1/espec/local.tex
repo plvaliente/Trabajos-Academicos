@@ -1,0 +1,179 @@
+
+\begin{problema}{stockBebidasL}{l: Local, b:Bebida}{Cantidad}
+\requiere {b \in bebidasDelLocal(l)}
+\asegura {stockBebidas(l, b) == res}
+\end{problema}
+
+\begin{problema}{stockSandwichesL}{l: Local, h:Hamburguesa}{Cantidad}
+\requiere {h \in sandwichesDelLocal(l)}
+\asegura {stockSandwiches(l, h) == res}
+\end{problema}
+
+\begin{problema}{bebidasDelLocalL}{l: Local}{[Bebida]}
+\asegura {mismos(bebidasDelLocal(l), res)}
+\end{problema}
+	
+\begin{problema}{sandwichesDelLocalL}{l: Local}{[Hamburguesa]}
+\asegura {mismos(sandwichesDelLocal(l), res)}
+\end{problema}
+
+\begin{problema}{empleadosL}{l: Local}{[Empleado]}
+\asegura {mismos(empleados(l), res)}
+\end{problema}
+
+\begin{problema}{desempleadosL}{l: Local}{[Empleado]}
+\asegura {mismos(desempleados(l), res)}
+\end{problema}
+
+\begin{problema}{energiaEmpleadoL}{l: Local, e:Empleado}{Energia}
+\requiere {e \in empleados(l)}
+\asegura {energiaEmpleado(l, e) == res}
+\end{problema}
+
+\begin{problema}{ventasL}{l: Local}{[Pedido]}
+\asegura {mismos(ventas(l), res)}
+\end{problema}
+
+\newpage
+
+\begin{problema}{unaVentaCadaUno}{l:Local}{\bool}
+\asegura [haySuficientesVentasYlasVentasRotan]{res == ((( \vert atendioEmpleado(l) \vert \geq \vert empleados(l) \vert) \wedge \\* ( \vert sacarRepeticiones(subventas(l)) \vert == \vert empleados(l) \vert )) \wedge \\* 
+(\forall \ i \leftarrow [0.. \vert atendioEmpleado(l) \vert )) \ atendio(atendioEmpleado(l)_i) == atendio(subventas(l)[i \ mod \ \vert subventas(l) \vert ] ) \ ) }
+\end{problema}
+
+\begin{problema}{venderL}{l: Local, p:Pedido}{} 
+\requiere [pedidoSeaCorrelativo]{(\vert ventas(p) \vert > 0) \Rightarrow numero(p) == NumeroPedidoUltimaVenta(l) + 1 }
+\requiere [seaEmpleado]{atendio(p) \in empleados(l)}
+\requiere [hayaStockDeBebidas]{\\ (\forall \ b \leftarrow bebidasDelPedido(p)) \ stockBebidas(l,b) \geq cuenta(b,bebidasDelPedido(p))}
+\requiere [hayaStockDeSandwiches]{\\ (\forall \ s \leftarrow sandwichesDelPedido(p)) \ stockSandwiches(l,s) \geq cuenta(s,sandwichesDelPedido(p))}
+\modifica {l}
+\asegura [mantieneBebidas]{mismos(bebidasDelLocal(l),bebidasDelLocal(pre(l)))}
+\asegura [mantieneSandwiches]{mismos(sandwichesDelLocal(l),sandwichesDelLocal(pre(l)))}	
+\asegura [mantieneVentas]{mismos(ventas(l),p:ventas(pre(l)))}
+\asegura [siTieneEnergiaParaVender]{energiaEmpleado(pre(l),atendio(p)) \geq dificultadPedido(p) \Rightarrow \\ mismos(empleados(pre(l)),empleados(l)) \wedge \\ 
+	\ mismos(desempleados(pre(l)),desempleados(l)) \wedge \\
+	\ energiaEmpleado(l,atendio(p)) ==  (energiaEmpleado(pre(l),atendio(p)) - dificultadPedido(p)) }
+\asegura [siNoTieneEnergiaParaVender]{energiaEmpleado(pre(l),atendio(p)) < dificultadPedido(p) \Rightarrow \\ mismos(atendio(p):empleados(l),empleados(pre(l))  \wedge \\ mismos(desempleados(l),atendio(p):desempleados(pre(l)) ) }
+
+\asegura [renuevaStockBebidas]{(\forall \ b \leftarrow bebidasDelLocal(pre(l))) \\ stockBebidas(l,b) == stockbebidas(pre(l),b) \ - \ cuenta(b,bebidasDelPedido(p))}
+\asegura [renuevaStockSandwiches]{(\forall \ s \leftarrow sandwichesDelLocal(pre(l))) \\ stockSandwiches(l,s) == stockSandwiches(pre(l),s) \ - \ cuenta(s,sandwichesDelPedido)}
+	
+\end{problema}
+
+\begin{problema}{candidatosAEmpleadosDelMesL}{l: Local}{[Empleado]}
+\asegura [sonCandidatos]{mismos(res,[ \ e \ \vert \ e \selec empleadosConMasVentas(l), ( \forall \ e2 \selec empleadosConMasVentas(l)) \\  cantidadDeCombosDeEmpleado(e,l) \geq cantidadDeCombosDeEmpleado(e2,l) ] )}
+\end{problema}
+
+
+\begin{problema}{sancionL}{l: Local, e:Empleado, n:Energia}{}
+\requiere [seaEmpleado]{e \in empleados(l)}
+\requiere [energiaPositiva]{n > 0}
+\modifica {l}
+\asegura [mantieneVentas]{mismos(ventas(l),ventas(pre(l)))}
+\asegura [mantieneBebidas]{mismos(bebidasDelLocal(l),bebidasDelLocal(pre(l)))}
+\asegura [mantieneSandwiches]{mismos(sandwichesDelLocal(l),sandwichesDelLocal(pre(l)))}
+\asegura [mantieneStockDeBebidas]{\\ (\forall \ b \leftarrow bebidasDelLocal(pre(l))) \  stockBebidas(l,b) == stockBebidas(pre(l),b)}
+\asegura [mantieneStockDeSandwiches]{\\ (\forall \ s \leftarrow sandwichesDelLocal(pre(l))) \ stockSandwiches(l,s) == stockSandwiches(pre(l),s)}
+\asegura [mantieneEnergiaDeOtrosEmpleados]{\\ (\forall \ x \leftarrow empleados(pre(l)), x \neq e) \ energiaEmpleado(l,x) == energiaEmpleado(pre(l),x)}
+\asegura [siTieneEnergiaSuficiente]{energiaEmpleado(pre(l),e) \geq n \Rightarrow \\((mismos(empleados(l),empleados(pre(l))) \wedge \\ mismos(desempleados(l),desempleados(pre(l)))) \wedge \\ energiaEmpleado(l,e) == (energiaEmpleado(pre(l),e) - n))}
+\asegura [sinoTieneEnergiaSuficiete]{energiaEmpleado(pre(l),e) < n \Rightarrow \\mismos(e:empleados(l),empleados(pre(l))) \wedge \\ mismos(desempleados(l),e:desempleados(pre(l)))}
+\end{problema}
+
+
+
+\begin{problema}{elVagonetaL}{l: Local}{Empleado}
+\requiere [tengaVentas]{\vert ventas(l) \vert > 0}
+\requiere [tengaEmpleados]{\vert empleados(l) \vert > 0}
+\asegura [esUnVago]{res \in [ \ e \ \vert \ e \selec empleados(l) , (\forall \ e2 \selec empleados(l), e2 \neq e) \\* distanciaMayorEntreVentasDelEmpleado(e2, ventas(l)) \leq \\* distanciaMayorEntreVentasDelEmpleado(e, ventas(l)]}
+\end{problema}
+
+\newpage
+
+\begin{problema}{anularPedidoL}{l: Local, n: \ent}{}
+\requiere [esPedido]{n \in numVentaL(l)}
+\requiere [atendioEmpleado]{atendio(ventaN(l,n)) \in empleados(l)}
+
+\modifica {l}
+
+\asegura [mantieneBebidas]{ mismos(bebidasDelLocal(l), bebidasDelLocal(pre(l)) ) }
+\asegura [mantieneSandwiches]{ mismos(sandwichesDelLocal(l), sandwichesDelLocal(pre(l)) ) }
+\asegura [mantieneEmpleados]{ mismos(empleados(l), empleados(pre(l)) ) } 
+\asegura [mantieneDesempleados]{ mismos(desempleados(l), desempleados(pre(l)) ) } 
+
+\asegura [mantieneLasOtrasVentas]{mismosVenta(ventas(l), ventaMenosN(pre(l),n))}
+
+\asegura [mantieneCorrelatividad]{
+mismos(sacarVentaN(pre(l),n),numVentaL(l))
+}
+
+\asegura [mantieneEnergiaOtrosEmpleados]{(\forall \ i \leftarrow empleados(l), i \neq atendio(ventaN(pre(l),n))) \\ energiaEmpleado(pre(l), i) == energiaEmpleado(l,i)
+}
+
+\asegura [actualizaEnergiaEmpleado]{\\
+energiaEmpleado(pre(l), atendio(ventaN(pre(l),n))) \\ + \ dificultadPedido(ventaN(pre(l),n)) == energiaEmpleado(l, atendio(ventaN(pre(l),n)))
+} 
+
+\asegura [mantieneStockDeLasOtrasBebidas]{\\ (\forall \ i \leftarrow bebidasDelLocal(l), i \not\in bebidasUsadasN(pre(l),n) \\ stockBebidas(pre(l), i) == stockBebidas(l, i)} 
+
+
+\asegura [actualizaStockBebidasDelPedidoAnulado]{\\
+(\forall i \selec bebidasUsadasN(pre(l), n)) \\ stockBebidas(l, i) == stockBebidas(pre(l), i) + cuenta(i, bebidasN(pre(l), n))
+}
+
+\asegura [mantieneStockDeLosOtrosSandwiches]{\\ (\forall \ i \leftarrow sandwichesDelLocal(l), i \not\in sandwichesUsadosN(pre(l), n) \\ stockSandwiches(l, i) == stockSandwiches(pre(l), i)}
+
+
+\asegura [actualizaStockSandwichesDelPedidoAnulado]{\\
+(\forall i \selec sandwichesUsadosN(pre(l), n)) \\ stockSandwiches(l, i) == stockSandwiches(pre(l), i) + cuenta(i, sandwichesN(pre(l), n))
+}
+
+
+\end{problema}
+
+\begin{problema}{agregarComboAlPedidoL}{l: Local, c: Combo, n:\ent}{}
+\requiere [esPedido]{n \in numVentaL(l)}
+
+
+\requiere [hayaBebidaDeC]{stockBebidas(l, bebida(c)) > 0}
+\requiere [hayaSandwichDeC]{stockSandwiches(l, sandwich(c)) > 0}
+\requiere [atendioEmpleado]{atendio(ventaN(l,n)) \in empleados(l)}
+\requiere [tieneEnergiaParaC]{energiaEmpleado(l,atendio(ventaN(l,n)) \geq dificultad(c)}
+
+\modifica {l}
+
+\asegura [mantieneBebidas]{ mismos(bebidasDelLocal(l), bebidasDelLocal(pre(l)) ) }
+\asegura [mantieneSandwiches]{ mismos(sandwichesDelLocal(l), sandwichesDelLocal(pre(l)) ) }
+\asegura [mantieneEmpleados]{ mismos(empleados(l), empleados(pre(l)) ) } 
+\asegura [mantieneDesempleados]{ mismos(desempleados(l), desempleados(pre(l)) ) } 
+
+\asegura [lasOtrasVentasNoCambian]{\\
+mismos(ventaMenosN(l,n), ventaMenosN(pre(l),n))
+}
+\asegura [mantieneNumeroVentaN]{
+numero(ventaN(l,n)) == numero(ventaN(pre(l),n))
+}
+\asegura [mantieneEmpleadoVentaN]{
+atendio(ventaN(l,n)) == atendio(ventaN(pre(l),n))
+}
+\asegura [agregaComboVentaN]{ 
+combos(ventaN(l,n)) == combos(ventaN(pre(l),n)) ++ [c]
+}
+
+\asegura [mantieneStockDeLasOtrasBebidas]{\\ (\forall \ i \leftarrow bebidasDelLocal(l), i \neq bebida(c)) \ stockBebidas(pre(l), i) == stockBebidas(l, i) }
+
+\asegura [actualizaStockBebidaC]{\\ 
+stockBebidas(l, bebida(c)) == stockBebidas(pre(l), bebida(c)) - 1
+}
+
+\asegura [mantieneStockDeLosOtrosSandwiches]{\\
+(\forall \ i \leftarrow sandwichesDelLocal(l), i \neq sandwich(c)) \ stockSandwiches(pre(l), i) == stockSandwiches(l, i) }
+
+\asegura [actualizaStockSandwichC]{\\ 
+stockSandwiches(l, sandwich(c)) == stockSandwiches(pre(l), sandwich(c)) - 1
+}
+
+\asegura [mantieneEnergiaDeLosOtrosEmpleados]{\\ (\forall \ i \leftarrow empleados(l), i \neq atendio(ventaN(l,n))) energiaEmpleado(pre(l), i) == energiaEmpleado(l,i)}
+
+\asegura [actualizaEnergiaEmpleadoVentaN]{\\ energiaEmpleado(pre(l), atendio(ventaN(pre(l),n))) \ - \ dificultad (c) \\ == energiaEmpleado(l, atendio(ventaN(pre(l),n)))
+}
+\end{problema}

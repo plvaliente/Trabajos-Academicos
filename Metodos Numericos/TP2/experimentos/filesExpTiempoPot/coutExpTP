@@ -1,0 +1,11 @@
+cargado
+loaded
+M creada en: 181.565
+alpha = 50 (1 solo Kfold)
+Tiempo potencia+deflacion en PCA, criterio 200: 8.075672
+Tiempo potencia+deflacion en PCA, criterio 300: 11.543155
+Tiempo potencia+deflacion en PCA, criterio 400: 15.170629
+Tiempo potencia+deflacion en PCA, criterio 500: 19.129117
+Tiempo potencia+deflacion en PCA, criterio 700: 27.026456
+Tiempo potencia+deflacion en PCA, criterio 1000: 37.331144
+Tiempo potencia+deflacion en PCA, criterio 2000: 72.711859

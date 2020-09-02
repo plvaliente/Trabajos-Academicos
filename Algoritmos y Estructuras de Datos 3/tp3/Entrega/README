@@ -1,0 +1,14 @@
+En el archivo mainfunctions.h se encuentran aquellas funciones que se usan en varios de nuestros algoritmos por lo que se colocaron aqui para evitar repetir codigo.
+
+Los .cpp que se encuentran aquí contienen las funciones que se utilizaron para los experimentos que se encuentran en el informe.
+
+Para replicar los resultados de contarCiclos es necesario descomentar en los algoritmos greedy y random las lineas que dicen "prueba de ciclos" para que retorne la cantidad de ciclos que realiza el algoritmo en lugar del resultado.
+
+Para correr Res*, testTiempos y contarCiclos es necesario compilarlos con "g++ -std=c++11 -g -o NAME Res*.cpp"
+
+En las carpetas Grafos* se encuentran los grafos que se generaron para experimentar.
+
+En el resto de las subcarpetas se encuentran los algoritmos que buscan resolver el problema de CMF, cada subcarpeta tiene su propio makefile. Dentro de cada una de estas carpetas está la subcarpeta "Experimentos" la cual tiene los resultados de las mediciones de los experimentos.
+
+
+

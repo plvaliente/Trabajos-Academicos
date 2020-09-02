@@ -1,0 +1,105 @@
+\subsection{Algoritmo}
+Dado que ninguna heurística garantiza soluciones de calidad para cualquier tipo de grafo, en este algoritmo nos concentraremos en utilizar las heurísticas de forma inteligente intentando que la solución brindada sea siempre de buena calidad sin importar el grafo que se establece en la entrada.
+
+Para ello nos basaremos en el algoritmo de GRASP (Greedy randomized adaptive search procedure) el cual genera soluciones greedys partiendo desde distintos nodos del grafo buscando cubrir la mayor cantidad de soluciones posibles devolviendo finalmente la mejor solución.
+
+Una parte fundamental de GRASP es el algoritmo que genera las soluciones greedy aleatorias, dado que debe de poder generar soluciones lo suficientemente diferentes para que se garantice explorar un amplio espectro del espacio de soluciones.
+
+En nuestro algoritmo, nuestra solución aleatoria se construye eligiendo un nodo al azar de una lista de nodos que no fueron utilizados en las últimas $n$ soluciones y luego agregando sus vecinos que más mejoren la solución. Se puede ver cómo funciona el algoritmo en el siguiente pseudocódigo:
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Algoritmo greedy aleatorio}
+	\Function{CMFRandomGreedy}{Matriz de Adyacencias, n, cliqueMF}
+		\State{}\\
+		\If{NoUsados es Vacio}{
+			\State{}\\
+			\For{Desde i entre 1 y n}{
+				\State{}\\
+				noUsados $\leftarrow$ AgregarAtras(noUsados, i)\\
+			}
+			noUsados $\leftarrow$ Mezclar(noUsados)
+		}
+		nodo $\leftarrow$ Ultimo(noUsados)\\
+		noUsados $\leftarrow$ EliminarUltimo(noUsados)\\
+		clique $\leftarrow$ Vacio\\
+		clique $\leftarrow$ AgregarAtras(clique, nodo)\\
+		maxFront $\leftarrow$ TamFrontera(clique)\\
+		tamClique $leftarrow$ 1\\
+		vecinos $\leftarrow$ dameVecinosCliqueyGrado(clique)\\
+		vecinos $\leftarrow$ OrdenarporGrado(Vecinos)\\
+		\For{i desde 1 hasta Tamaño(vecinos) y mientras $vecinos_i$ pueda mejorar la solución}{
+			\State{}\\
+			clique $\leftarrow$ AgregarAtras($vecinos_i$, clique) \\
+			\\
+			\If{$clique$ es clique y tiene mayor frontera que antes}{
+				\State{}\\
+				Actualizo $maxFront$ \\
+				tamClique $\leftarrow$ tamClique + 1\\
+			}
+			\Else{
+				\State{}\\
+				clique $\leftarrow$ EliminarUltimo(clique)\\ 
+			}			
+		}
+		cliqueMF $\leftarrow$ clique\\
+		\Return{$maxFront$} \\
+	\EndFunction
+\end{algorithmic}
+\end{algorithm} 
+
+Se analizará en la experimentación las mejoras en rendimiento y calidad de soluciones que se obtendrán al modificar este algoritmo.
+
+Otra parte importante de GRASP es cuándo termina el algoritmo, es decir, cuándo consideramos que ya buscó una cantidad suficientemente buena de soluciones diferentes por lo que ya deberíamos obtener una solución de buena calidad con alta probabilidad. Ńuestro algoritmo terminará luego de buscar una cantidad de soluciones sin que se mejore la mejor solución obtenida hasta el momento. Esta cantidad de iteraciones sin mejorar la solución se determinará en la entrada y se verá luego las variaciones en el rendimiento y en las soluciones que se obtienen al modificar este valor.
+
+Finalmente, el algoritmo de GRASP que realizamos se puede resumir de la siguiente forma:
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\caption{Algoritmo GRASP}
+	\Function{CMFGRASP}{Matriz de Adyacencias, n, cliqueMF, limite}
+		\State{}\\
+		maxFront $\leftarrow$ maxFronCliqueLFS(Matriz de adyacencias, n, cliqueMF)\\
+		maxFrontAux $\leftarrow$ 0\\
+		CMFAux $\leftarrow$ Vacio\\
+		iterSinMejorar $\leftarrow$ 0\\
+		\While{iterSinMejorar < limite}{
+			\State{}\\
+			maxFrontAux $\leftarrow$ CMFRandomGreedy(Matriz de Adyacencias, n, CMFAux)\\
+			maxFrontAux $\leftarrow$ MejorarBusqLocalVecChica(Matriz de Adyacencias, n, CMFAux, maxFrontAux)\\
+			\If{maxFrontAux > maxFront}{
+				\State{}\\
+				maxFront $\leftarrow$ maxFrontAux\\
+				Actualizo cliqueMF\\
+			}
+			\Else{
+				iterSinMejorar $\leftarrow$ iterSinMejorar + 1\\
+			}
+			Vaciar(CMFAux)\\
+		}
+		\Return{$maxFront$} \\
+	\EndFunction
+\end{algorithmic}
+\end{algorithm} 
+
+\subsection{Complejidad}
+
+Vamos a analizar la complejidad del algoritmo dividiendo el algoritmo en partes. En primer lugar comenzaremos con la inicialización de variables donde se crean vectores vacíos y enteros con costo $O(1)$ salvo por el llamado a $maxFronCliqueLFS$ el cual tiene un costo de $O(n^2)$. La complejidad de esta parte será entonces $O(n^2)$
+
+Luego estaremos en el ciclo, comenzaremos por ver el costo de las operaciones dentro del mismo.
+
+ Se llama a la función $CMFRandomGreedy$ la cual inicia llenando un vector vacío con $n$ nodos con costo $O(n)$ y luego mezcla los elementos del mismo también con costo $O(n)$. Se realizan asignaciones y se elimina el último elemento de un vector con costo $O(1)$. Se calcula la frontera de la clique de tamaño 1 generada hasta el momento con costo $O(n)$, se buscan los vecinos de la clique y su grado con costo $O(n^2)$ dado que la clique tiene un solo nodo. Se ordenan los vecinos de forma decreciente según su grado en $O(n log n)$. Luego se ingresa a un ciclo que realizará a lo sumo $n$ iteraciones donde la única operación que no es elemental es ver si se forma una clique al agregar un nodo que tiene costo $O(n)$. Al salir del ciclo se copia la mejor solución en $O(n)$. Por lo tanto la complejidad de $CMFRandomGreedy$ sera $O(n)$ + $O(n)$ + $O(1)$ + $O(n^2)$ + $O(n log n)$ + $O(n)$ * $O(n)$ + $O(n)$ = $O(n^2)$.
+
+ Se llamará a la búsqueda local para la que ya se mostró que tiene complejidad $O(n^5)$
+
+ Luego se copiará la solución obtenida en esta iteración si mejora la mejor solución con costo $O(n)$.
+
+ Nos queda ver cuantas iteraciones hará a lo sumo este ciclo, por un lado depende de un parámetro $l$ que se establece en la entrada que indica cuantas iteraciones realizará el ciclo sin que se mejore la solución, por el otro lado debemos saber cuantas iteraciones se pueden hacer mejorando la solucion, por la forma en que funciona $CMFRandomGreedy$ puede generar $n$ soluciones distintas por lo que luego de $n$ iteraciones donde se mejore siempre la solución es imposible que se siga mejorando. Por lo tanto el ciclo hace a lo sumo $n + l$ iteraciones.
+
+ Entonces el costo total del ciclo será de $O(n + l)$ * ($O(n^2)$ + $O(n^5)$ + $O(n)$) = $O((n+l) * n^5)$
+
+ Finalmente se devuelve la solución con costo $O(1)$
+
+ Concluimos que la complejidad total del algoritmo será de $O(n^2)$ + $O((n+l) * n^5)$ + $O(1)$ = $O((n+l) * n^5)$
+
+

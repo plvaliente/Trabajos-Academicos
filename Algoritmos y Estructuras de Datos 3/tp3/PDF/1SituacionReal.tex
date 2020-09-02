@@ -1,0 +1,18 @@
+\subsection{Pinche Trump Cat Problem}
+Los Estados Unidos de América acaban de invadir México y el emperador Ronald Trump decidió que su nuevo territorio necesita con urgencia una reestructuración politica completa. 
+
+Una de las primeras medidas a tomar es cambiar la distribución de las provincias del pais, y en particular mudar la capital administrativa de México D.F. a un territorio denominado Centro de Reinado de México (CRM). Este territorio puede estar formado por una o más ciudades y debe cumplir con los siquientes requerimientos estrictos:
+
+\begin{itemize}
+\item Todas las ciudades dentro del territorio deben estar conectadas entre sí por rutas directas (es decir sin pasar por otras ciudades intermedias), para asegurar una fluida comunicación.
+\item Dichas ciudades tienen que tener la mayor cantidad posible de rutas que comuniquen el CRM con ciudades fuera de este, para favorecer el comercio interno pero principalmente para proveer vias de escape en caso de atentados terroristas realizados contra su Deidad Gobernante.
+\item No es problema si dentro del territorio delimitado queda alguna ciudad que no cumpla el primer punto, ya que estas pueden formar parte de otras provincias dentro del CRM.
+\end{itemize}
+
+Roland Trump decidió contratar (en un intento por corregir la imagen pública de xenófobo que le fue injustamente atribuida) a un equipo de latinos del Departamento de Computación de la UBA, en Argentina, para determinar la mejor ubicación del CRM.
+
+Para resolver este problema, el territorio mexicano puede ser representado como un grafo, donde los nodos son las ciudades y existe una arista entre ellos si hay alguna ruta directa que conecte estas ciudades.
+
+Por lo tanto, la nueva capital administrativa será una clique en nuestro grafo ya que es condición necesaria que todas las ciudades dentro del CRM se conecten entre sí, es decir, que exista una arista entre ellas. Además, de todas las cliques posibles del grafo debe de ser una de las cliques (ya que puede existir más de una) que tenga mayor cantidad de aristas que conecten a los nodos de la clique con los que no pertenecen a ésta. Esto se debe a que se busca maximizar las rutas que conectan a la nueva capital con ciudades fuera de ésta para garantizar rutas de escape.
+
+Esto quiere decir que para resolver el problema, lo que buscamos es justamente la clique de máxima frontera o CMF dentro del grafo.

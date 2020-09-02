@@ -1,0 +1,391 @@
+\section{Extension de Modulos basicos}
+
+% \Encabezado{Diccionario Lineal($\kappa$, $\sigma$)}
+
+% \begin{Interfaz}
+  
+%   \Encabezado{Funciones Extendidas}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%        FUNCIONES       %%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \tadAlinearFunciones{coincidenTodosAux}{$\kappa$ \ $c$, {{dicc($\kappa$, $\sigma$)}} \ $d$, conj({{dicc($\kappa$, $\sigma$)}}) \ $cd$}
+
+% \tadOperacion{campos}{{{dicc($\kappa$, $\sigma$)}}}{conj($\kappa$)}{}
+
+% \tadOperacion{borrar?}{{{dicc($\kappa$, $\sigma$)}} /$crit$, {{dicc($\kappa$, $\sigma$)}}}{bool}{$\#$campos($crit$) $\equiv$ 1}
+
+% \tadOperacion{agregarCampos}{{{dicc($\kappa$, $\sigma$)}} \ $d_1$, {{dicc($\kappa$, $\sigma$)}} \ $d_2$}{dicc($\kappa$, $\sigma$)}{}
+
+% \tadOperacion{copiarCampos}{conj($\kappa$) \ $cc$, {{dicc($\kappa$, $\sigma$)}} \ $d_1$ , {{dicc($\kappa$, $\sigma$)}}  \ $d_2$}{dicc($\kappa$, $\sigma$)}{$cc$ $\in$ campos($d_2$)}
+
+% \tadOperacion{coincideAlguno}{{{dicc($\kappa$, $\sigma$)}} \ $d_1$, conj($\kappa$) \ $cc$, {{dicc($\kappa$, $\sigma$)}} \ $d_2$}{bool}{$cc$ $\subseteq$ campos($d_1$) $\cap$ campos($d_2$)}
+
+% \tadOperacion{coincidenTodos}{{{dicc($\kappa$, $\sigma$)}} \ $d_1$, conj($\kappa$) \ $cc$, {{dicc($\kappa$, $\sigma$)}} \ $d_2$}{dicc$(\kappa, \sigma)$}{$cc$ $\subseteq$ campos($d_1$) $\cap$ campos($d_2$)}
+
+% \tadOperacion{coincidenTodosAux}{{{dicc($\kappa$, $\sigma$)}} \ $d_1$, conj($\kappa$) \ $cc$, {{dicc($\kappa$, $\sigma$)}} \ $d_2$}{dicc$(\kappa, \sigma)$}{$cc$ $\subseteq$ campos($d_1$)}
+
+% \tadOperacion{enTodos}{$\kappa$ \ $c$, conj({{dicc($\kappa$, $\sigma$)}}) \ $cd$}{bool}{}
+
+% \tadOperacion{combinarTodos}{$\kappa$ \ $c$, {{dicc($\kappa$, $\sigma$)}} \ $d$, conj({{dicc($\kappa$, $\sigma$)}}) \ $cd$}{conj({{dicc($\kappa$, $\sigma$)}})}{$c$ $\in$ campos($d_1$) $\land$ enTodos($c$,$cd$)}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%         AXIOMAS        %%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \tadAxiomas[\paratodo{dicc($\kappa$, $\sigma$)}{d, d_1, d_2, crit}, \paratodo{conj(dicc($\kappa$, $\sigma$))}{cd}, \paratodo{conj($\kappa)$}{cc}, \paratodo{$\sigma$}{d_1, d_2}, \paratodo{$\kappa$}{c} ]
+
+% \tadAlinearAxiomas{coicidenTodosAux($d_1$, $cc$, $d_2$)cccc}
+
+% \tadAxioma{campos($d$)}{claves($d$)}
+
+% \tadAxioma{borrar?($crit$, $d$)}{coincidenTodos($crit$, campos($crit$), $d$)}
+
+% \tadAxioma{agregarCampos($d_1$, $d_2$)}{copiarCampos(campos($d_2$) - campos($d_1$), $d_1$, $d_2$)}
+
+% \tadAxioma{copiarCampos($cc$, $d_1$, $d_2$)}{
+% $\textbf{if}$ ($\emptyset$?($cc$)) $\emph{then}$ \\
+% 	$\hspace*{10px}$ $r_1$ \\
+% $\textbf{else}$ \\
+% 	$\hspace*{10px}$ copiarCampos(sinUno($cc$), definir(dameUno($cc$), \\
+% 	$\hspace*{10px}$ obtener(dameUno($cc$), $d_2$),$d_1$), $d_2$ ) \\
+% $\textbf{fi}$}
+
+% \tadAxioma{coicideAlguno($d_1$, $cc$, $d_2$)}{$\neg \emptyset$?($cc$) $\yluego$ ((obtener(dameUno($cc$),$d_1$) $=$ obtener(dameUno($cc$), $d_2$)) $\lor$ \\ coincideAlguno($d_1$, sinUno($cc$), $d_2$))} 
+
+% \tadAxioma{coincidenTodos($d_1$, $cc$, $d_2$)}{$\emptyset$?($cc$) $\oluego$ ((obtener(dameUno($cc$),$d_1$) $=$ obtener(dameUno($cc$), $d_2$)) $\land$ \\ coincidenTodos($d_1$, sinUno($cc$), $d_2$))}
+
+
+% \tadAxioma{coincidenTodosAux($d_1$, $cc$, $d_2$)}{$\emptyset$?($cc$) $\oluego$ def?(dameUno($cc$), $d_2$) $\yluego$ ((obtener(dameUno($cc$),$d_1$) $=$ obtener(dameUno($cc$), $d_2$)) $\land$ \\ coincidenTodos($d_1$, sinUno($cc$), $d_2$))}
+
+% \tadAxioma{enTodos($c$, $cd$)}{$\emptyset$?($cd$) $\oluego$ ($c$ $\in$ campos(dameUno($cd$)) $\land$ enTodos($c$, sinUno($cd$)))}
+
+% \tadAxioma{combinarTodos($c$, $d$, $cd$)}{
+% $\textbf{if}$ ($\emptyset$?($cd$)) $\emph{then}$ \\
+% 	$\hspace*{10px}$ $\emptyset$ \\
+% $\textbf{else}$ \\
+% 	$\hspace*{10px}$ combinarTodos($c$, $d$, sinUno($cd$)) $\cup$ $\textbf{if}$ (obtener($c$, dameUno($cd$)) $=$ \\
+% 	$\hspace*{10px}$ obtener($c$, $d$)) $\textbf{\emph{then}}$ 	$\{$agregarCampos($d$, dameUno($cd$)) $\}$ $\textbf{else}$ $\emptyset$ $\textbf{fi}$ \\
+% $\textbf{fi}$}
+    
+% $\vspace*{15px}$
+  
+%   \Encabezado{Funciones Extendidas}  
+  
+%   \InterfazFuncion{Campos}{\In{d}{dicc$(\kappa, \sigma)$}}{conj($\kappa$)}
+%   [true] % Pre
+%   {$res$ $\igobs$ campos($d$)} % Pos
+%   [$O(\#Claves(d)*copy(\kappa))$] % Complejidad
+%   [Retorna las claves del diccionario] % Descripción
+%   [] % Aliasing
+  
+%   \InterfazFuncion{Borrar?}{\In{crit}{dicc$(\kappa, \sigma)$}, \In{d}{dicc$(\kappa, \sigma)$}}{bool}
+%   [$\#$ campos($crit$) $\equiv$ 1] % Pre
+%   {$res$ $\igobs$ borrar?($crit$,$d$)} % Pos
+%   [$O(\sum_{k' \in K}equal(c,k') + equal(g_{crit},g_d))$] % Complejidad
+%   [Dice sin un Diccionario es Borrable segun el criterio crit(que matchee el significado en $d$ y $crit$ para el campo(unico) de $crit$ ] % Descripción
+%   [] % Aliasing
+  
+%    \InterfazFuncion{AgregarCampos}{\In{d_1}{dicc$(\kappa, \sigma)$}, \In{d_2}{dicc$(\kappa, \sigma)$}}{dicc$(\kappa, \sigma)$}
+%   [true] % Pre
+%   {$res$ $\igobs$ agregarCampos($d_1$,$d_2$)} % Pos
+%   [$O(\#cc*\sum_{k' \in K}(equal(k,k') + copy(sc) + copy(\text{significado}(sc,d_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($d_1$), $sc$ $\in$ Claves($res$), $l$ $\in$ Claves($d_2$) y $g$ $=$ Significado($d_2$,$l$)  ] % Complejidad
+%   [Retorna un Diccionario con las claves de $d_1$ y su respectivo significado, mas las claves que posee $d_2$ y no $d_1$, tambien con el significado que poseia en $d_2$] % Descripción
+%   [] % Aliasing
+  
+%    \InterfazFuncion{CopiarCampos}{\In{cc}{conj($\kappa$)}, \In{d_1}{dicc$(\kappa, \sigma)$}, \In{d_2}{dicc$(\kappa, \sigma)$}}{dicc$(\kappa, \sigma)$}
+%   [$cc$ $\subseteq$ campos($d_2$)] % Pre
+%   {$res$ $\igobs$ copiarCampos($cc$,$dd1$,$d_2$)} % Pos
+%   [$O(\#Claves(d_2)*\sum_{k' \in K}(equal(k,k') + copy(k) + copy(\text{significado}(k,d_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($d_1$), $l$ $\in$ Claves($d_2$) y $g$ $=$ Significado($d_2$,$l$)  ] % Complejidad
+%   [Retorna un Diccionario con las claves de $d_1$ y su respectivo significado, mas las claves pertenecientes a $cc$ con el significado que tienen en $d_2$] % Descripción
+%   [] % Aliasing
+  
+%    \InterfazFuncion{CoincideAlguno}{\In{d_1}{dicc$(\kappa, \sigma)$}, \In{cc}{conj($\kappa$)}, \In{d_2}{dicc$(\kappa, \sigma)$}}{bool}
+%   [$cc$ $\subseteq$ (campos($d_1$) $\cap$ campos($d_2$))] % Pre
+%   {$res$ $\igobs$ coincideAlguno($d_1$,$cc$,$d_2$)} % Pos
+%   [$O(\#cc*(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(k,k')$ K $=$ Claves($d_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$  ] % Complejidad
+%   [Devuelve Verdadero si alguna clave perteneciente a $cc$ tiene el mismo significado en $d_1$ y en $d_2$ ] % Descripción
+%   [] % Aliasing
+  
+%   \InterfazFuncion{CoincidenTodos}{\In{d_1}{dicc$(\kappa, \sigma)$}, \In{cc}{conj($\kappa$)}, \In{d_2}{dicc$(\kappa, \sigma)$}}{bool}
+%   [$cc$ $\subseteq$ (campos($d_1$) $\cap$ campos($d_2$))] % Pre
+%   {$res$ $\igobs$ coincidenTodos($d_1$,$cc$,$d_2$)} % Pos
+%   [$O(\#cc*(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($d_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ ] % Complejidad
+%   [Devuelve Verdadero si para toda clave perteneciente a $cc$ tiene el mismo significado en $d_1$ y en $d_2$ ] % Descripción
+%   [] % Aliasing
+
+%  \InterfazFuncion{CoincidenTodosAux}{\In{d_1}{dicc$(\kappa, \sigma)$}, \In{cc}{conj($\kappa$)}, \In{d_2}{dicc$(\kappa, \sigma)$}}{bool}
+%   [$cc$ $\subseteq$ campos($d_1$)] % Pre
+%   {$res$ $\igobs$ coincidenTodosAux($d_1$,$cc$,$d_2$)} % Pos
+%   [$O(\#cc*(Sig_1 + def_2 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($d_i$), $def_2$ $=$ $Sig_2$ y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ ] % Complejidad
+%   [Devuelve Verdadero si para toda clave perteneciente a $cc$ tiene el mismo significado en $d_1$ y en $d_2$ ] % Descripción
+%   [] % Aliasing
+
+%   \InterfazFuncion{enTodos}{\In{c}{$\kappa$}, \In{cd}{conj(dicc$(\kappa, \sigma)$)}}{bool}
+%   [true] % Pre
+%   {$res$ $\igobs$ enTodos($c$,$cd$)} % Pos
+%   [$O(\#cr*\sum_{k' \in K}(equal(c,k')))$, K $=$ Claves($r$) $r$ $\in$ $cr$ ] % Complejidad
+%   [Devuelve Verdadero si $c$ es una clave definida en cada diccionario perteneciente a $cd$ ] % Descripción
+%   [] % Aliasing
+
+% \newpage
+
+%   \InterfazFuncion{CombinarTodos}{\In{c}{$\kappa$}, \In{d}{dicc$(\kappa, \sigma)$}, \In{cd}{conj(dicc$(\kappa, \sigma)$)}}{conj(dicc$(\kappa, \sigma)$)}
+%   [$c$ $\in$ campos($r_1$) $\land$ enTodos($c$,$cr$)] % Pre
+%   {$res$ $\igobs$ combinarTodos($c$,$d$,$cd$)} % Pos
+%   [$O(Sig_d + \#cr*(Sig_r + equal(sc,g_{r}) + Ag))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$, $r$ $\in$ $cr$, K $=$ Claves($i$), $g_i$ $=$ Significado($i$,$c$), $d$ $=$ AgregarCampos($d$,$r$) y $Ag$ es $\sum_{d' \in res}(equal(d,d'))$] % Complejidad
+%   [Devuelve un Conjunto que posee por elementos a diccionarios con las claves de $d$ y su respectivo significado, mas las claves que posee $d_i$ y no $d$, tambien con el significado que poseia en $d_i$, donde $d_i$ son los diccionarios pertenecientes a $cd$ tales que coicidan en su significado con $d$ para la clave $c$  ] % Descripción
+%   [] % Aliasing
+
+% \InterfazFuncion{Sub?}{\In{d_1}{dicc$(\kappa, \sigma)$}, \In{d_2}{dicc$(\kappa, \sigma)$}}{bool}
+%   [true] % Pre
+%   {$res$ $\igobs$ coincidenTodos($d_1$,claves($d_1$),$d_2$)} % Pos
+%   [$O(\#claves(d_1)*(def_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $def_1$ es $\sum_{t' \in T}(equal(c,t')$ T $=$ claves($d_1$),$Sig_2$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ claves($d_2$) y $g_i$ $=$ Significado($i$,$c$), $c$ $\in$ claves($d_1$)] % Complejidad
+%   [Devuelve Verdadero si para toda clave perteneciente a $claves(d_1)$,existe esta en $d_2$  y tiene el mismo significado que en $d_1$] % Descripción
+%   [] % Aliasing
+
+% \end{Interfaz}
+
+% \begin{Algoritmos}
+
+% \begin{algoritmo}{iCampos}{\In{d}{dic}}{conj($\kappa$)}
+% 	$it \gets CrearIt(d.claves) $ \com*{$\Theta(1)$}
+%     $res \gets Vacio() $ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(it)$)}{
+%      	$AgregarRapido(res, SiguienteClave(it))$ \com*{$\Theta(copy(sigCl(it)))$}
+% 		$Avanzar(it)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#Claves(d)*copy(\kappa))$
+%     \end{algoritmo}
+
+% \begin{algoritmo}{iBorrar?}{\In{crit}{dic}, \Inout{d}{dic}}{bool}
+% 	$itcrit \gets CrearIt(crit) $ \com*{$\Theta(1)$}
+%     $c \gets SiguienteClave(itcrit) $ \com*{$\Theta(1)$}
+%     $res \gets Significado(crit,c) = Significado(d,c)$ \com*{$\Theta(\sum_{k' \in K}equal(c,k') + equal(g_{crit},g_d))$}
+% 	\medskip
+% 	\underline{Complejidad:} $O(\sum_{k' \in K}equal(c,k') + equal(g_{crit},g_d))$, donde $K$ $=$ claves($d$), y $g_i$ $=$ Significado($i$,$c$)  
+% \end{algoritmo}
+
+% \begin{algoritmo}{iAgregarCampos}{\In{d_1}{dic}, \Inout{d_2}{dic}}{dic}
+%     % lo hago asi porque no tengo la operacion resta de conjuntos, ni se su complejidad
+%     $it2 \gets CrearIt(d_2) $ \com*{$\Theta(1)$}
+%     $res \gets Copiar(d_1) 	$ \com*{$\Theta(\sum_{k \in K}(copy(k) + copy(\text{significado}(k,d_1)))$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(it2)$)}{
+%     	\If(\com*[f]{$\Theta(\sum_{k' \in K}equal(SigCl(it2),k'))$}){$\lnot Definido?(res,SiguienteClave(it2))$}{
+% 			$DefinirRapido(res, SiguienteClave(it2), SiguienteSignificado(it2))$ \com*{$\Theta(copy(k) + copy(s))$}
+% 		}
+%      	$Avanzar(it2)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#Claves(d_2)*\sum_{k' \in K}(equal(k,k') + copy(k) + copy(\text{significado}(k,d_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($d_1$), $l$ $\in$ Claves($d_2$) y $g$ $=$ Significado($d_2$,$l$) 
+% \end{algoritmo}
+
+% \begin{algoritmo}{iCopiarCampos}{\In{cc}{conj($\kappa$)}, \In{d_1}{dic}, \In{d_2}{dic}}{dic}
+%     $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+%     $res \gets Copiar(d_1) 	$ \com*{$\Theta(\sum_{k \in K}(copy(k) + copy(\text{significado}(k,d_1)))$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc)$)}{
+%      	\If(\com*[f]{$\Theta(\sum_{k' \in K}equal(sigCl(itc),k'))$}){$\lnot Definido?(res,SiguienteClave(itc))$}{
+% 			$DefinirRapido(res, SiguienteClave(itc), SiguienteSignificado(itc))$ \com*{$\Theta(copy(sc) + copy(s))$}
+% 		}
+%      	$Avanzar(it2)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#cc*\sum_{k' \in K}(equal(k,k') + copy(sc) + copy(\text{significado}(sc,d_1)))+(Copy(l) + Copy(g)))$, donde K $=$ Claves($d_1$), $sc$ $\in$ Claves($res$), $l$ $\in$ Claves($d_2$) y $g$ $=$ Significado($d_2$,$l$) 
+% \end{algoritmo}
+
+% \begin{algoritmo}{iCoincideAlguno}{\In{d_1}{dic}, \In{cc}{conj($\kappa$)}, \In{d_2}{dic}}{bool}
+%     $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+%     $res \gets false $ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc) \land not res$)}{
+%     	$res \gets Significado(d_1,Siguiente(itc)) = Significado(d_2,Siguiente(itc))$ \com*{$\Theta(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2}))$}
+% 	$Avanzar(itc)$ \com*{$\Theta(1)$}
+%     }
+%     \medskip
+% 	\underline{Complejidad:} $O(\#cc*(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(k,k')$ K $=$ Claves($d_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ 
+% \end{algoritmo}
+
+% \begin{algoritmo}{iCoincidenTodos}{\In{d_1}{dic}, \In{cc}{conj($\kappa$)}, \In{d_2}{dic}}{bool}
+%     $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+%     $res \gets true $ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc) \wedge res$)}{
+%     	$res \gets Significado(d_1,Siguiente(itc)) = Significado(d_2,Siguiente(itc))$ \com*{$\Theta(Sig_1 + Sig_2 + 		equal(g_{d_1},g_{d_2}))$}
+% 		$Avanzar(itc)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#cc*(Sig_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($d_i$) y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ 
+% \end{algoritmo}
+
+% \begin{algoritmo}{iCoincidenTodosAux}{\In{d_1}{dic}, \In{cc}{conj($\kappa$)}, \In{d_2}{dic}}{bool}
+%     $itc \gets CrearIt(cc) $ \com*{$\Theta(1)$}
+%     $res \gets true $ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc) \wedge res$)}{
+%     	\eIf(\com*[f]{$\Theta(\sum_{k' \in claves(d_2)}equal(sigCl(itc),k'))$}){$Definido?(d_2,SiguienteClave(itc))$}{
+% 		$res \gets Significado(d_1,Siguiente(itc)) = Significado(d_2,Siguiente(itc))$ \com*{$\Theta(Sig_1 + Sig_2 + 		equal(g_{d_1},g_{d_2}))$}
+% 		}{
+%         $res \gets false $ \com*{$\Theta(1)$}
+%         }
+%     	$Avanzar(itc)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#cc*(Sig_1 + def_2 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ Claves($d_i$), $def_2$ $=$ $Sig_2$ y $g_i$ $=$ Significado($i$,$c$), $c \in cc$ 
+% \end{algoritmo}
+
+% \begin{algoritmo}{ienTodos}{\In{c}{campo}, \In{cr}{conj(dicc$(\kappa, \sigma)$)}}{bool}
+%     $itcr \gets CrearIt(cr) $ \com*{$\Theta(1)$}
+%     $res \gets true $ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itcr) \wedge res$)}{
+%     	$res \gets Definido?(Siguiente(itcr), c)$\com*{$\Theta(\sum_{k' \in K}(equal(c,k')))$}
+% 		$Avanzar(itc)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#cr*\sum_{k' \in K}(equal(c,k')))$, K $=$ Claves($r$) $r$ $\in$ $cr$
+% \end{algoritmo}
+
+% \begin{algoritmo}{iCombinarTodos}{\In{c}{$\kappa$}, \In{d}{dic}, \In{cr}{conj(dicc$(\kappa, \sigma)$)}}{conj(dicc$(\kappa, \sigma)$)}
+%     $itcr \gets CrearIt(cr) $ \com*{$\Theta(1)$}
+%     $res \gets Vacio() $ \com*{$\Theta(1)$}
+%     $sc  \gets Significado(d,c)$ \com*{$O(Sig_d)$} 
+%    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itcr)$)}{
+%     	\If(\com*[f]{$O(Sig_{Sig(itcr)} + equal(sc,g_{r}))$}){($sc = Significado(Siguiente(itcr),c)$)}{
+% 			$Agregar(res, AgregarCampos(d, Siguiente(itcr)))$ \com*{$\Theta(\sum_{d' \in res}(equal(d,d')))$}
+% 		}
+%      	$Avanzar(itcr)$ \com*{$\Theta(1)$}	
+%    }
+%     \medskip
+% 	\underline{Complejidad:} $O(Sig_d + \#cr*(Sig_r + equal(sc,g_{r}) + Ag))$, donde $Sig_i$ es $\sum_{k' \in K}(equal(c,k')$, $r$ $\in$ $cr$, K $=$ Claves($i$), $g_i$ $=$ Significado($i$,$c$), $d$ $=$ AgregarCampos($d$,$r$) y $Ag$ es $\sum_{d' \in res}(equal(d,d'))$
+% \end{algoritmo}
+
+% \begin{algoritmo}{iSub?}{\In{d_1}{dic}, \In{d_2}{dic}}{bool}
+%     $itd1 \gets CrearIt(d_1) $ \com*{$\Theta(1)$}
+%     $res \gets true $ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itd1) \land res$)}{
+%     	\eIf(\com*[f]{$\Theta(\sum_{k \in K}equal(SigCl(itd1),k'))$}){$\lnot Definido?(d_2,SiguienteClave(itd1))$}{
+% 			$res \gets SiguienteSignificado(itd1) = Significado(d_2,SiguienteClave(itd1))$ \com*{$\Theta(Sig_2 + 		equal(SigSdo(itd1),g_{d_2}))$}
+% 		}{
+%         	$res \gets false $ \com*{$\Theta(1)$}
+%         }
+% 		$Avanzar(itd1)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#claves(d_1)*(def_1 + Sig_2 + equal(g_{d_1},g_{d_2})))$, donde $def_1$ es $\sum_{t' \in T}(equal(c,t')$ T $=$ claves($d_1$),$Sig_2$ es $\sum_{k' \in K}(equal(c,k')$ K $=$ claves($d_2$) y $g_i$ $=$ Significado($i$,$c$), $c$ $\in$ claves($d_1$)
+% \end{algoritmo}
+
+% \end{Algoritmos}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\Encabezado{Conjunto Lineal($\alpha$)}
+
+
+  
+  \Encabezado{Funciones Extendidas}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%        FUNCIONES       %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tadAlinearFunciones{Minimo}{conj($\alpha$) \ c}
+
+\tadOperacion{Minimo}{conj($\alpha$) \ $c$}{$\alpha$}{$\neg$ $\emptyset$?(c)}
+
+\tadOperacion{Maximo}{conj($\alpha$) \ $c$}{$\alpha$}{$\neg$ $\emptyset$?(c)}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%         AXIOMAS        %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tadAxiomas[\paratodo{conj($\alpha$)}{c}, \paratodo{$\alpha$}{d}]
+
+\tadAlinearAxiomas{Minimo(conj($\alpha$))}
+
+\tadAxioma{Minimo($c$)}{
+$\textbf{if}$ ($\emptyset$?(SinUno($c$))) $\emph{then}$ \\
+	$\hspace*{10px}$ DameUno($c$) \\
+$\textbf{else}$ \\
+	$\hspace*{10px}$ $\textbf{if}$ dameUno($c$)) $\leq$ Minimo(SinUno($c$))\\
+		$\hspace*{20px}$ dameUno($c$) \\
+    $\hspace*{10px}$ $\textbf{else}$ \\
+    	$\hspace*{20px}$ Minimo(SinUno($c$)) \\
+    $\hspace*{10px}$ $\textbf{fi}$ \\
+$\textbf{fi}$}
+
+\tadAxioma{Maximo($c$)}{
+$\textbf{if}$ ($\emptyset$?(SinUno($c$))) $\emph{then}$ \\
+	$\hspace*{10px}$ DameUno($c$) \\
+$\textbf{else}$ \\
+	$\hspace*{10px}$ $\textbf{if}$ dameUno($c$)) $\geq$ Maximo(SinUno($c$))\\
+		$\hspace*{20px}$ dameUno($c$) \\
+    $\hspace*{10px}$ $\textbf{else}$ \\
+    	$\hspace*{20px}$ Maximo(SinUno($c$)) \\
+    $\hspace*{10px}$ $\textbf{fi}$ \\
+$\textbf{fi}$}
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%        INTERFAZ        %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+  \begin{Interfaz}
+  %\Encabezado{Funciones Extendidas}  
+  
+  \InterfazFuncion{Minimo}{\In{c}{conj($\alpha$)}}{$\alpha$}
+  [$\neg$ $\emptyset$?(c)] % Pre
+  {$res$ $\igobs$ Minimo($c$)} % Pos
+  [$O(\sum_{k \in c}equal(k,\alpha) + copy(\alpha)) $] % Complejidad
+  [Retorna el menor elemento del conjunto] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Maximo}{\In{c}{conj($\alpha$)}}{$\alpha$}
+  [$\neg$ $\emptyset$?(c)] % Pre
+  {$res$ $\igobs$ Maximo($c$)} % Pos
+  [$O(\sum_{k \in c}equal(k,\alpha) + copy(\alpha)) $] % Complejidad
+  [Retorna el mayor elemento del conjunto] % Descripción
+  [] % Aliasing
+
+\end{Interfaz}
+
+\begin{Algoritmos}
+
+\begin{algoritmo}{iminimo}{\In {c}{conj($\alpha$)}}{$\alpha$}
+	$itc \gets crearIt(c)$ \com*{$\Theta(1)$}
+    $res \gets Siguiente(itc)$ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc)$)}{
+    	\If(\com*[f]{$O(equal(res,Siguiente(itc)))$}){$\neg (res \leq Siguiente(itc))$}{
+			$res \gets Siguiente(itc)$ \com*{$\Theta(Copy(Siguiente(itc)))$}
+		}
+     	$Avanzar(itc)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#(c)*(ed + copy(d_i)))$, donde ed es el costo de equal($res$,$d_i$) $d_i$ $\in$ $c$
+\end{algoritmo} 
+
+\begin{algoritmo}{imaximo}{\In {c}{conj($\alpha$)}}{$\alpha$}
+	$itc \gets crearIt(c)$ \com*{$\Theta(1)$}
+    $res \gets Siguiente(itc)$ \com*{$\Theta(1)$}
+    \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc)$)}{
+    	\If(\com*[f]{$O(equal(res,Siguiente(itc)))$}){$(res \leq Siguiente(itc))$}{
+			$res \gets Siguiente(itc)$ \com*{$\Theta(Copy(Siguiente(itc)))$}
+		}
+     	$Avanzar(itc)$ \com*{$\Theta(1)$}
+	}
+    \medskip
+	\underline{Complejidad:} $O(\#(cd)*(ed + copy(d_i)))$, donde ed es el costo de equal($res$,$d_i$) $d_i$ $\in$ $c$
+\end{algoritmo} 
+
+
+
+\end{Algoritmos}
+

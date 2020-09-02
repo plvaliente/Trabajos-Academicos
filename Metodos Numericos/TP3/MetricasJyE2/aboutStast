@@ -1,0 +1,17 @@
+EQUIPO
+	Mide 3P,2P,FT%,TRB,STL,TOV
+	
+	1 ------> Lineal
+	2 ------> Peso sobre la posesion
+	3 ------> Peso sobre puntos, con AllAround	
+	4 ------> Peso Puntos
+	5 ------> Peso posesion y puntos
+
+JUGADORES
+	Mide TS%,ORB%,DRB%,AST%,STL%,BLK% 
+	
+	1 ------> Lineal
+	2 ------> Peso sobre la posesion
+	3 ------> Peso sobre LA defensa	
+	4 ------> Peso Puntos
+	5 ------> Peso posesion y puntos

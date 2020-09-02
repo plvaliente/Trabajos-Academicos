@@ -1,0 +1,26 @@
+En este trabajo se analiza el problema de \textit{clique de máxima frontera} (CMF). Para definir en qué consiste este problema, primero es necesario definir el término \textit{clique} y luego su \textit{frontera}.
+
+Dado un grafo simple $G$ = ($V, E$), un subconjunto de vértices de $G$ es una \textit{clique} si y sólo si éste induce
+un subgrafo completo de $G$. Es decir, $K \subseteq V$, tal que $K \neq \emptyset$, es una clique de $G$ si y sólo si para todo
+par de vértices $u, v \in K, u \neq v$, existe la arista $(u,v)$ en $E$.
+
+Definimos la \textit{frontera} de una clique $K$ como el
+conjunto de aristas de $G$ que tienen un extremo en $K$ y otro en $V \setminus K$. Formalmente, la frontera de una
+clique $K$ queda definida por
+
+$\delta(K) = \lbrace (v,w) \in E / v \in K \wedge w \in V \setminus K \rbrace$.
+
+Una vez definido esto, el problema de clique de máxima frontera (CMF) en un grafo $G$ consiste en hallar una clique $K$ de $G$ cuya frontera $\delta$(K) tenga cardinalidad máxima. Algunas situaciones de la vida real que pueden ser modelados a través de este problema se pueden ver en la sección siguiente.
+
+Si bien CMF es un problema conocido, no se conocen algoritmos polinomiales que lo resuelvan. En este trabajo, primero se resolverá el problema de forma exacta, utilizando la técnica \textit{Backtracking}. Luego, con el fin de mejorar la complejidad, se presentarán varios algoritmos heurísticos que también intenten resolverlo.
+
+En concreto, se implementarán los siguientes algoritmos:
+
+\begin{enumerate}
+\item Un algoritmo exacto utilizando \textit{Backtracking}.
+\item Dos heurísticas constructivas \textit{golosas}.
+\item Una heurística de \textit{búsqueda local}.
+\item Una heurística \textit{GRASP}.
+\end{enumerate}
+
+El objetivo de este trabajo es experimentar sobre cada uno de los algoritmos implementados, estudiando su complejidad y tiempo de ejecución en función del tamaño de la entrada, y, en los algoritmos heurísticos, también analizar la calidad de los datos. Se intentarán definir familias de grafos que optimicen los resultados, o que hagan los contrario, es decir, que no proporcionen una solución óptima. 

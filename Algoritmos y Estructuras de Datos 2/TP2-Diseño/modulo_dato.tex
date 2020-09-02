@@ -1,0 +1,266 @@
+\section{M\'odulo Dato}
+
+
+\Encabezado{Notas preliminares}
+  En todos los casos, al indicar las complejidades de los algoritmos, las variables que se utilizan corresponden a:
+  \vspace{-0.5em}\begin{itemize}
+    \item $L$: M\'axima longitud de un valor STRING de un registro en la tabla pasada por par\'ametro.
+  \end{itemize}
+
+\servUsados{nat, string, bool}
+
+\begin{Interfaz}
+  
+
+  \seExplicaCon{Dato}
+
+  \generos{\tipo{dat}}
+  
+  \Encabezado{Operaciones basicas de Dato}
+
+  \InterfazFuncion{datoStr}{\In {s} {string}}{dat}
+  [true] % Pre
+  {res $\igobs$ datoString(s)} % Pos
+  [$\Theta(L)$] % Complejidad
+  [Genera un dato string] % Descripción
+  [...] % Aliasing
+
+  ~
+
+  \InterfazFuncion{datoN}{\In {n}{nat}}{dat}
+  [true] % Pre
+  {res $\igobs$ datoNat(n)} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Genera un dato nat] % Descripción
+  [...] % Aliasing
+
+  ~
+  
+\InterfazFuncion{tipo?}{\In {d}{dat}}{bool}
+  [true] % Pre
+  {res $\igobs$ tipo?(d)} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Devuelve true si el dato es nat, si es string devuelve false] % Descripción
+  [...] % Aliasing
+
+  ~
+
+\InterfazFuncion{valorN}{\In {d}{dat}}{nat}
+  [Nat?(d)] % Pre
+  {res $\igobs$ valorNat(d)} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Devuelve el valor de un dato nat] % Descripción
+  [res es una referencia] % Aliasing
+
+  ~
+  
+\InterfazFuncion{valorS}{\In {d}{dat}}{string}
+  [String?(d)] % Pre
+  {res $\igobs$ valorStr(d)} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Devuelve el valor de un dato string] % Descripción
+  [res es una referencia] % Aliasing
+  
+  ~
+  
+\newpage  
+
+\InterfazFuncion{mismoTipo}{\In {d1}{dat}, \In {d2}{dat}}{bool}
+  [true] % Pre
+  {res $\igobs$ (tipo?(d1) == tipo?(d2))} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Devuelve verdadero si coincide el tipo de los datos $d1$ y $d2$] % Descripción
+  [...] % Aliasing
+  
+  ~
+\InterfazFuncion{esString?}{\In {d}{dat}}{bool}
+  [true] % Pre
+  {res $\igobs$ String?(d)} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Devuelve verdadero si $d$ es de tipo string] % Descripción
+  [...] % Aliasing
+  
+  ~
+
+\InterfazFuncion{esNat?}{\In {d}{dat}}{bool}
+  [true] % Pre
+  {res $\igobs$ Nat?(d)} % Pos
+  [$\Theta(1)$] % Complejidad
+  [Devuelve verdadero si $d$ es de tipo nat] % Descripción
+  [...] % Aliasing
+  ~
+
+% \InterfazFuncion{minimo}{\In {cd}{conj(dat)}}{dat}
+%   [true] % Pre
+%   {res $\igobs$ min(cd)} % Pos
+%   [$\Theta(1)$] % Complejidad
+%   [Devuelve el minimo de un conjunto de datos] % Descripción
+%   [...] % Aliasing
+%   ~
+
+% \InterfazFuncion{maximo}{\In {cd}{conj(dat)}}{dat}
+%   [true] % Pre
+%   {res $\igobs$ max(cd)} % Pos
+%   [$\Theta(1)$] % Complejidad
+%   [Devuelve el maximo de un conjunto de datos] % Descripción
+%   [...] % Aliasing
+%   ~
+
+\InterfazFuncion{\argumento $\leq$ \argumento}{\In {d1}{dat}, \In {d2}{dat}}{bool}
+[mismoTipo?(d1,d2)] % Pre
+{res $\igobs$ (d1 $\leq$ d2)} % Pos
+[$O(1 + comp(d1,d2))$] % Complejidad
+[Devuelve verdadero si $d1$ es menor o igual a $d2$] % Descripción
+[...] % Aliasing
+  ~
+  
+  \InterfazFuncion{\argumento = \argumento}{\In {d1}{dat}, \In {d2}{dat}}{bool}
+[true] % Pre
+{res $\igobs$ (d1 = d2)} % Pos
+[$O(1 + equal(d1,d2))$] % Complejidad
+[Devuelve true si dos datos son iguales] % Descripción
+[...] % Aliasing
+
+%   \InterfazFuncion{copiar}{\In {d}{dat}}{dat}
+% [true] % Pre
+% {res $\igobs$ d} % Pos
+% [$\Theta(1)$] % Complejidad
+% [Retorna una copia de d ] % Descripción
+% [...] % Aliasing
+
+\end{Interfaz} 
+
+\begin{Representacion}
+
+  \begin{Estructura}{dat}[estrDato]
+
+    \begin{Tupla}[estrDato]
+      \tupItem{DatoString}{String}
+      \tupItem{DatoNat}{Nat}
+      \tupItem{EsNat?}{Bool}
+    \end{Tupla}
+
+  \end{Estructura}
+  
+%\textbf{Invariante de representaci\'on en castellano:}
+
+ %   \begin{enumerate} 
+  %    \item 
+   % \end{enumerate}
+  \RepFc[estrDato][e]{
+    $\textbf{if}(e.esNat?)$ \emph{then} $e.DatoString \equiv$ $""$ $\textbf{else}$ $e.DatoNat \equiv 0$  
+    }
+    
+
+  \AbsFc[estrDato]{Dato}[e]{d: Dato $/$ \\
+     \begin{enumerate}
+		\item $tipo?(d) \equiv e.esNat? \yluego$
+        \item $tipo?(d) \impluego valorNat(d) \equiv e.DatoNat \land$ 
+      	\item $\neg tipo?(d) \impluego valorStr(d) \equiv e.DatoString $ 
+      \end{enumerate} 
+  }
+    
+\end{Representacion}
+
+
+\begin{Algoritmos}
+
+\begin{algoritmo}{idatoStr}{\In {s}{string}}{estrDato}
+	$res \gets \langle false,s,0 \rangle$ \com*{$O(3 + copy(s))$}
+    \medskip
+	\underline{Complejidad:} $O(copy(s))$
+\end{algoritmo}    
+
+\begin{algoritmo}{idatoN}{\In {n}{nat}}{estrDato}
+	$res \gets \langle true,"",n \rangle$ \com*{$O(3 + copy(n))$}
+    \medskip
+	\underline{Complejidad:} $O(1)$
+\end{algoritmo}    
+
+\begin{algoritmo}{itipo?}{\In {d}{estrDato}}{bool}
+	$res \gets \langle d.esNat? \rangle$ \com*{$\Theta(1)$}
+    \medskip
+	\underline{Complejidad:} $\Theta(1)$
+\end{algoritmo}    
+
+\begin{algoritmo}{ivalorN}{\In {d}{estrDato}}{nat}
+	$res \gets d.DatoNat$ \com*{$\Theta(1)$}
+    \medskip
+	\underline{Complejidad:} $\Theta(1)$
+\end{algoritmo}    
+
+\begin{algoritmo}{ivalorS}{\In {d}{estrDato}}{string}
+	$res \gets d.DatoString$ \com*{$\Theta(1)$}
+    \medskip
+	\underline{Complejidad:} $\Theta(1)$
+\end{algoritmo}    
+
+\begin{algoritmo}{imismoTipo}{\In {d1}{estrDato}, \In {d2}{estrDato}}{bool}
+	$res \gets d1.esNat? = d2.esNat?$ \com*{$\Theta(1)$}
+    \medskip
+	\underline{Complejidad:} $\Theta(1)$
+\end{algoritmo}    
+
+\begin{algoritmo}{iesString?}{\In {d}{estrDato}}{bool}
+	$res \gets not tipo?(d)$ \com*{$\Theta(1)$}
+    \medskip
+	\underline{Complejidad:} $\Theta(1)$
+\end{algoritmo} 
+
+\begin{algoritmo}{iesNat?}{\In {d}{estrDato}}{bool}
+	$res \gets tipo?(d)$ \com*{$\Theta(1)$}
+    \medskip
+	\underline{Complejidad:} $\Theta(1)$
+\end{algoritmo} 
+
+% \begin{algoritmo}{iminimo}{\In {cd}{conj(dat)}}{dat}
+% 	$itc \gets crearIt(cd)$ \com*{$\Theta(1)$}
+%     $res \gets Siguiente(itc)$ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc)$)}{
+%     	\If(\com*[f]{$O(equal(res,Siguiente(itc)))$}){$\neg (res \leq Siguiente(itc))$}{
+% 			$res \gets Siguiente(itc)$ \com*{$\Theta(Copy(Siguiente(itc)))$}
+% 		}
+%      	$Avanzar(itc)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#(cd)*(ed + copy(d_i)))$, donde ed es el costo de equal($res$,$d_i$) $d_i$ $\in$ $cd$
+% \end{algoritmo} 
+
+% \begin{algoritmo}{imaximo}{\In {cd}{conj(dat)}}{dat}
+% 	$itc \gets crearIt(cd)$ \com*{$\Theta(1)$}
+%     $res \gets Siguiente(itc)$ \com*{$\Theta(1)$}
+%     \While(\com*[f]{$\Theta(1)$}){($HaySiguiente(itc)$)}{
+%     	\If(\com*[f]{$O(equal(res,Siguiente(itc)))$}){$(res \leq Siguiente(itc))$}{
+% 			$res \gets Siguiente(itc)$ \com*{$\Theta(Copy(Siguiente(itc)))$}
+% 		}
+%      	$Avanzar(itc)$ \com*{$\Theta(1)$}
+% 	}
+%     \medskip
+% 	\underline{Complejidad:} $O(\#(cd)*(ed + copy(d_i)))$, donde ed es el costo de equal($res$,$d_i$) $d_i$ $\in$ $cd$
+% \end{algoritmo} 
+
+\begin{algoritmo}{i$\argumento = \argumento$}{\In {d1}{estrDato}, \In {d2}{estrDato}}{bool}
+	$res \gets false $ \com*{$\Theta(1)$}
+    \If(\com*[f]{$\theta(1)$}){$(esNat?(d1) \wedge esNat?(d2))$}{
+			$res \gets valorN(d1) = valorN(d2) $ \com*{$\Theta(1)$}
+		}
+    \If(\com*[f]{$\theta(1)$}){$(esString?(d1) \wedge esString?(d2))$}{
+			$res \gets valorS(d1) = valorS(d2) $ \com*{$O(equal(s_1,s_2))$}
+		} 
+    \medskip
+	\underline{Complejidad:} $O(1 + equal(s_1,s_2))$, donde $s_i$ es el valorS(di)
+\end{algoritmo}    
+
+\begin{algoritmo}{i$\argumento \leq \argumento$}{\In {d1}{estrDato}, \In {d2}{estrDato}}{bool}
+	$res \gets false $ \com*{$\Theta(1)$}
+    \If(\com*[f]{$\theta(1)$}){$(esNat?(d1) \wedge esNat?(d2))$}{
+			$res \gets valorN(d1) \leq valorN(d2) $ \com*{$\Theta(1)$}
+		}
+    \If(\com*[f]{$\theta(1)$}){$(esString?(d1) \wedge esString?(d2))$}{
+			$res \gets valorS(d1) \leq valorS(d2) $ \com*{$O(comp(s_1,s_2))$}
+		} 
+    \medskip
+	\underline{Complejidad:} $O(1 + comp(s_1,s_2))$, donde $s_i$ es el valorS(di)
+\end{algoritmo}    
+
+\end{Algoritmos}

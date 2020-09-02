@@ -1,0 +1,46 @@
+\begin{lstlisting}
+Empleado Local::elVagonetaL() const{
+	int i = 0;
+	vector<Empleado> emps = empleadosL();
+	Empleado vagoneta;
+	int max = 0;
+	while(i < emps.size()) {
+		int desc = _descansoMasLargo(emps.at(i));
+		if (desc >= max) {
+			max = desc;
+			vagoneta = emps.at(i);
+		}
+		i++;
+	}	
+	return vagoneta;
+}
+\end{lstlisting}
+
+\hspace{15pt}\textbf{Pc, Qc, I, B, cota y fv.} \\
+Pc: $i==0 \wedge \ max==0 \wedge |emps| >  0 $ \  (por requiere) \ $ \wedge (\forall i, j, \leftarrow[0..|emps|), i \neq j) emps_i \neq emps_j$  (por invariante empleadosDistintos) ; \\
+Qc: $(\forall \ e \leftarrow[0..|emps|)) descansoMasLargo(l, emps[e]) \leq descansoMasLargo(l, vagoneta) \wedge \\ descansoMasLargo(l, emps[e]) \leq max $ ; \\
+B: $i<|emps|$; \\
+fv: $|emps| - i$; \\
+Cota: $0$; \\
+I: $0 \ \leq \ i \ \leq \ |emps| \ \wedge (((\forall e \leftarrow [0..i)) descansoMasLargo(l,emps[e]) \leq descansoMasLargo(l, vagoneta) \wedge \\ \_descansoMasLargo(emps[e]) \leq max)) \wedge (i > 0 \Rightarrow vagoneta \in emps[0..i) \wedge vagoneta \not \in emps[i..|emps|) )  $; \\
+
+\hspace{15pt}\textbf{Pc $\wedge$ B $\Rightarrow$ I:} \\
+Pc $\wedge$ B: $i == 0 \wedge max == 0 \wedge |emps| > 0 \wedge (\forall i, j \leftarrow[0..|emps|), i \neq j) emps_i \neq emps_j \wedge i < |emps| $ ; \\
+Sabiendo que $i == 0$ verifico que se cumple el invariante: \\
+Reemplazo i=0 en I: $0  \leq  0  < |emps| \ \wedge \ ((\forall \ e \leftarrow[0..0)) descansoMasLargo(l, emps[e]) \leq descansoMasLargo(l, vagoneta) \wedge  descansoMasLargo(l, emps[e]) \leq max) \wedge 0 > 0 \Rightarrow (vagoneta \in emps[0..0) \wedge vagoneta \not \in emps) $; \\
+Implica: $0 < |emps|$. Que es correcto por Pc; \\
+
+\hspace{15pt}\textbf{I $\wedge \neg $ B $\Rightarrow$ Qc:} \\
+I $\wedge \neg $ B: $ 0 \ \leq \ i \ \leq \ |emps| \ \wedge (((\forall e \leftarrow [0..i)) descansoMasLargo(l, emps[e]) \leq descansoMasLargo(l, vagoneta) \wedge \\ descansoMasLargo(l, emps[e]) \leq max)) \wedge (i > 0 \Rightarrow vagoneta \in emps[0..i) \wedge vagoneta \not \in emps[i..|emps|)) \wedge i \geq |emps| $; \\
+Implica $ 0 \leq i \leq |emps| \wedge |emps| \leq i $; \\
+Implica: $i==|emps|$; \\
+Reemplazo en invariante: $ i==|emps| \wedge (\forall \ e \leftarrow[0..|emps|)) descansoMasLargo(l, emps[e]) \leq descansoMasLargo(l, vagoneta) \wedge descansoMasLargo(l, emps[e]) \leq max $ ; \\
+Equivale a Qc. \\
+
+\hspace{15pt}\textbf{I $\wedge$ fv $\leq$ Cota $\Rightarrow \neg$ B:} \\
+I $\wedge$ fv $\leq$ Cota: $0 \leq i \leq |emps| \wedge |emps| - i \leq 0$; \\
+Implica: $i \leq |emps| \wedge |emps| \leq i$; \\
+Implica: $i == |emps|$;\\
+Implica: $i \geq |emps|$ ; \\
+Equivale a $\neg B$; \\
+

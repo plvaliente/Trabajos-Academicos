@@ -1,0 +1,619 @@
+\section{M\'odulo Base de Datos}
+
+\Encabezado{Notas Preliminares}
+  En todos los casos, al indicar las complejidades de los algoritmos, las variables que se utilizan corresponden a:
+  \vspace{-0.5em}\begin{itemize}
+    \item $n$: N\'umero de registros en la tabla pasada por par\'ametro.
+    \item $m$: N\'umero de registros en la tabla pasada por par\'ametro.
+    \item $L$: M\'axima longitud de un valor STRING de un registro en la tabla pasada por par\'ametro.
+    \item $T$: Cantidad de tablas en la base de datos
+    \item $R$: Cantidad de elementos en la lista de modificaciones de un join.
+  \end{itemize}
+
+
+\begin{Interfaz}
+	\seExplicaCon{BaseDeDatos}
+    
+    \generos{\tipo{bd}} 
+    
+ 		\servUsados{tbl, nombreTabla, itTablas, reg, campo, bool, conj, tupla, diccStr, datosTabla}
+    
+    \Encabezado{Operaciones de Base De Datos}
+    
+    \InterfazFuncion{nuevaDB}{}{bd}%
+    [true]%pre
+    {res $\igobs$ nuevaDB()}%pos
+    [$O(1)$]%complejidad
+    [Genera una nueva Base De Datos. ]%descripcion
+    []%aliasing
+    
+    \InterfazFuncion{agregarTabla}{\In{t}{tbl}, \Inout{b}{bd}}{}%
+    [b $\igobs$ $b_{0}$ $\land$ $\emptyset$?(registros(t))]%pre
+    {b $\igobs$ agregarTabla(t, $b_{0}$)}%pos
+    [$O(1)$]%complejidad
+    [Agrega una nueva tabla sin registros a la base de datos]%descripcion
+    []%aliasing
+    
+    \InterfazFuncion{insertarEntrada}{\In{reg}{reg}, \In{t}{nombreTabla}, \Inout{b}{bd}}{}%
+    [b $\igobs$ $b_{0}$ $\land$ t $\in$ tablas(b) $\yluego$ puedoInsertar?(reg, t)]%pre
+    {b $\igobs$ insertarEntrada(reg, t, $b_{0}$)}%pos
+    [$O(T*L + lg(n))$]%complejidad
+    [Inserta un nuevo registro en la tabla cuyo nombre es pasado por par\'ametro]%descripcion
+    []%aliasing
+    
+    \InterfazFuncion{borrar}{\In{cr}{reg}, \In{t}{nombreTabla}, \Inout{b}{bd}}{}%
+    [b $\igobs$ $b_{0}$ $\land$ t $\in$ tablas(b) $\land$ \#(campos(cr))=1]%pre
+    {b $\igobs$ borrar(reg, t, $b_{0}$)}%pos
+    [$O(T*L + n *(n + L)$]%complejidad
+    [Borra todos los registros de la tabla, cuyo nombre es pasado por par\'ametro, cuyos datos del campo del registro pasado por par\'ametro coincidan con el dato del mismo registro]%descripcion
+	[]%aliasing
+    
+    \InterfazFuncion{generarVistaJoin}{\In{t1}{nombreTabla}, \In{t2}{nombreTabla}, \In{c}{campo} \Inout{b}{bd}}{}%
+    [b $\igobs$ $b_{0} \land$ t1 $\neq$ t2 $\land$ $\lbrace$t1, t2$\rbrace$ $\subseteq$ tablas(b) $\yluego$ c $\in$ claves(dameTabla(t1, b)) $\land$ c $\in$ claves(dameTabla(t2,b)) $\land$ $\lnot$hayJoin?(t1,t2,b)]%pre
+    {b $\igobs$ generarVistaJoin(t1, t2, c, $b_{0}$)}%pos
+    [$O((n+m)*(L + log(n + m)))$]%complejidad
+    [Genera un join entre las tablas cuyos nombres son pasados por par\'ametro]%descripcion
+    []%aliasing 
+  
+    \InterfazFuncion{borrarJoin}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \Inout{b}{bd}}{}%
+    [b $\igobs$ $b_{0} \land$ hayJoin?(t1,t2,b)]%pre
+    {b $\igobs$ borrarJoin(t1,t2,$b_{0}$}%pos
+    [$O(1)$]%complejidad
+    [Borra el join entre las tablas cuyos nombres son pasados por par\'ametro]%descripcion
+    []%aliasing 
+  
+    \InterfazFuncion{tablas}{\In{b}{bd}}{itTablas}%
+    [true]%pre
+    {esPermutacion?(SecuSuby(res), tablas(b)) }%pos
+    [$O(1)$]%complejidad
+    [Devuelve un iterador de Tablas con siguiente ]%descripcion
+    []%aliasing     
+
+    \InterfazFuncion{dameTabla}{\In{t}{nombreTabla} \In{b}{bd}}{tbl}%
+    [t $\in$ tablas(b)]%pre
+    {res $\igobs$ dameTabla(t,b) }%pos
+    [$O(1)$]%complejidad
+    [Devuelve la tabla de la base de datos cuyo nombre es $t$]%descripcion
+    [tbl se devuelve por referencia]%aliasing     
+
+    \InterfazFuncion{hayJoin?}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \In{b}{bd}}{bool}%
+    [true]%pre
+    {res $\igobs$ hayJoin(t1,t2,b) }%pos
+    [$O(1)$]%complejidad
+    [Devuelve si hay join entre las dos tablas cuyos nombres son los pasados como parametro]%descripcion
+    []%aliasing   
+
+    \InterfazFuncion{campoJoin}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \In{b}{bd}}{campo}%
+    [hayJoin?(t1,t2,b)]%pre
+    {res $\igobs$ campoJoin(t1,t2,b)}%pos
+    [$O(1)$]%complejidad
+    [Devuelve el campo por el cual hay join en las tablas cuyos nombres son pasados como parametro]%descripcion
+    []%aliasing   
+
+    \InterfazFuncion{registros}{\In{t}{nombreTabla} \In{b}{bd}}{conj(reg)}%
+    [t $\in$ tablas(b)]%pre
+    {res $\igobs$ registros(t,b)}%pos
+    [$O(n)$]%complejidad
+    [Devuelve el conjunto de registros de la tabla cuyo nombre es pasado como parametro]%descripcion
+    [El conjunto de registros de pasa por referencia no modificable]%aliasing   
+
+    \InterfazFuncion{vistaJoin}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \In{b}{bd}}{conj(reg)}%
+    [hayJoin?(t1,t2,b)]%pre
+    {res $\igobs$ vistaJoin(t1,t2,b)}%pos
+    [$O(R*(L+log(n+m))$]%complejidad
+    [Actualiza y devuelve el join entre las dos tablas cuyos nombres son pasados como parametro.]%descripcion
+    [El conjunto de registros de devuelve por referencia no modificable]%aliasing   
+
+    \InterfazFuncion{cantidadDeAccesos}{\In{t}{nombreTabla} \In{b}{bd}}{conj(reg)}%
+    [t $\in$ tablas(b)]%pre
+    {res $\igobs$ cantidadDeAccesos(t,b)}%pos
+    [$O(1)$]%complejidad
+    [Devuelve la cantidad de accesos de la tabla cuyo nombre es pasado como parametro]%descripcion
+    []%aliasing   
+    
+    \InterfazFuncion{tablaMaxima}{\In{b}{bd}}{nombreTabla}%
+    [tablas(b) $\neq \emptyset$]%pre
+    {res $\igobs$ tablaMaxima(t1,t2,b)}%pos
+    [$O(1)$]%complejidad
+    [Devuelve el nombre de la tabla m\'axima de la base de datos]%descripcion
+    []%aliasing   
+
+    \InterfazFuncion{encontrarMaximo}{\In{t}{nombreTabla} \In{ct}{conj(nombreTabla)} \In{b}{bd}}{nombreTabla}%
+    [\{t\} $\cup$ ct $\subseteq$ tablas(b)]%pre
+    {res $\igobs$ encontrarMaximo(t,ct,b)}%pos
+    [$O(T)$]%complejidad
+    [Devuelve el nombre de la tabla m\'axima de entre una tabla y conjunto de tablas cuyos nombres son pasados por parametro]%descripcion
+    []%aliasing   
+    
+    \InterfazFuncion{buscar}{\In{criterio}{reg} \In{t}{nombreTabla} \In{b}{bd}}{conj(reg)}%
+    [t $\in$ tablas(b)]%pre
+    {res $\igobs$ buscar(criterio,t,b)}%pos
+    [$O(n*L)$ en peor caso, si alguno de los campos de criterio es un campo indexado y clave en la tabla de nombre t la complejidad es $O(log(n) + L)$]%complejidad
+    [Devuelve un conjunto con los registros de la tabla con nombre $t$ que coincidan en campo y dato para cada campo de $r$ utilizando los campos indexados de t (si existen y si son campos de criterio) para realizar la busqueda en menor tiempo]%descripcion
+    [El conjunto de registros se pasa por referencia no modificable]%aliasing   
+\end{Interfaz}    
+
+\begin{Representacion}
+	\begin{Estructura}{bd}[estrBD]
+    	\begin{Tupla}[estrBD]
+		\tupItem{NombresTablas}{Conj<nombreTabla>)}
+        \tupItem{Tablas}{DiccStr<nombreTabla, datosTabla>}
+        \tupItem{tablaMaxima}{nombreTabla}
+        \end{Tupla}
+	\end{Estructura}
+    
+    
+\textbf{Invariante de Representaci\'on en castellano}
+
+	\begin{enumerate}
+		\item TablaMaxima es el nombre de una tabla en las tablas de la base de datos
+        \item Para cada tabla en Tablas, la cantidad de accesos es menor o igual a la cantidad de accesos de la tabla cuyo nombre es el de tablaMaxima
+        \item Los nombres en Tablas son los mismos que el conjunto NombresTablas, y para cada nombre en Tablas, la Tabla en su significado tiene el mismo nombre.
+        \item En cada Tabla, las tablas en Joins pertenecen a las tablas de la base de datos.
+		\item En cada Tabla, el nombre de la tabla, no aparece en sus Joins en datosTabla.
+        \item En cada Tabla, las claves de todas las tablas con las que tiene Join, estan incluidas en las claves de Tabla.
+        \item En cada Tabla, y cada Join, el campo del Join es un campo de las dos tablas.
+        \item En cada Tabla, los registros de Joins de datosTabla, son el resultado de combinar las dos claves por el campo del Join.
+        \item En cada Tabla, si el campo del Join es de tipo String, entonces en ConjJoin en Joins de datosTabla, cada DatoString de IndiceString es equivalente a obtener el CampoIndiceString de Registros, y su significado es una tupla cuyo primer elemento es un iterador que apunta al registro que tiene ese dato en el campo CampoIndiceString, y el segundo es NULL.
+        \item En cada Tabla, si el campo del Join es de tipo Nat, entonces en ConjJoin en Joins de datosTabla, cada DatoNat de IndiceNat es equivalente a obtener el CampoIndiceNat de Registros, y su significado es una tupla cuyo primer elemento es un iterador que apunta al registro que tiene ese dato en el campo CampoIndiceString, y el segundo es NULL.
+	\end{enumerate}
+    
+ \textbf{Invariante de Representaci\'on}
+     \Rep[bd][e]{
+     \begin{enumerate}
+		\item ($\exists$ n $\in$ e.NombresTablas) n = e.tablaMaxima $\yluego$ 
+		\item ($\forall$ n $\in$ e.NombresTablas) cantidadDeAccesos(Obtener(n , e.Tablas).Tabla) $\leq$ cantidadDeAccesos(Obtener( e.TablaMaxima, e.Tablas).Tabla)  $\land$ 
+		\item e.NombresTablas = Claves(e.Tablas) $\yluego$ ($\forall$ n $\in$ e.NombresTablas)) n $=$ nombre(Obtener(n, e.Tablas).Tabla) $\land$ 
+		\item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1, e.Tablas).Joins)) n2 $\in$ e.NombresTablas $\yluego$ 
+        \item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1,	 e.Tablas).Joins)) n1 $\neq$ n2 $\land$ 
+        \item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1, e.Tablas).Joins)) claves(Obtener(n2, e.Tablas).Tabla) $\in$ claves(Obtener(n1, e.Tablas).Tabla) $\land$ 
+        \item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1, e.Tablas).Joins)) Obtener(n2, Obtener(n1, e.Tablas).Joins).Campo $\in$ campos(Obtener(n1, e.Tablas).Tabla) $\land$ Obtener(n2, Obtener(n1, e.Tablas).Joins).Campo $\in$ campos(Obtener(n2, e.Tablas).Tabla) $\land$ 
+		\item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1, e.Tablas).Joins)) Obtener(n2, Obtener(n1, e.Tablas).Joins).ConjJoin.Registros $=$ CombinarRegistros(Obtener(n2, Obtener(n1, e.Tablas).Joins).ConjJoin.Campo , registros(Obtener(n1, e.Tablas).Tabla) , registros(Obtener(n1, e.Tablas).Tabla) ) $\land$
+		\item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1, e.Tablas).Joins)) String?(Obtener(n2, Obtener(n1, e.Tablas).Joins).Campo) $\impluego$ 
+        ($\forall$ s$\in$ Claves(Obtener(n2, Obtener(n1, e.Tablas).Joins).ConjJoin.IndiceString)) Obtener(Obtener(n2, Obtener(n1, e.Tablas).Join).Campo , Siguiente(Obtener(s , Obtener(n2, Obtener(n1, e.Tablas).Join).ConjJoin.IndiceString))) $=$ s
+		\item ($\forall$ n1 $\in$ e.NombresTablas) ($\forall$ n2 $\in$ Claves(Obtener(n1, e.Tablas).Joins)) Nat?(Obtener(n2, Obtener(n1, e.Tablas).Joins).Campo) $\impluego$ 
+        ($\forall$ s$\in$ Claves(Obtener(n2, Obtener(n1, e.Tablas).Joins).ConjJoin.IndiceNat)) Obtener(Obtener(n2, Obtener(n1, e.Tablas).Joins).Campo , Siguiente(Obtener(s ,Obtener(n2, Obtener(n1, e.Tablas).Joins).ConjJoin.IndiceNat))) $=$ s.
+      \end{enumerate}  
+      }
+
+
+\textbf{Funcion de Abstracci\'on}
+
+\Abs[estrBD]{BaseDeDatos}[e]{bd}{
+\begin{enumerate}
+	\item tablas(bd) $=$ e.NombresTablas $\yluego$ 
+    \item ($\forall$ s $\in$ tablas(bd)) s $\in$ tablas(bd) $\impluego$ dameTabla(s, bd) $=$ Obtener(s, e.Tablas).Tabla $\yluego$ 
+    \item ($\forall$ t1 $\in$ tablas(bd)) ($\forall$ t2 $\in$ tablas(b)) hayJoin?(t1,t2,bd) $=$ Def?(t2, Obtener(t1, e.Tablas).Joins) $\land$ 
+    \item ($\forall$ t1 $\in$ tablas(bd)) ($\forall$ t2 $\in$ tablas(b)) hayJoin?(t1,t2,bd) $\impluego$ campoJoin(t1,t2,bd) $=$ Obtener(t2, Obtener(t1, e.Tablas).Join).Campo   
+    \end{enumerate}
+}
+    
+\end{Representacion}  
+
+\begin{Algoritmos}
+
+\begin{algoritmo}{iNuevaBD}{}{estrBD}
+	$res.NombreTablas \gets Vacio()$ \com*{$O(1)$}
+  	$res.Tablas \gets Vacio()$ \com*{$O(1)$}
+    $res.tablaMaxima \gets "" $ \com*{$O(1)$}
+    
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(1) + O(1) + O(1) = O(1) $} % Justificación
+
+\begin{algoritmo}{iAgregarTabla}{\Inout{b}{estrBD}, \In{t}{tbl}}{bd}
+	\If(\com*[f]{$O(|t.Nombre|)$}){$\neg$ Definido?(b.Tablas, t.Nombre)}{
+    	$AgregarRapido(b.NombreTablas, t.Nombre)$ \com*{$O(copy(t.Nombre))$}
+        $datos \gets < t , Vacio() > $ \com*{$O(1) + O(1)$}
+        $Definir(b.Tablas, t.Nombre, datos) $ \com*{$O(copy(t.Nombre))$}
+        \If(\com*[f]{$O(equals(b.tablaMaxima, t.Nombre)$}){b.tablaMaxima = $""$}{
+            $b.tablaMaxima \gets t.Nombre$ \com*{$O(copy(t.Nombre))$}
+        }
+    }	 
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(copy(t.Nombre))$} % Complejidad
+{El algoritmo tiene llamada a funciones con costo $O(copy(t.Nombre))$, $O(|t.Nombre|)$ , $O(equals(b.tablaMaxima, t.Nombre)$ , $O(1)$ y $O(1)$. Aplicando \'algebra de \'ordenes: \\ $O(|t.Nombre|)$ + $O(copy(t.Nombre))$ + $O(1)$ + $O(1)$ + $O(copy(t.Nombre))$ + $O(equals(b.tablaMaxima, t.Nombre)$ + $O(copy(t.Nombre))$ = $O(copy(t.Nombre))$
+
+Como el nombre de las tablas esta acotado, el costo de copiado es $O(1)$} % Justificación
+
+\begin{algoritmo}{iInsertarEntrada}{\In{reg}{reg}, \In{t}{string}, \Inout{b}{estrBD}}{}
+	$tablaMaxima \gets DameTabla(b.tablaMaxima, b)$ \com*{$O(|b.tablaMaxima|)$}
+   	$tabla \gets DameTabla(t, b)$ \com*{$O(|t|)$}
+   	$AgregarRegistro(reg, tabla)$ \com*{$O(L) + O(in)$}
+    \If(\com*[f]{$O(1)$}){$CantidadAccesos(tabla) > CantidadAccesos(tablaMaxima)$}{		    	    			$b.tablaMaxima \gets t$ \com*{$O(1)$}
+    }
+	$ActualizarJoin(true, reg,t,b)$ \com*{$O(T*L)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(T*L + lg(n))$} % Complejidad
+{Por algebra de ordenes
+$O(|b.tablaMaxima|) + O(|t|) + O(L) + O(in) + O(1) + O(T*L) =$
+
+$O(1) + O(1) + O(L) + O(in) + O(1) + O(T*L) =$
+
+$O(T*L) + O(in)$ Ya que los nombres de las tablas son acotados.
+
+Donde in es $O(|L|)$, si no hay indices o si solo hay indice string, y $O(lg(n))$ si hay indice NAT} % Justificación
+		
+\begin{algoritmo}{iBorrar}{\In{cr}{reg}, \In{t}{string}, \Inout{b}{estrBD}}{}
+	$tablaMaxima \gets DameTabla(b.tablaMaxima, b)$ \com*{$O(|b.tablaMaxima|)$}
+   	$tabla \gets DameTabla(t, b)$ \com*{$O(|t|)$}
+   	$BorrarRegistro(reg, tabla)$ \com*{$O(L) + O(in)$}
+    \If(\com*[f]{$O(1)$}){$CantidadAccesos(tabla) > CantidadAccesos(tablaMaxima)$}{		    	    			$b.tablaMaxima \gets t$ \com*{$O(1)$}
+    }
+	$ActualizarJoin(false, cr,t,b)$ \com*{$O(T*L)$}
+    
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(T*L + n*(n+L)) $} % Complejidad
+{$O(T) + O(L) + O(in) + O(T*L)$ = $O(T*L + in)$ Por algebra de ordenes.
+
+Donde in es $O(n *(n + L))$ en peor caso, y $O(log(n) + L)$ si el criterio de borrado es indice sobre campo tipo nat. } % Justificación 
+
+\begin{algoritmo}{iGenerarVistaJoin}{\In{t1}{string}, \In{t2}{string}, \In{c}{campo}, \Inout{b}{estrBD}}{}
+    $datosT \gets Obtener(b.Tablas, t1)$ \com*{$O(|t1.Nombre|)$}
+   	$contenedor \gets <Vacio(), Vacio(), Vacio() > $ \com*{$O(3)$}
+	$join \gets <c, Vacio(), contenedor > $ \com*{$O(3)$}
+	$Definir(datosT.Joins, t2, join) $ \com*{$O(copy(t1.Nombre))$}
+    $regsT1 \gets registros(t1, bd)$ \com*{$O(1)$}
+    $regsComb \gets combinarRegistrosRap(c, regsT1, dameTabla(t2))$ \com*{$O(A)$}
+    $itRegsComb \gets CrearIt(regsComb) $ \com*{$O(1)$}
+    \While(\com*[f]{$O((n+m)*(3*L+(3*log(n+m)))$}){($HaySiguiente(itRegsComb)$)}{
+    
+		$regComb \gets Siguiente(itRegsComb) $ \com*{$O(1)$} 
+        $itRegComb \gets AgregarRapido(contenedor.Registros, regComb) $ \com*{$O(1)$} 
+    	\eIf(\com*[f]{$O(|campos(regComb)|)$}){esNat?(Significado(regComb,c))}{
+        	$DatoNat \gets ValorN(Significado(regComb, c))$ \com*{$O(|campos(regComb)|)$} 
+            \eIf(\com*[f]{$O(log(n+m))$}){Definido?(contenedor.IndiceNat, DatoNat)}{
+            	$ConjIts \gets Significado(contenedor.IndiceNat, DatoNat) $ \com*{$O(log(n+m))$}
+                $AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+            }{
+            	$ConjIts \gets Vacio() $ \com*{$O(1)$}
+				$AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+				$DefinirRapido(contenedor.IndiceNat, DatoNat, ConjIts) $ \com*{$O(log(n+m))$}             	
+            }
+        }
+        {
+        	$DatoString \gets ValorS(Significado(regComb, c))$ \com*{$O(|campos(regComb)|)$} 
+            \eIf(\com*[f]{$O(L)$}){Definido?(contenedor.IndiceString, DatoString)}{
+            	$ConjIts \gets Significado(contenedor.IndiceString, DatoString) $ \com*{$O(L)$}
+                $AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+            }{
+            	$ConjIts \gets Vacio() $ \com*{$O(1)$}
+				$AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+				$DefinirRapido(contenedor.IndiceString, DatoString, ConjIts) $ \com*{$O(L)$}             	
+            }
+		}
+        $Avanzar(itRegsComb)$ \com*{$O(1)$}
+    }
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O((n+m)*(L+log(n+m))$} % Complejidad
+{\begin{enumerate}
+\item $n$ es la cantidad de registros de la tabla 1
+\item $m$ es la cantidad de registros de la tabla 2
+\item $L$ es la maxima longitud de algun campo string de algun registro que este en alguno de los dos conjuntos de registros de las tablas.
+\item $A$ es la complejidad de combinarRegistrosRap. Y como el campo es Clave e Indice. Entonces esta complejidad es $O(n*(log(m) + L))$
+\item El nombre de las tablas es acotado por lo tanto $O(t1.Nombre) \in O(1)$
+\item La cantidad de campos de un registro es acotado por lo tanto $O(|campos(regComb)|) \in O(1)$
+\item Por los items anteriores y las justificaciones del codigo se deduce que la complejidad del while es $O((n+m)*(3*L+(3*log(n+m)))$
+\item Por lo tanto la complejidad del algoritmo es $O((n+m)*(3*L+(3*log(n+m)))) + O(n*(log m + L))$
+\item Aplicando algebra de ordenes se obtiene $O(n*L + m*L + n*log(n+m) + m*log(n+m) + n*log(m) + n*L)$
+\item Siguiendo $O(n*L +n*L + m*L + n*log(n+m) + m*log(n+m) + n*log(m))$
+\item Siguiendo $O(2*n*L + m*L + n*log(n+m) + m*log(n+m) + n*log(m))$
+\item Siguiendo $O(2*n*L + m*L + n*log(n+m) + m*log(n+m) + n*log(m+n))$
+\item Siguiendo $O(2*n*L + m*L + 2*n*log(n+m) + m*log(n+m))$
+\item Siguiendo $O(n*L + m*L + n*log(n+m) + m*log(n+m))$
+\item Finalmente queda que la complejidad es $O((n+m)*(L + log(n+m)))$
+\end{enumerate}} % Justificación
+
+\begin{algoritmo}{iborrarJoin}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \Inout{b}{estrBD}}{}
+
+    $datosT \gets Obtener(b.Tablas, t1)$ \com*{$O(|t1|)$}
+    $borrar(datosT.Joins, t2)$\com*{$O(1)$}
+    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(|t1|) + O(1) = O(1) $porque los nombres de las tablas estan acotados.} % Justificación
+
+\begin{algoritmo}{itablas}{\In{b}{estrBD}}{itTablas}
+    $itTbl \gets CrearIt(b.NombresTablas)$ \com*{$O(1)$}
+	$res \gets itTbl$ \com*{$O(1)$}  	    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(1) + O(1) = O(1)$} % Justificación
+
+\begin{algoritmo}{idameTabla}{\In{t}{nombreTabla} \In{b}{estrBD}}{tbl}
+
+	$datosT \gets Obtener(b.Tablas,t)$ \com*{$O(|t|)$}
+	$res \gets datosT.Tabla$ \com*{$O(1)$}
+    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(|t|) + O(1) = O(1)$ porque los nombres de las tablas estan acotados} % Justificación
+
+\begin{algoritmo}{ihayJoin?}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \In{b}{estrBD}}{bool}
+
+	$datosT \gets Obtener(b.Tablas, t1)$ \com*{$O(|t1|)$}
+	$res \gets Def?(datosT.Joins, t2)$ \com*{$O(|t2|)$}
+
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(|t1|) + O(|t2|) = O(1)$ porque los nombres de las tablas estan acotados} % Justificación
+
+\begin{algoritmo}{icampoJoin}{\In{t1}{nombreTabla} \In{t2}{nombreTabla} \In{b}{estrBD}}{campo}%
+
+	$datosT \gets Obtener(b.Tablas,t1)$ \com*{$O(|t1|)$}
+    $res \gets Obtener(datosT.Joins, t2).Campo$ \com*{$O(|t2|)$}
+    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(|t1|) + O(|t2|) = O(1)$ porque los nombres de las tablas estan acotados} % Justificación
+
+\begin{algoritmo}{iregistros}{\In{t}{nombreTabla} \In{b}{estrBD}}{conj(reg)}%
+
+	$datosT \gets Obtener(b.Tablas,t1)$ \com*{$O(|t|)$}
+    $res \gets registros(datosT.Tabla)$ \com*{$O(registros(t))$}
+    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(registros(t))$} % Complejidad
+{$O(|t|) + O(registros(t)) = O(registros(t))$ porque los nombres de las tablas estan acotados} % Justificación
+
+
+\begin{algoritmo}{iVistaJoin}{\In{t1}{string}, \In{t2}{string}, \In{b}{estrBD}}{conj(reg)}
+    $datosT \gets Obtener(b.Tablas, t1)$ \com*{$O(|t1|)$}
+    $join \gets Obtener(datosT.Joins, t2) $ \com*{$O(|t2|)$}
+    $itMod \gets CrearIt(join.Modifiaciones) $ \com*{$O(1)$}
+	\While(\com*[f]{$O(R*(L+log(n*m)))$}){HaySiguiente(itMod)}{
+    	$ mod \gets Siguiente(itMod) $ \com*{$O(1)$}
+        $conjReg2 \gets buscar(mod.Reg, t2, b)$ \com*{$O(buscar(r,t,b))$}
+        $conjReg1 \gets Vacio() $ \com*{$O(1)$}
+        $AgregarRapido(conjReg1, mod.Reg) $ \com*{$O(1)$}
+        $regsComb \gets combinarRegistros(join.Campo, conjReg1, conjReg2)$ \com*{$O(A)$}
+        $itRegsComb \gets CrearIt(regsComb) $ \com*{$O(1)$}
+        \While(\com*[f]{$O(\#regsComb)$}){($HaySiguiente(itRegsComb)$)}{
+            $regComb \gets Siguiente(itRegsComb) $ \com*{$O(1)$} 
+        	\eIf(\com*[f]{$O(|campos(regComb)|)$}){Nat?(Significado(regComb,join.Campo))}{
+				$AuxActContenedor(join.ConjJoin, regComb, mod, join.Campo, true)$ \com*{$O(log(n+m) + L)$}
+        	}
+        	{
+				$AuxActContenedor(join.ConjJoin, regComb, mod, join.Campo, false)$ \com*{$O(log(n+m) + L)$}
+			}
+		}
+    }
+    $ res \gets join.Reg $ \com*{$O(1)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(R*(L+log(n+m))$} % Complejidad
+{\begin{enumerate}
+\item $R$ es la cantidad de elementos en la lista de modificaciones del Join
+\item $n$ es la cantidad de elementos de la tabla 1
+\item $m$ es la cantidad de elementos de la tabla 2
+\item El nombre de las tablas es acotado por lo tanto $O(t1.Nombre) \in O(1)$
+\item La cantidad de campos de un registro es acotado por lo tanto $O(|campos(regComb)|) \in O(1)$
+\item $O(buscar(r,t,b)$ es $O(log(m) + L)$ pues el campo del join es un campo clave con indice. Y todos los registros que se agreguen al la lista de modificaciones tiene al dicho campo.
+\item $A$ es la complejidad de combinarRegistros(c, cr1, cr2) la cual es $O(\#cr1*\#cr2*L*min\lbrace \#cr1, \#cr2\rbrace)$. Pero como $\#cr1 = \#cr2 = 1$. Entonces la complejidad queda O(1*1*L*1), entonces por algebra de ordenes queda O(L)
+\item La complejidad de la funcion AuxActContenedor es O((log(m+n) + L) + (A*L)) pero como el campo del join es indice y clave. Entonces queda O(log(m+n) + 2L) pues (A) es la cantidad de elementos que puede haber en un algun Indice. Y, como el campo es clave, esa cantidad es 1.
+\item La complejidad del algoritmo es : O(R*((log(m) + L) + log(m+n) + 2L))
+\item Aplicando algebra de Ordenes queda : O(R*(log(m+n)*L))
+\end{enumerate}} % Justificación
+
+
+\begin{algoritmo}{iAuxActContenedor}{\Inout{cont}{estrCont}, \In{reg}{reg}, \In{mod}{estrMod}, \In{c}{string},\In{nat?}{bool}}{}
+	\eIf(\com*[f]{$O(1)$}){nat?}{
+ 		$DatoNat \gets ValorN(Significado(reg, c))$ \com*{$O(|campos(regComb)|)$} 
+        \eIf(\com*[f]{$O(log(n+m))$}){Definido?(cont.IndiceNat, DatoNat)}{
+        	$ ConjIts \gets Significado(cont.IndiceNat, DatoNat) $ \com*{$O(log(n+m))$}
+        	\eIf(\com*[f]{$O(1)$}){mod.Inserto?}{
+	    	    $itRegComb \gets AgregarRapido(cont.Registros, reg) $ \com*{$O(1)$}
+    	    	$AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+			}{
+				$AuxBorrarDelJoin(ConjIts,c,DatoNat,nat?)$ \com*{$O(1)$}
+	        }
+        }{
+        	$ConjIts \gets Vacio() $ \com*{$O(1)$}
+	        $DefinirRapido(cont.IndiceNat, DatoNat, ConjIts) $ \com*{$O(log(n+m))$}
+    	    \If(\com*[f]{$O(1)$}){mod.Inserto?}{
+    	    	$itRegComb \gets AgregarRapido(cont.Registros, reg) $ \com*{$O(1)$}
+	    	    $AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+	        }
+
+		}
+	}{
+          $DatoString \gets ValorS(Significado(regComb, c))$ \com*{$O(|campos(regComb)|)$}
+	      \eIf(\com*[f]{$O(log(n+m))$}){Definido?(contenedor.IndiceString, DatoString)}{
+          $ ConjIts \gets Significado(contenedor.IndiceString, DatoString) $ \com*{$O(log(n+m))$}
+          \eIf(\com*[f]{$O(1)$}){mod.Inserto?}{
+              $itRegComb \gets AgregarRapido(contenedor.Registros, regComb) $ \com*{$O(1)$}
+              $AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+          }{
+				$AuxBorrarDelJoin()$ \com*{$O(1)$}
+          }
+          }{
+              $ConjIts \gets Vacio() $ \com*{$O(1)$}
+              $DefinirRapido(contenedor.IndiceString, DatoString, ConjIts) $ \com*{$O(log(n+m))$}
+              \If(\com*[f]{$O(1)$}){mod.Inserto?}{
+                  $itRegComb \gets AgregarRapido(contenedor.Registros, regComb) $ \com*{$O(1)$}
+                  $AgregarRapido(ConjIts, $<$itRegComb,NULL$>$) $ \com*{$O(1)$}
+              }  		             	
+          }
+   
+    }
+\end{algoritmo}
+\datosAlgoritmo{Use este algoritmo auxiliar porque actualizar vista join no entraba en la pagina}
+{}
+{}
+{$O((log(n+m) + L) + (A)*L) $}
+{\begin{enumerate}
+\item Busca el registro en el indice que corresponda. O(log(m+n) + L)
+\item Si la modificacion fue de Borrar. Borrar en los indices segun corresponda. O(A*L)
+\item A es la cantidad de elementos en el significado de la clave del indice a borrar.
+\item Finalmente la complejidad del algoritmo es O((log(m+n) + L) + (A)*L)
+\end{enumerate}}
+
+\begin{algoritmo}{iAuxBorrarDelJoin}{\Inout{its}{conj}, \In{c}{string}, \In{dato}{Dato}, \In{nat?}{bool}}{}
+    $itConjIts \gets CrearIt(its) $ \com*{$O(1)$}
+    \While(\com*[f]{$O(|ConjIts|)$}){HaySiguiente(itConjIts)}{
+	    $ itReg \gets Siguiente(itConjIts).Reg $\com*{$O(1)$}
+    	$ regB \gets Siguiente(itReg) $ \com*{$O(1)$}
+	    $ datoR \gets Significado(regB, c) $ \com*{$O(|campos(regB)|$}
+		\If(\com*[f]{$O(L)$}){(nat? $\wedge$ ValorN(datoR) = dato)) $\vee$ (ValorS(datoR) = dato)}{
+	        $EliminarSiguiente(itReg) $ \com*{$O(1)$}
+            $EliminarSiguiente(itConjIts, it) $ \com*{$O(1)$}
+        }
+		$ Avanzar(itConjIts) $ \com*{$O(1)$}
+    }
+\end{algoritmo}
+\datosAlgoritmo{Use este algoritmo auxiliar porque actualizar vista join no entraba en la pagina}
+{}
+{}
+{O(A*L)}
+{\begin{enumerate}
+\item A es la cantidad de elementos en el significado de la clave del indice a borrar, o sea $\#ConjIts$.
+\end{enumerate}}
+\begin{algoritmo}{iActualizarJoin}{\In{inserta}{bool},\In{r}{reg}, \In{t}{string}, \Inout{b}{estrBD}}{}
+    $itTbl \gets CrearIt(b.NombresTablas)$ \com*{$O(1)$}
+    $datosT \gets Obtener(b.Tablas, t)$ \com*{$O(|t|)$}
+    \While(\com*[f]{$O(|NombreTablas|*(2*copy(reg)))$}){($HaySiguiente(itTbl)$)}{
+    	$nombreT \gets Siguiente(itTbl)$ \com*{$O(1)$}
+        \If(\com*[f]{$O(|nombreT|)$}){HayJoin?(t, nombreT)}{
+        	$join \gets Obtener(datosT.Joins, nombreT) $ \com*{$O(|nombreT|)$}
+            $tup \gets <$inserta$, $copiar(reg)$> $ \com*{$O(copy(reg))$}
+	        $AgregarAdelante(join.modificaciones, tup) $ \com*{$O(copy(reg))$}
+        }
+        $Avanzar(itTbl) $ \com*{$O(1)$}        
+    }
+    $itTbl \gets CrearIt(b.NombresTablas)$ \com*{$O(1)$}
+    \While(\com*[f]{$O(|NombreTablas|*(2*copy(reg)))$}){($HaySiguiente(itTbl)$)}{
+    	$nombreT \gets Siguiente(itTbl)$ \com*{$O(1)$}
+        \If(\com*[f]{$O(1)$}){HayJoin?(nombreT, t)}{
+            $datosT \gets Obtener(b.Tablas, nombreT)$ \com*{$O(|nombreT|)$}
+        	$join \gets Obtener(datosT.Joins, t) $ \com*{$O(|t|) $}
+            $tup \gets <$inserta$, $copiar(reg)$> $ \com*{$O(copy(reg))$}
+	        $AgregarAdelante(join.modificaciones, tup) $ \com*{$O(copy(reg))$}
+        }
+        $Avanzar(itTbl) $ \com*{$O(1)$}    
+    }
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{$t \in tablas(b) $} % Pre
+{$ (\forall t_{1}, t_{2} \in tablas(b)) \ hayJoin?(t1,t2,b) \impluego vistaJoin(t1,t2,b) \equiv combinarRegistros(campoJoin(t1,t2,b), registros(t1), registros(t2)) $} % Post
+{$O(n*L)$} % Complejidad
+{\begin{enumerate}
+	\item $n$ es la cantidad de Tablas de la base de datos.
+    \item $L$ es la longitud maxima de algun dato string del registro a copiar
+	\item Recorre los joins de la tabla. O(n)
+    \item Para cada join de la tabla. Agrega una copia del registro. O(L)
+    \item Por los 2 items anteriores el costo total del while es O(n*L)
+    \item Luego, recorre todas las tablas de la base de datos. O(n)
+    \item Luego para cada tabla se pregunta si existe un join con la tabla $t$. Como los nombre de las tablas estan acotados, esta operaci\'on es O(1), por su definici\'on
+    \item Si hay un join, lo recupera, y como el nombre de las tablas es acotado y las tablas estan implementadas sobre un DiccString, el Obtener es O(1)
+    \item Luego, genera la modificacion para eso copia el registro. Copiar un registro cuesta O(L)
+    \item Por ultimo, lo agrega a la lista de modificaciones del join. Esta operacion tambien copia el registro por lo tanto cuesta O(L)
+    \item Finalmente, por lo items anteriores, el segundo while cuesta $O(n*(1+1+L+L) \in O(n*L)$
+    \item Sino hay join, no se hace nada.
+    \item Luego, la complejidad total del algoritmo es $O(n*L + n*L) \in O(n*L)$
+\end{enumerate}} % Justificación
+
+
+
+\begin{algoritmo}{icantidadDeAccesos}{\In{t}{nombreTabla} \In{b}{estrBD}}{conj(reg)}
+
+	$datosT \gets Obtener(b.Tablas,t)$ \com*{$O(|t|)$}
+	$res \gets cantidadDeAccesos(datosT.Tabla)$ \com*{$O(1)$}
+    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{$O(|t|) + O(1) = O(1)$ porque los nombres de las tablas estan acotados} % Justificación
+
+\begin{algoritmo}{itablaMaxima}{\In{b}{estrBD}}{nombreTabla}%
+
+	$res \gets b.tablaMaxima$ \com*{$O(1)$}
+   
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(1)$} % Complejidad
+{} % Justificación
+
+\begin{algoritmo}{iencontrarMaximo}{\In{t}{nombreTabla} \In{ct}{conj(nombreTabla)} \In{b}{estrBD}}{nombreTabla}%
+		
+	$itTbl \gets CrearIt(ct)$ \com*{$O(1)$}
+	$res \gets t$ \com*{$O(1)$}
+	\While(\com*[f]{$O(1)$}){($HaySiguiente(itTbl)$)}{
+		$nombreT \gets Siguiente(itTbl)$ \com*{$O(1)$}
+		\If(\com*[f]{$O(1)$}){cantidadDeAccesos(dameTabla(res)) $\leq$ cantidadDeAccesos(dameTabla(nombreT)) }{
+            $res \gets nombreT$ \com*{$O(1)$}
+        }
+		$Avanzar(itTbl)$ \com*{$O(1)$}
+    }
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(\#(ct))$} % Complejidad
+{} % Justificación
+
+\begin{algoritmo}{ibuscar}{\In{criterio}{registro} \In{t}{nombreTabla} \In{b}{estrBD}}{conj(reg)}%
+
+	$res \gets coincidenciasRap(dameTabla(t,b),criterio)$ \com*{$O(coincidenciasRap)$}
+    
+\end{algoritmo}
+
+\datosAlgoritmo{} % Descripción
+{} % Pre
+{} % Post
+{$O(coincidenciasRap)$} % Complejidad
+{Hereda la complejidad de coincidenciasRap: \\ En el caso de que la tabla de nombre $t$ no tenga indices o que ningun campo de $criterio$ sea indice en $t$, coincidenciasRap debe recorrer linealmente los registros de $t$ teniendo la complejidad de coincidencias: $O(n*L)$ \\ Si alguno de los campos de $criterio$ es indice solo debe buscar las coincidencias en el conjunto de registros que coincidan en el dato del campo indexado, los cuales obtengo realizando un $"Obtener"$ de ese dato en un diccStr o en un diccNat. Si alguno de los campos de $criterio$ ademas de ser indice es clave en t puede haber a lo sumo un registro en t que coincide con el valor de ese campo en $criterio$ por lo que al buscar los registros a traves del campo indexado voy a obtener un conjunto de 1 elemento por lo que la complejidad sera solamente la del $Obtener$ de los diccionarios: $O(log(n) + L)$} % Justificación
+
+	
+\end{Algoritmos}
+    
+    
+    

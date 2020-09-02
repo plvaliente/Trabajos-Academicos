@@ -1,0 +1,12 @@
+member hola
+member bonjour
+member danke
+member hello   
+addAndInc danke
+addAndInc bonjour
+addAndInc hello
+member hola
+member bonjour
+member danke
+member hello
+quit

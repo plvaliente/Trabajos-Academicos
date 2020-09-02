@@ -1,0 +1,359 @@
+
+%%%%%%%%%%%%%%%%%%%% Renombres
+\section{Renombres de TADs}
+
+\tadNombre{TAD Nombre} es \tadNombre{$String$}
+
+\tadNombre{TAD Type} es \tadNombre{\{N, S\}} $\emph{(Funciona como Bool)}$
+
+\tadNombre{TAD Join} es \tadNombre{Tupla($Conjunto(Nombre),Campo$)}
+
+
+\section{Operaciones Adicionales de TIPOS BASICOS} 
+
+\tadOtrasOperaciones
+\tadAlinearFunciones{multiIncluido?}{multiconj($\alpha$), multiconj($\alpha$)}
+
+\tadOperacion{\argumento $=$ \argumento}{conj($\alpha$), conj($\alpha$)}{bool}{}
+\tadOperacion{\argumento $=$ \argumento}{multiconj($\alpha$), multiconj($\alpha$)}{bool}{}
+\tadOperacion{\argumento $=$ \argumento}{tupla($\alpha$, $\beta$), tupla($\alpha$, $\beta$)}{bool}{}
+\tadOperacion{multiIncluido?}{multiconj($\alpha$), multiconj($\alpha$)}{bool}{}
+\tadOperacion{quitarN}{$\alpha$, nat , multiconj($\alpha$)}{multiconj($\alpha$)}{}
+
+
+\tadAxiomas[\paratodo{conj($\alpha$)}{c_1, c_2} \paratodo{multiconj($\alpha$)}{mc_1, mc_2} \paratodo{tupla($\alpha$, $\beta$)}{ta_1, ta_2} \paratodo{$\alpha$}{a} \paratodo{nat}{n}]
+\tadAlinearAxiomas{multiIncluido?($mc_1$, $mc_2$)}
+
+\tadAxioma{$c_1$ = $c_2$}{$\textbf{if} \ (\#(c_1) \equiv \#(c_2)) \ \emph{then} \\ \hspace*{10px} \textbf{if} \ (\emptyset?(c_1))\ \emph{then} \\ \hspace*{20px} true \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} c_1 \subseteq c_2 \\ \hspace*{10px} \textbf{fi} \\ \textbf{else} \\ \hspace*{10px} false \\  \textbf{fi}$}
+\tadAxioma{$mc_1$ = $mc_2$}{$\textbf{if} \ (\#(mc_1) \equiv \#(mc_2)) \ \emph{then} \\ \hspace*{10px}  multiIncluido?(mc_1, mc_2) \\ \textbf{else} \\ \hspace*{10px} false \\ \textbf{fi}$}
+\tadAxioma{$ta_1$ = $ta_2$}{$(\pi_1(ta_1) = \pi_1(ta_2)) \land (\pi_2(ta_1) = \pi_2(ta_2))$}
+\tadAxioma{multiIncluido?($mc_1$, $mc_2$)}{$\textbf{if} \ (\emptyset?(mc_1)) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ (\#(dameUno(mc_1),mc_1) \equiv \#(dameUno(mc_1),mc_2)) \ \emph{then} \\ \hspace*{20px} multiIncluido?(quitarN(dameUno(mc_1),\#(dameUno(mc_1),mc_1),mc_1), mc_2) \\ \hspace*{10px} \textbf{else}   \\ \hspace*{20px} false \\ \hspace*{10px} \textbf{fi} \\ \textbf{fi}$}
+\tadAxioma{quitarN($a$, $n$ ,$mc_1$)}{$\textbf{if} \ (n \not\equiv 0) \ \emph{then} \\ \hspace*{10px} quitarN(a,(n-1),(mc_1 - \{a\})) \\ \textbf{else} \\ \hspace*{10px} mc_1 \\ \textbf{fi}$}
+
+\newpage
+
+%TAD
+\section{TAD \tadNombre{Valor}}
+
+
+\begin{tad}{\tadNombre{Valor}}
+\tadGeneros{val}
+\tadExporta{CrearNat, CrearString, Tipo?, DameNat, DameString}
+\tadUsa{ \tadNombre{Type}, \tadNombre{String}, \tadNombre{Nat}, \tadNombre{Bool}}
+
+
+%%****Igualdad Observacional****%%
+\tadIgualdadObservacional{v_1}{v_2}{val}{Tipo?($v_1$) $\igobs$ Tipo?($v_2$) $\yluego$ \\ \textbf{if} \ (Tipo?($v_1$) $\igobs$ N) \ $\emph{then}$ \\ \hspace*{10px} DameNat($v_1$) \igobs DameNat($v_2$) \\ $\textbf{else}$ \\ \hspace*{10px} DameString($v_1$) $ \igobs $ \hspace*{10px} DameString($v_2$) \\ \textbf{fi} \hfill  }
+
+\tadIgualdadObservacional{c_1}{c_2}{campo}{Nombre($c_1$) $\igobs$ Nombre($c_2$) $\land$ Tipo($c_1$) $\igobs$ Tipo($c_2$)}
+
+%%****Generadores****%%
+\tadGeneradores
+\tadAlinearFunciones{CrearString}{String}{val}
+
+\tadOperacion{CrearNat}{Nat}{val}{}
+\tadOperacion{CrearString}{String}{val}{}
+
+
+%%****Observadores****%%
+\tadObservadores
+\tadAlinearFunciones{DameString}{val /$v$}{String}
+
+\tadOperacion{Tipo?}{val}{type}{}
+\tadOperacion{DameNat}{val /$v$}{Nat}{Tipo?($v$) = N}
+\tadOperacion{DameString}{val /$v$}{String}{Tipo?($v$) = S}
+
+
+%%****Axiomas****%%
+\tadAxiomas[\paratodo{val}{v} \paratodo{type}{t}]
+\tadAlinearAxiomas{DameString($CrearString(s)$)}
+
+\tadAxioma{Tipo?($CrearNat(n)$)}{N}
+\tadAxioma{Tipo?($CrearString(s)$)}{S}
+\tadAxioma{DameNat($CrearNat(n)$)}{n}
+\tadAxioma{DameString($CrearString(s)$)}{s}
+
+
+\end{tad}
+
+\newpage
+
+%TAD
+\section{TAD \tadNombre{Campo}}
+
+
+\begin{tad}{\tadNombre{Campo}}
+\tadGeneros{campo}
+\tadExporta{CrearCampo, Nombre, Tipo, =}
+\tadUsa{ \tadNombre{Type}, \tadNombre{Nombre}, \tadNombre{Bool}}
+
+
+%%****Igualdad Observacional****%%
+\tadIgualdadObservacional{c_1}{c_2}{campo}{Nombre($c_1$) $\igobs$ Nombre($c_2$) $\land$ Tipo($c_1$) $\igobs$ Tipo($c_2$)}
+
+%%****Generadores****%%
+\tadGeneradores
+\tadAlinearFunciones{CrearCampo}{nombre /$n$, type}
+
+\tadOperacion{CrearCampo}{nombre /$n$, type}{campo}{$n \not\equiv \emptyset$}
+
+
+%%****Observadores****%%
+\tadObservadores
+\tadAlinearFunciones{campo}{nombre}
+
+\tadOperacion{Nombre}{campo}{nombre}{}
+\tadOperacion{Tipo}{campo}{type}{}
+
+
+%%****Otras Operaciones****%%
+\tadOtrasOperaciones
+\tadAlinearFunciones{\argumento = \argumento}{campo, campo}
+\tadOperacion{\argumento = \argumento}{campo, campo}{bool}{}
+
+%%****Axiomas****%%
+\tadAxiomas[\paratodo{nombre}{n} \paratodo{type}{t}]
+\tadAlinearAxiomas{Nombre($CrearCampo(n,t)$)}
+
+\tadAxioma{Nombre($CrearCampo(n,t)$)}{n}
+\tadAxioma{Tipo($CrearCampo(n,t)$)}{t}
+\tadAxioma{$c_1$ = $c_2$}{$(Nombre(c_1) \equiv Nombre(c_1)) \land (Tipo(c_1) \equiv Tipo(c_2))$}
+
+
+\end{tad}
+
+\newpage
+
+\section{TAD \tadNombre{Registro}}
+
+
+\begin{tad}{\tadNombre{Registro}}
+\tadGeneros{registro}
+\tadExporta{CrearRegistro, AgregarCD, Campos, Dato?, agregarDatos, = }
+\tadUsa{ \tadNombre{Campo}, \tadNombre{Conjunto($\alpha$)}, \tadNombre{Nat}, \tadNombre{String}, \tadNombre{Bool}, \tadNombre{val}}
+
+
+%%****Igualdad Observacional****%%
+\tadIgualdadObservacional{r_1}{r_2}{registro}{$Campos(r_1) \igobs Campos(r_2) \yluego $\\$ (\forall c:campo , c \in Campos(r_1)) $\\$ Dato?(r_1 , c) \igobs Dato?(r_2 , c) \hfill$}
+
+
+%%****Generadores****%%
+\tadGeneradores
+\tadAlinearFunciones{AgregarCD}{registro /$r$, campo /$c$, val /$v$}
+
+\tadOperacion{CrearRegistro}{}{registro}{}
+\tadOperacion{AgregarCD}{registro /$r$, campo /$c$, val /$v$}{registro}{Tipo?($c$)$\equiv$ Tipo?($v$) $\land$ $c$ $\not\in$ Campos($r$)}
+
+
+%%****Observadores****%%
+\tadObservadores
+\tadAlinearFunciones{Campos}{registro /$r$, campo /$c$}
+
+\tadOperacion{Campos}{registro}{conj(campo)}{}
+\tadOperacion{Dato?}{registro /$r$, campo /$c$}{val}{$c$ $\in$ Campos($r$)}
+
+
+%%****Otras Operaciones****%%
+\tadOtrasOperaciones
+\tadAlinearFunciones{agregarDatos}{registro /r_1, conj(campo) /cc , registro /r_2}
+\tadOperacion{agregarDatos}{registro /r_1, conj(campo) /cc , registro /r_2}{registro}{$ cc \subseteq campos(r_2)$}
+\tadOperacion{\argumento = \argumento}{registro, registro}{bool}{}
+\tadOperacion{IgualDatos}{registro, registro, conj(campo)}{bool}{}
+
+%%****Axiomas****%%
+\tadAxiomas[\paratodo{registro}{r} \paratodo{conj(campo)}{cc} \paratodo{campo}{c_1,c_2} \paratodo{nat}{n} \paratodo{string}{s}]
+\tadAlinearAxiomas{DatoString($AgregarCDString(r,c1,s)$, $c2$)}
+
+\tadAxioma{Campos($CrearRegistro$)}{$\emptyset$}
+\tadAxioma{Campos($AgregarCD(r,c_1,v)$)}{Ag($c_1$,$Campos(r)$)}
+\tadAxioma{Dato?($AgregarCD(r,c_1,v)$, $c_2$)}{\textbf{if} ($c_1 = c_2$) \emph{then} v \textbf{else} Dato?($r,c_2$) \textbf{fi}  }
+\tadAxioma{agregarDatos($r_1, cc , r_2$)}{$\textbf{if} \ (\emptyset ?(cc)) \ \emph{then} \\ \hspace*{10px} r_1 \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ (dameUno(cc) \in Campos(r_1)) \ \emph{then} \\ \hspace*{15px} agregarDatos(r_1, sinUno(cc), r_2)  \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px}  AgregarCD(agregarDatos(r_1 , sinUno(cc) , r_2) , \\ \hspace*{25px} dameUno(cc), Dato?(r_2, dameUno(cc))) \\   \hspace*{10px} \textbf{fi}  \\  \textbf{fi}$}
+\tadAxioma{$r_1$ = $r_2$}{$\textbf{if} \ (Campos(r_1) = Campos(r_2)) \ \emph{then} \\ \hspace*{10px} IgualDatos(r_1,r_2,Campos(r_1)) \\ \textbf{else} \\ \hspace*{10px} false \\  \textbf{fi}$}
+\tadAxioma{IgualDatos($r_1,r_2,cc$)}{$\textbf{if} \ (\emptyset?(cc)) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px}  \textbf{if} \ (Dato?(r_1,dameUno(cc))\equiv \hfill \\ \hspace*{20px} Dato?(r_2,dameUno(cc))) \ \emph{then} \\ \hspace*{30px} IgualDatos(r_1,r_2,sinUno(cc)) \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} false \\ \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+\end{tad}
+
+\newpage
+
+\section{TAD \tadNombre{Tabla}}
+
+
+\begin{tad}{\tadNombre{Tabla}}
+\tadGeneros{tabla}
+\tadExporta{CrearTabla, AgregarRegistro, BorrarRegistros, Columna, NoRepiteDatosClave, =}
+\tadUsa{ \tadNombre{Campo} , \tadNombre{Registro} , \tadNombre{Conjunto($\alpha$)}, \tadNombre{Nombre}, \tadNombre{MultiConjunto($\alpha$)}, \tadNombre{Bool}, \tadNombre{val}}
+
+%%****Igualdad Observacional****%%
+\tadIgualdadObservacional{t_1}{t_2}{tabla}{$Campos(t_1) \igobs Campos(t_2) \land $\\$ Claves(t_1) \igobs Claves(t_2) \land $\\$Nombre(t_1) \igobs Nombre(t_2) \land $ \\ $Registros(t_1) \igobs Registros(t_2) $}
+
+%%***Observadores Basicos***%%
+\tadObservadores
+\tadOperacion{Campos}{tabla}{conj(campos)}{}
+\tadOperacion{Claves}{tabla}{conj(campos)}{}
+\tadOperacion{Nombre}{tabla}{nombre}{}
+\tadOperacion{Registros}{tabla}{conj(registro)}{}
+
+%%****Generadores****%%
+\tadGeneradores
+\tadAlinearFunciones{AgregarRegistro}{conj(campo) \ $c_1$ , conj(campo) \ $c_2$ , nombre \ $n$}
+\tadOperacion{CrearTabla}{conj(campo) \ $c_1$ , conj(campo) \ $c_2$ , nombre \ $n$}{tabla}{$ \neg \emptyset?(c_2) \land c_2 \subseteq c_1 $}
+\tadOperacion{AgregarRegistro}{tabla \ $t$ , registro \ $r$}{tabla}{$ Campos(r) = Campos(t) \yluego NoRepiteDatosClaves(r,t) $}
+
+%%****Otras Operaciones****%%
+%\tadOtrasOperaciones
+\tadAlinearFunciones{NoRepiteDatosClave}{conj(campo) /$cc$ , registro /$r$ , conj(registro) /$cr$}
+\tadOtrasOperaciones
+\tadOperacion{BorrarRegistros}{tabla  /$t$ , campo /$c$, val /$d$}{tabla}{$ c \in Campos(t) \land Tipo(c) \equiv Tipo?(v) $} 
+\tadOperacion{Columna}{conj(registro)  /$cr$ , campo /$c$}{multiconj(val)}{$ (\forall r \in cr) c \in Campos(r) $}
+\tadOperacion{NoRepiteDatosClave}{registro , tabla }{bool}{}
+\tadOperacion{AuxNoRepite}{conj(campo) /$cc$ , registro /$r$ , conj(registro) /$cr$}{bool}{$((\forall c:conj(campo))( c \in cc \Rightarrow c \in Campos(r)) \land ((\forall r_1:registro)( r_1 \in cr) \Rightarrow c \in Campos(r_1)))$}
+\tadOperacion{\argumento = \argumento}{tabla, tabla }{bool}{}
+
+\tadAxiomas[\paratodo{tabla}{t} \paratodo{conj(registro)}{cr}  \paratodo{registro}{r} \paratodo{conj(campo)}{c_1, c_2, cc} \paratodo{campo}{c} \paratodo{nombre}{n} \paratodo{string}{s} \paratodo{nat}{i}]
+\tadAlinearAxiomas{BorrarRegistrosString($AgregarRegistro(t,r),c,d$)}
+\tadAxioma{Campos($CrearTabla(c_1, c_2, n)$)}{$c_1$}
+\tadAxioma{Campos($AgregarRegistro(t,r)$)}{Campos(t)}
+\tadAxioma{Claves($CrearTabla(c_1, c_2, n)$)}{$c_2$}
+\tadAxioma{Claves($AgregarRegistro(t,r)$)}{Claves(t)}
+\tadAxioma{Nombre($CrearTabla(c_1, c_2, n)$)}{n}
+\tadAxioma{Nombre($AgregarRegistro(t,r)$)}{Nombre(t)}
+\tadAxioma{Registros($CrearTabla(c_1, c_2, n)$)}{$\emptyset$}
+\tadAxioma{Registros($AgregarRegistro(t,r)$)}{Ag(r, Registros(t))}
+
+\tadAxioma{BorrarRegistros($CrearTabla(c_1,c_2,n),c,v$)}{$CrearTabla(c_1,c_2,n)$}
+\tadAxioma{BorrarRegistros($AgregarRegistro(t,r),c,v$)}{$\textbf{if} \ (v \equiv Dato?(r,c)) \ \emph{then} \\ \hspace*{10px} BorrarRegistros(t,c,v) \\ \textbf{else} \\ \hspace*{10px} AgregarRegistro(BorrarRegistros(t,c,v),r) \\  \textbf{fi}$}
+\tadAxioma{Columna($ cr, c $)}{$\textbf{if} \ (\emptyset?(cr)) \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} Ag(Dato?(dameUno(cr),c), Columna(sinUno(cr),c)) \\  \textbf{fi}$}
+\tadAxioma{NoRepiteDatosClave($r, t$)}{$AuxNoRepite(Claves(t), r , Registros(t))$}
+\tadAxioma{AuxNoRepite($ cc , r , cr$)}{$\textbf{if} \ (\emptyset?(cc)) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px}  \textbf{if} \  (\neg Dato?(r , dameUno(cc)) \in \\ \hspace*{30px} Columna(cr , dameUno(cc))) \ \emph{then} \\ \hspace*{35px} AuxNoRepite(sinUno(cc), r , cr) \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} false \\  \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+\tadAxioma{$t_1$ = $t_2$}{$(Nombre(t_1) \equiv Nombre(t_2)) \land \\ (Campos(t_1) = Campos(t_2)) \land \\ (Claves(t_1) = Claves(t_2)) \land \\ (Registros(t_1) = Registros(t_2))$}
+
+
+\end{tad}
+
+\newpage
+
+
+\section{TAD \tadNombre{Base de Datos}}
+
+
+\begin{tad}{\tadNombre{Base de Datos}}
+\tadGeneros{bdd}
+\tadExporta{ CrearBase, AgTabla, AgRegistro, BorrarRegistros, CrearJoin, CrearTrigger, BorrarJoin, BorrarTrigger, Tablas, Joins, Triggers, $\#$ Usos, VisualizarJoin, TablaMasUsada}
+\tadUsa{ \tadNombre{Tabla},\tadNombre{Registro}, \tadNombre{Campo}, \tadNombre{Join}, \tadNombre{Conjunto($\alpha$)}, \tadNombre{Nombre}, \tadNombre{Nat}, \tadNombre{String}, \tadNombre{val}, \tadNombre{dicc(clave,significado)}}
+
+%%****Observadores****%%
+\tadObservadores
+\tadAlinearFunciones{Triggers}{bdd \ $b$ , nombre \ $nt$}
+
+\tadOperacion{Tablas}{bdd}{conj(tabla)}{}
+\tadOperacion{Joins}{bdd}{conj(join)}{}
+\tadOperacion{Triggers}{bdd \ $b$ , nombre \ $nt$}{dicc(nombre,dicc(campo,val))}{$ nt \in DameNombres(Tablas(b))$}
+\tadOperacion{\# Usos}{bdd \ $b$ , tabla \ $t$}{nat}{$ t \in Tablas(b)$}
+
+
+%%****Igualdad Observacional****%%
+\tadIgualdadObservacional{b_1}{b_2}{bdd}{$Tablas(b_1) \igobs Tablas(b_2) \land \hfill$\\$ Joins(b_1) \igobs Joins(b_2) \yluego $\\$ (\forall t:tabla, t \in Tablas(b_1))$\\$ Triggers(b_1,Nombre(t)) \igobs Triggers(b_2,Nombre(t)) \land $\\$ \# Usos(b_1,t) \igobs  \# Usos(b_2, t) $}
+
+
+%%****Generadores****%%
+\tadGeneradores
+\tadAlinearFunciones{BorrarRegistrosString}{bdd \ $b$ , nombre \ $nt_1$ , nombre \ $nt_2$ , {dicc(campo, val)}  \ $d$}
+
+\tadOperacion{CrearBase}{}{bdd}{}
+\tadOperacion{AgTabla}{bdd \ $b$ , tabla \ $t$}{bdd}{$ Nombre(t) \not\in DameNombres(Tablas(b))$}
+\tadOperacion{AgRegistro}{bdd \ $b$ , tabla \ $t$ ,registro \ $r$ }{bdd}{$ Campos(r) = Campos(t) \yluego NoRepiteDatosClaves(r,t) $}
+\tadOperacion{BorrarRegistros}{bdd \ $b$ , tabla \ $t$ , campo \ $c$ , val \ $v$ }{bdd}{$ c \in Campos(t) \land Tipo(c) \equiv Tipo?(v) $}
+\tadOperacion{CrearJoin}{bdd \ $b$ , join \ $j$  }{bdd}{$ EsJoinValido(b,j) $}
+\tadOperacion{CrearTrigger}{bdd \ $b$ , nombre \ $nt_1$ , nombre \ $nt_2$, {{dicc(campo, val)}} \ $d$}{bdd}{$ nt_1 \in DameNombres(Tablas(b)) \land nt_2 \in DameNombres(Tablas(b)) \land $\\$ \neg (nt_1 = nt_2) \land Claves(DameTabla(Tablas(b), nt_2)) \subseteq Claves(DameTabla(Tablas(b), nt_1)) \yluego  \neg def?(nt_2 , Triggers(b,nt_1) \land claves(d) = \hfill $\\$ (Campos(dameTabla(Tablas(b),nt_2)) - Campos(dameTabla(Tablas(b),nt_1))) $}
+\tadOperacion{BorrarTrigger}{bdd \ $b$ , nombre \ $nt_1$ , nombre \ $nt_2$  }{bdd}{$def?(nt_2, Triggers(b, nt_1)$}
+
+
+%%****Otras Operaciones****%%
+%\tadOtrasOperaciones
+\tadAlinearFunciones{CoincideAlgunDato?}{bdd, conj(nombre) , registro, {dicc(nombre,dicc(campo,val))}}
+\tadOtrasOperaciones
+\tadOperacion{BorrarJoin}{bdd \ $b$ , join \ $j$  }{bdd}{$ j \in Joins(b)$}
+\tadOperacion{EsJoinValido}{bdd, join}{bool}{}
+\tadOperacion{Actualizar}{bdd, conj(nombre) , registro, {dicc(nombre,dicc(campo,val))}}{conj(tabla)}{}
+\tadOperacion{CompletarRegistro}{conj(campo) \ $cc$, registro \ $r$, {{dicc(campo,val)}} \ $d$}{registro}{$(\forall c : Campo) c \in cc \Rightarrow (c \in Campos(r) \lor def?(c,d))$}  
+\tadOperacion{NomxTablas}{conj(tabla) \ $ct$, conj(nombre) /$cn$}{conj(tabla)}{$(\forall nt:nombre) nt \in cn \Rightarrow nt \in DameNobres(ct)$}
+\tadOperacion{DameTabla}{conj(tabla) \ $ct$, nombre \ $nt$}{tabla}{$nt \in DameNombres(ct)$}
+\tadOperacion{DameNombres}{conj(tabla) }{conj(nombre)}{}
+\tadOperacion{VisualizarJoin}{bdd \ $b$ , join \ $j$}{conj(registro)}{$j \in Joins(b)$}
+\tadOperacion{ArmarJoin}{conj(registro) , conj(registro) , campo}{conj(registro)}{}
+\tadOperacion{UnirRegCoinc}{registro \ $r$ , conj(registro)\ $cr$ , campo \ $c$}{registro}{$(c \in Campos(r)) \land (\forall reg : registro) reg \in cr \Rightarrow c \in Campos(reg)$}
+\tadOperacion{CoincideAlgunDato?}{registro \ $r$ , conj(registro) \ $cr$ , campo \ $c$}{bool}{$(c \in Campos(r)) \land (\forall reg : registro) reg \in cr \Rightarrow c \in Campos(reg)$}
+\tadOperacion{TablaMasUsada}{bdd \ $b$}{tabla}{$ \neg \emptyset?(Tablas(b))$}
+\tadOperacion{MayorUso}{conj(tabla), nat}{nat}{}
+\tadOperacion{TablasConUso}{conj(tabla), nat}{conj(tabla)}{}
+\tadOperacion{Busqueda}{{{conj( $\langle$ campo,valor $\rangle$)}} \ $ct$ , conj(campo) \ $cc$, bdd \ $b$, nombre \ $n$ }{conj(registro)}{ $ n \in DameNombres(tablas(b)) \land (\forall tv: \langle campo,valor \rangle) \hfill$  \\  $(tv \in ct \Rightarrow  ( \pi _1(tv) \in Campos(DameTabla(Tablas(b),n))\hfill$ \\ $ \land (Tipo( \pi _1(tv)) \equiv tipo?(\pi _2(tv)))) \land \hfill $ \\ $ cc \subseteq Campos(DameTabla(Tablas(b),n)) $}
+\tadOperacion{Coincide?}{conj($\langle campo \ valor \rangle$ , registro \ $r$}{bool}{}
+\tadOperacion{CampoSalida}{conj(campo) , registro}{registro}{}
+\tadOperacion{FiltrarReg}{conj(campo), conj($\langle campo \ valor \rangle $) , conj(registro)}{conj(registro)}{}
+
+%%****Axiomas****%%
+\tadAxiomas[\paratodo{bdd}{b} \paratodo{conj(tabla)}{ct} \paratodo{conj(nombre)}{cn} \paratodo{conj(registro)}{cr, cr_1, cr_2} \paratodo{conj(campo)}{cc} \paratodo{tabla}{t, t_1} \paratodo{dicc(nombre,dicc(campo,val))}{td} \paratodo{dicc(campo,val)}{dcv} \paratodo{join}{j} \paratodo{registro}{r} \paratodo{campo}{c} \paratodo{nombre}{nt, nt_1, nt_2} \paratodo{string}{s} \paratodo{nat}{i, m, u}]
+\tadAlinearAxiomas{Triggers($BorrarRegistrosString(b,t,c,s),nt$)}
+
+\tadAxioma{Tablas($CrearBase()$)}{$\emptyset$}
+\tadAxioma{Tablas($AgTabla(b,t)$)}{$Ag(t,Tablas(b))$}
+\tadAxioma{Tablas($AgRegistro(b,t,r)$)}{$Ag(AgregarRegistro(t,r),((Tablas(b) - \hfill \\ NomxTablas(Tablas(b),claves(Triggers(b,Nombre(t))))) \cup \hfill \\ Actualizar(b,claves(Triggers(b,Nombre(t))) \hfill \\ ,r,Triggers(b,Nombre(t)))) - \{t\})$}
+\tadAxioma{Tablas($BorrarRegistros(b,t,c,v)$)}{$Ag(BorrarRegistros(t,c,v),(Tablas(b) - \{t\}))$}
+\tadAxioma{Tablas($CrearJoin(b,j)$)}{$Tablas(b)$}
+\tadAxioma{Tablas($CrearTrigger(b,nt_1,nt_2,dcv)$)}{$ Tablas(b) $}
+\tadAxioma{Tablas($BorrarTrigger(b,nt_1,nt_2)$)}{$ Tablas(b) $}
+\tadAxioma{Joins($CrearBase()$)}{$\emptyset$}
+\tadAxioma{Joins($AgTabla(b,t)$)}{$Joins(b)$}
+\tadAxioma{Joins($AgRegistro(b,t,r)$)}{$Joins(b)$}
+\tadAxioma{Joins($BorrarRegistros(b,t,c,v)$)}{$Joins(b)$}
+\tadAxioma{Joins($CrearJoin(b,j)$)}{$Ag(j,Joins(b))$}
+\tadAxioma{Joins($CrearTrigger(b,nt,nt_2,dcv)$)}{$Joins(b)$}
+\tadAxioma{Joins($BorrarTrigger(b,nt,nt_2)$)}{$Joins(b)$}
+\tadAxioma{Triggers($AgTabla(b,t),nt$)}{$\textbf{if} \ (nt \equiv Nombre(t)) \ \emph{then} \ vacio \ \textbf{else} \ Triggers(b,nt) \  \textbf{fi}$}
+\tadAxioma{Triggers($AgRegistro(b,t,r),nt$)}{$Triggers(b)$}
+\tadAxioma{Triggers($BorrarRegistros(b,t,c,v),nt$)}{$Triggers(b,nt)$}
+\tadAxioma{Triggers($CrearJoin(b,j)$}{$Triggers(b,nt)$}
+\tadAxioma{Triggers($CrearTrigger(b,nt_1,nt_2,dcv),nt$)}{$\textbf{if} \ (nt \equiv nt_1) \ \emph{then} \ definir(nt_2,d,Triggers(b,nt)) \\ \textbf{else} \ Triggers(b,nt) \  \textbf{fi}$}
+\tadAxioma{Triggers($BorrarTrigger(b,nt_1,nt_2),nt$)}{$\textbf{if} \ (nt \equiv nt_1) \ \emph{then} \\ \hspace*{10px} borrar(nt_2, Triggers(b,nt)) \\ \textbf{else} \\ \hspace*{10px} Triggers(b,nt) \\ \textbf{fi}$}
+\tadAxioma{\# Usos($AgTabla(b,t_1),t$)}{$\textbf{if} \ (t = t_1) \ \emph{then} \ 0 \ \textbf{else} \ \# Usos(b,t) \  \textbf{fi}$}
+\tadAxioma{\# Usos($AgRegistro(b,t_1,r),t$)}{$\textbf{if} \ (t = t_1) \ \emph{then} \\ \hspace*{10px} 1 + \# Usos(b,t) \\ \textbf{else} \\ \hspace*{10px} \beta (def?(Nombre(t),Triggers(b,Nombre(t_1)))) + \# Usos(b,t) \\  \textbf{fi}$}
+\tadAxioma{\# Usos($BorrarRegistros(b,t_1,c,v),t$)}{$\textbf{if} \ (t = t_1) \ \emph{then} \\ \hspace*{10px} \# Usos(b,t) + \# (v,Columna(Registros(t),c)) \\ \textbf{else} \\ \hspace*{10px} \# Usos(b,t) \\  \textbf{fi}$}
+\tadAxioma{\# Usos($CrearJoin(b,j),t$)}{$ \# Usos(b,t) $}
+\tadAxioma{\# Usos($CrearTrigger(b,nt_1,nt_2,dcv),t$)}{$\# Usos(b,t)$}
+\tadAxioma{\# Usos($BorrarTrigger(b,nt_1,nt_2),t$)}{$\# Usos(b,t)$}
+
+\tadAxioma{BorrarJoin$(AgTabla(b,t),j)$}{$AgTabla(BorrarJoin(b,j),t)$}
+\tadAxioma{BorrarJoin$(AgRegistro(b,t,r),j)$}{$AgRegistro(BorrarJoin(b,j),t,r)$}
+\tadAxioma{BorrarJoin$(BorrarRegistros(b,t,c,v),j)$}{$BorrarRegistros(BorrarJoin(b,j),t,c,v)$}
+\tadAxioma{BorrarJoin$(CrearJoin(b,j_1),j_2)$}{$\textbf{if} \ (j_1 \equiv j_2) \ \emph{then} \ b \ \textbf{else} \ CrearJoin(BorrarJoin(b,j_2),j_1) \  \textbf{fi}$}
+\tadAxioma{BorrarJoin$(CrearTrigger(b,nt,nt_2,dcv),j)$}{$CrearTrigger(BorrarJoin(b,j),nt,nt_2,dcv)$}
+\tadAxioma{BorrarJoin$(BorrarTrigger(b,nt,nt_2),j)$}{$BorrarTrigger(BorrarJoin(b,j),nt,nt_2)$}
+\tadAxioma{EsJoinValido($b,j$)}{$ (\# \pi_1(j) \equiv 2) \land \hfill \\ (\pi_1 \subseteq DameNombres(Tablas(b))) \land \hfill \\ (j \not\in Joins(b)) \yluego \hfill \\ (\pi_2(j) \in Claves(DameTabla(dameUno(\pi_1(j))))) \land \hfill \\ (\pi_2(j) \in Claves(DameTabla(dameUno(SinUno(\pi_1(j)))))) $}
+\tadAxioma{Actualizar($b$,$cn$,$r$,$td$)}{$\textbf{if} \ (\emptyset?(cn)) \ \emph{then} \\ \hspace*{7px} \emptyset \\ \textbf{else} \\ \hspace*{7px} \textbf{if} \ $ {\small $(NoRepiteDatosClaves(r, \\ \hspace*{14px} DameTabla(Tablas(b),dameUno(cn))))$} $ \emph{then} $ \\ \hspace*{14px} {\small $Ag(AgregarRegistro(DameTabla(Tablas(b),dameUno(cn)),$} $ \\ \hspace*{14px} $ {\small $CompletarRegistro(Campos(DameTabla(Tablas(b),dameUno(cn))),\hfil \\ r, obtener(dameUno(cn),td))),$ }$ \\ \hspace*{14px}$ {\small $Actualizar(b,sinUno(cn),r,td))$} $ \\ \hspace*{7px} \textbf{else} \\ \hspace*{14px} Actualizar(b,sinUno(cn),r,td) \\ \hspace*{7px} \textbf{fi} \\  \textbf{fi}$}
+\tadAxioma{CompletarRegistro($cc$,$r$, $dcv$)}{$\textbf{if} \ (\emptyset?(cc)) \ \emph{then} \\ \hspace*{10px} r \\ \textbf{else} \\ \hspace*{10px} 
+\textbf{if} \ (dameUno(cc) \in Campos(r)) \ \emph{then} \\ \hspace*{20px} CompletarRegistro(sinUno(cc),r,dcv) \\ \hspace*{10px} \textbf{else} \\  \hspace*{20px}
+AgregarCD(CompletarRegistro(sinUno(cc),r,dcv), \\ \hspace*{35px} dameUno(cc),obtener(DameUno(cc),dcv)) \\ \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+\tadAxioma{NomxTablas($ct, cn$)}{$\textbf{if} \ (\emptyset?(cn)) \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} Ag(DameTabla(ct,dameUno(cn)),NomxTablas(ct,sinUno(cn))) \\  \textbf{fi}$}
+\tadAxioma{DameTabla($ct, n$)}{$\textbf{if} \ (Nombre(dameUno(ct)) \equiv n) \ \emph{then} \\ \hspace*{10px} dameUno(ct) \\ \textbf{else} \\ \hspace*{10px} DameTabla(sinUno(ct),n) \\  \textbf{fi}$}
+\tadAxioma{DameNombres($ct$)}{$\textbf{if} \ (\emptyset?(ct)) \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} Ag(Nombre(dameUno(ct)),DameNombres(sinUno(ct))) \\  \textbf{fi}$}
+\tadAxioma{VisualizarJoin($b, j$)}{$ ArmarJoin(Registros(DameTabla(Tablas(b) , dameUno(\pi_1(j)))) \\ \hspace*{5px} , Registros(DameTabla(Tablas(b) , dameUno(sinUno(\pi_1(j)))))\\ \hspace*{5px} , \pi_2(j)) $}
+\tadAxioma{ArmarJoin($cr_1$ , $cr_2$ , $c$)}{$\textbf{if} \ (\emptyset?(cr_1)) \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ (CoincideAlgunDato?(dameUno(cr_1), cr_2, c)) \ \emph{then} \\ \hspace*{20px} Ag(UnirRegCoinc(dameUno(cr_1), cr_2, c), \\ \hspace*{25px} ArmarJoin(sinUno(cr1) , cr2 , c)) \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} ArmarJoin(sinUno(cr_1), cr_2, c) \\ \hspace*{10px} \textbf{fi} \\  \textbf{fi}$}
+\tadAxioma{UnirRegCoinc($r, cr, c$)}{$ \textbf{if} \ (\emptyset?(cr)) \ \emph{then} \\ \hspace*{10px} r \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \  (Dato?(r,c) \equiv Dato?(dameUno(cr),c)) \ \emph{then} \\ \hspace*{20px} agregarDatos(r,Campos(dameUno(cr)),dameUno(cr)) \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} UnirRegCoinc(r,sinUno(cr),c) \\ \hspace*{10px} \textbf{fi} \\ \textbf{fi} $}
+\tadAxioma{CoincideAlgunDato?($r,cr,c$)}{$Dato?(r,c) \in Columna(cr,c)$}
+
+\tadAxioma{TablaMasUsada($b$)}{$dameUno(TablasConUso(Tablas(b), \\ \hspace*{10px} MayorUso(Tablas(b), \# Usos(dameUno(Tablas(b))))$}
+
+\tadAxioma{TablasConUso($ct,u$)}{$\textbf{if} \ (\emptyset?(ct)) \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} \textbf{if} (\# Usos(dameUno(ct)) \equiv u) \ \emph{then}
+\\ \hspace*{10px} \hspace*{10px} Ag(dameUno(ct), TablasConUso(sinUno(ct), u)) \\ \hspace*{10px} \textbf{else} \\ \hspace*{10px} \hspace*{10px} TablasConUso(sinUno(ct),u) \\ \hspace*{10px} \textbf{fi} \\ \textbf{fi}$}
+
+\tadAxioma{MayorUso($ct$, $m$)}{$\textbf{if} \ (\emptyset?(ct)) \ \emph{then} \\ \hspace*{10px} m \\ \textbf{else} \\ \hspace*{10px}    MayorUso(sinUno(ct), max(\# Usos(dameUno(ct)), m)) \\ \textbf{fi}$}
+
+\tadAxioma{Busqueda($ct$,$cc$,$b$,$n$)}{$FiltrarReg(cc,ct,Registros(DameTabla(tablas(b),n)))$}
+\tadAxioma{Coincide?($ct$,$r$)}{$\textbf{if} \ (\emptyset?(ct)) \ \emph{then} \\ \hspace*{10px} true \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ {(Dato?(r,\pi _1(dameUno(ct))) \equiv \pi _2(DameUno(ct)))} \ \hspace*{10px} \emph{then} \hfill$ \\ $ \hspace*{20px} Coincide?(SinUno(ct),r) \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} false \\ \hspace*{10px} \textbf{fi} \\ \textbf{fi}$}
+\tadAxioma{CampoSalida($cc$,$r$)}{$ \textbf{if} \ (\emptyset?(cc)) \ \emph{then} \\ \hspace*{10px} CrearRegistro() \\ \textbf{else} \\ \hspace*{10px} AgregarCD(CampoSalida(SinUno(cc),r), DameUno(cc), \\ \hspace*{15px} Dato?(r,DameUno(cc))) \\ \textbf{fi}$ }
+\tadAxioma{FiltrarReg($cc$,$ct$,$cr$)}{$\textbf{if} \ (\emptyset?(cr)) \ \emph{then} \\ \hspace*{10px} \emptyset \\ \textbf{else} \\ \hspace*{10px} \textbf{if} \ (Coincide?(ct,DameUno(cr))) \ \hspace*{10px} \emph{then} \\ \hspace*{20px} Ag(CampoSalida(cc,DameUno(cr)), \\ \hspace*{25px} FiltrarReg(cc,ct,SinUno(cr))) \\ \hspace*{10px} \textbf{else} \\ \hspace*{20px} FiltrarReg(cc,ct,SinUno(cr)) \\ \hspace*{10px}\textbf{fi} \\ \textbf{fi} $}
+
+\end{tad}
+
+
+% if
+% $\textbf{if} \ *** \ \emph{then} \\ \hspace*{10px} *** \\ \textbf{else} \\ \hspace*{10px} *** \\  \textbf{fi}$

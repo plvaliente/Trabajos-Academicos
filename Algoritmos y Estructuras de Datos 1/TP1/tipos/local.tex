@@ -1,0 +1,30 @@
+\begin{tipo}{Local}
+	\observador{stockBebidas}{l: Local, b: Bebida}{Cantidad}
+	\requiere{b \in bebidasDelLocal(l)}
+
+	\observador{stockSandwiches}{l: Local, h: Hamburguesa}{Cantidad}
+	\requiere{h \in sandwichesDelLocal(l)}
+
+	\observador{bebidasDelLocal}{l:Local}{[Bebida]} 
+	\observador{sandwichesDelLocal}{l:Local}{[Hamburguesa]} 
+	\observador{empleados}{l: Local}{[Empleado]}
+	\observador{desempleados}{l: Local}{[Empleado]}
+	\observador{energiaEmpleado}{l: Local, e: Empleado}{Energia}
+	\requiere{e \in empleados(l)}
+
+	\observador{ventas}{l: Local}{[Pedido]}
+	
+	\medskip
+
+	\invariante[hayBebidasySonDistintas]{|bebidasDelLocal(l)|>0 \land distintos(bebidasDelLocal(l))}
+	\invariante[haySandwichesySonDistintos]{|sandwichesDelLocal(l)|>0 \land distintos(sandwichesDelLocal(l))}
+	\invariante[stockBebidasPositivo]{(\forall b \selec bebidasDelLocal(l)) stockBebidas(l,b) \geq 0 }
+	\invariante[stockSandwichesPositivo]{(\forall h \selec sandwichesDelLocal(l)) stockSandwiches(l,h) \geq 0 }
+	
+	\invariante[empleadosDistintos]{distintos(empleados(l)++desempleados(l))}
+	\invariante[energiaHasta100]{(\forall e \selec empleados(l)) energiaEnRango(energiaEmpleado(l,e))}
+	\invariante[empleadosQAtendieronDelLocal]{(\forall v \selec ventas(l)) atendio(v) \in empleados(l)++desempleados(l)}
+	\invariante[ventasCorrelativas]{correlativos([numero(p) | p \leftarrow ventas(l)])}
+	\invariante[combosDeLocal]{(\forall x \leftarrow [ c | p \leftarrow ventas(l), c \leftarrow combos(p)]) \\ (bebida(x) \in bebidasDelLocal(l)) \wedge (sandwich(x) \in sandwichesDelLocal(l)) }
+
+\end{tipo}

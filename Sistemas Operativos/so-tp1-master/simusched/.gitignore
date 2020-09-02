@@ -1,0 +1,9 @@
+# basura
+*.swp
+*.pyc
+
+# binarios que no sirven
+*.o
+
+# binarios que si hacen falta
+sched_mistery.o

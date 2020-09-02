@@ -1,0 +1,19 @@
+\begin{problema}{nuevoC}{b: Bebida, h: Hamburguesa, d: Energia}{Combo}
+\requiere {energiaEnRango(d)}     
+\asegura {bebida(res) == b}
+\asegura {sandwich(res) == h}
+\asegura {dificultad(res) == d}
+
+\end{problema}
+
+\begin{problema}{bebidaC}{c: Combo}{Bebida}
+\asegura {res == Bebida(c)}
+\end{problema}
+
+\begin{problema}{sandwichC}{c: Combo}{Hamburguesa}
+\asegura {res == sandwich(c)}
+\end{problema}
+
+\begin{problema}{dificultadC}{c: Combo}{Energia}
+\asegura {res == dificultad(c)}
+\end{problema}

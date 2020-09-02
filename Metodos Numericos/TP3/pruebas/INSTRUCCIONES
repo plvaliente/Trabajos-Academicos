@@ -1,0 +1,14 @@
+Para experimentar:
+1- modificar archivo ./stats/params.txt
+	(no tocar el 2 de la primer lines, ni el 5 y 7 de la segunda)
+2- correr ./tools/obtenerStatsJugadores2.sh y obtenerStatsEquipos2.sh
+3- correr procesarEquipos.py y procesarJugadores.py
+4- en matlab correr: 
+[A,b] = equipos(e1,...,en); [C,d] = jugadores(e1,...,en);
+	donde e1,...,en son los exponentes para experimentar
+	(primero cambiar a mano la cantidad de parametros de las funciones y las lineas 9 y 10)
+5- en matlab:
+MSEeCV = validationCV(A,b);
+MSEjCV = validationCV(C,d);
+MSEeTemp = validationTemp(A,b);
+MSEjTemp = validationTemp(C,d);

@@ -1,0 +1,16 @@
+STATS DEF
+
+	DRB 
+	STL 
+	BLK 
+	PF
+	DWS 
+
+STAT OFF
+	eFG%
+	FT%
+	ORB
+	TOV
+	PTS
+	OWS 
+

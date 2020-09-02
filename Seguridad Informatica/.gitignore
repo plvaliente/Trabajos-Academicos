@@ -1,0 +1,7 @@
+.idea/
+SegInf.iml
+.vscode/
+**/*.pyc
+**/__pycache__
+.DS_Store
+*.log

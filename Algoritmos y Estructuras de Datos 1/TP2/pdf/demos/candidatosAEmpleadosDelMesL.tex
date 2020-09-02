@@ -1,0 +1,66 @@
+\subsubsection{Primer ciclo}
+\begin{lstlisting}
+vector<Empleado> Local::candidatosAEmpleadosDelMesL() const{
+        return _candidatosAEmpleadosDelMes();
+}
+
+vector <Empleado> Local::_candidatosAEmpleadosDelMes() const{
+	return _empleadosConMasCombos(_empleadosConMasVentas(empleadosL()));
+}
+
+vector < Empleado > Local::_empleadosConMasCombos(const vector <Empleado> empleados) const{
+	int i = 0;
+	vector < Empleado > emp = vector < Empleado >();
+
+	//**Busco el maximo de Combos vendidos por todos los empleados.
+	int maxCombos = 0;
+	while (i < empleados.size()) {
+		if ( _combosVendidosPorElEmpleado(empleados.at(i)).size() > maxCombos) {
+			maxCombos = _combosVendidosPorElEmpleado(empleados.at(i)).size();
+		}
+		i++;
+	}
+\end{lstlisting} 
+
+
+\hspace{15pt}\textbf{Pc, Qc, I, B, cota y fv.} \\
+Llamo $sizeE = |empleados(l)| $; \\
+Vale $sizeE > 0$ por invariante de Local. ;\\
+Implica  $|empleados(l)| > 0$ ;\\
+Llamo $sizeCombosVendidosE(i) = | combosVendidosPorElEmpleado(l, empleados(l)_i) | $; \\
+Llamo $combosVendidosPorElEmpleado = concat[combos(p)|p \leftarrow ventas(l), atendio(p) == e]$ ;\\
+
+Pc: $i == 0 \wedge maxCombos == 0 \wedge emp == [] \wedge sizeE > 0$ ;\\
+Qc: $(\forall j \leftarrow [0..sizeE)) |combosVendidosPorElEmpleado(l, empleados(l)[j])| \leq maxCombos$ ;\\
+B: $i < sizeE$ ;\\
+I: $0 \leq i \leq sizeE \wedge (\forall j \leftarrow [0..i)) |combosVendidosPorElEmpleado(l, empleados(l)[j])| \leq maxCombos$ ;\\ 	
+fv: $sizeE - i$ ;\\
+cota: 0 ;\\
+
+\hspace{15pt}\textbf{Pc $\wedge$ B $\Rightarrow$ I:} \\
+Por Pc $\wedge$ B : $i == 0 \wedge maxCombos == 0 \wedge emp == [] \wedge sizeE > 0 \wedge i < sizeE $ ;\\
+Implica $ i == 0 \wedge i < sizeE \wedge sizeE > 0 \Leftrightarrow 0 == i < sizeE $ ; \\
+Implica $ 0 \leq i \leq sizeE $ ;\\
+
+Luego usando que $i == 0$ y por Pc sabemos que $maxCombos == 0$ ;\\
+Y $(\forall j \leftarrow [0..0)) |combosVendidosPorElEmpleado(l, empleados(l)_j)| == 0 $ ;\\
+Implica que $(\forall j \leftarrow [0..i)) |combosVendidosPorElEmpleado(l, empleados(l)_j)| == maxCombos $ ;\\
+Implica que $(\forall j \leftarrow [0..i)) |combosVendidosPorElEmpleado(l, empleados(l)_j)| \leq maxCombos $ ;\\
+
+Luego sabemos que $0 \leq i \leq sizeE \wedge (\forall j \leftarrow [0..i)) |combosVendidosPorElEmpleado(l, empleados(l)_j)| \leq maxCombos$ ;\\
+Equivale a I ;\\
+
+\hspace{15pt}\textbf{I $\wedge \neg $ B $\Rightarrow$ Qc:} \\
+Usando que $i \leq sizeE$ por el Invariante y $i >= sizeE$ por la negacion de la guarda ;\\
+Entonces $i \leq sizeE \wedge  i \geq sizeE \Rightarrow i == sizeE $ ;\\
+Reemplazo en I: $(\forall j \leftarrow [0..sizeE)) |combosVendidosPorElEmpleado(l, empleados(l)_j)| \leq maxCombos $ ;\\
+Lo cual es equivalente a Qc. ;\\
+
+\hspace{15pt}\textbf{I $\wedge$ fv $\leq$ Cota $\Rightarrow \neg$ B:} \\
+I $\wedge$ fv $\leq$: $0 \leq i \leq sizeE \wedge sizeE - i \leq cota$ ;\\
+Implica $ 0 \leq i \leq sizeE \wedge sizeE \leq i.$ ;\\
+Implica $i == sizeE.$ ;\\
+Implica $i \geq sizeE.$ Lo cual es equivalente a $ \neg$ B. ;\\
+\\
+\\
+

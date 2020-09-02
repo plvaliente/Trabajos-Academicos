@@ -1,0 +1,141 @@
+\aux{distintos}{ls:[T]}{\bool}{ 
+  (\forall \ i,j \selec [0..|ls|), i \neq j) \ ls_i \neq ls_j
+}
+
+\aux{energiaEnRango}{e: Energia} {\bool}{
+        0 \leq e \leq 100
+}
+
+\aux{correlativos}{ls:[\ent]}{\bool}{
+(((\forall \ n \leftarrow ls) (n+1) \in ls) \ \vee (esmax(n,ls))) \wedge (distintos(ls))
+}
+
+\aux{esmax}{n:\ent,ls:[\ent]}{\bool}{
+(\forall \ x \leftarrow ls) \ n \geq x
+}
+
+\aux{sacarRepeticiones}{ls:[T]}{[T]}{
+[ls_i \ \vert \ i \leftarrow [ 0.. \vert ls \vert) , ls_i \not \in ls(i..\vert ls \vert)] ] 
+}
+
+\aux{cuenta}{x:T, y:[T]}{\ent } {
+\vert [i \ \vert \ i \selec y, i == x] \vert
+}
+
+\aux {maximo}{ls:[\ent]}{\ent}{
+cab([x \ \vert \ x \leftarrow ls , (\forall \ y \leftarrow ls) \  x \geq y])
+}
+
+\subsection{Combo}
+% los aux del tipo combo
+
+\subsection{Pedido}
+% los aux del tipo pedido
+\aux{bebidasDelPedido}{p:Pedido}{[Bebida]}{
+[bebida(combos(p)_i) \ \vert \ i \leftarrow [0..\vert combos(p) \vert) ]  
+}
+\aux{bebidasUsadas}{p:Pedido}{[Bebida]}{
+sacarRepeticiones(bebidasDelPedido(p))  
+}
+\aux{sandwichesDelPedido}{p:Pedido}{[Hamburguesa]}{
+[sandwich(combos(p)_i) \ \vert \ i \leftarrow [0..\vert combos(p) \vert) ]  
+}
+\aux{sandwichesUsados}{p:Pedido}{[Hamburguesa]}{
+sacarRepeticiones(sandwichesDelPedido(p))  
+}
+\aux{dificultadPedido}{p:Pedido}{ \ent }{
+\vert [ 1 \ \vert \ c \selec combos(p), i \selec [0.. dificultad(c)) ] \vert
+}
+\aux{cantidadMovimientos}{cs:[Combo], cs2:[Combo]}{\ent}{
+\vert [1 \ \vert \ i \leftarrow [0..\vert cs \vert ), \neg combosIguales(cs_i ,cs2_i)] \vert 
+}
+\aux {combosIguales}{c1:Combo, c2:Combo}{\bool}{
+(bebida(c1) == bebida(c2)) \wedge (sandwich(c1) == sandwich(c2))
+}
+\aux {vuelveAAparecer}{i: \ent , cs:[Combo]}{\bool}{
+\vert [cs_x \ \vert \ x \selec (i.. \vert cs \vert ), combosIguales(cs_i,cs_x)] \vert > 0
+}
+\aux{cantRepeticionesDeCombos}{cs:[Combo]}{\ent}{
+\vert [cs_i \ \vert \ i \selec [0.. \vert cs \vert ), vuelveAAparecer(i, cs)] \vert
+}
+\aux{distintosSyB}{cs:[Combo]}{\bool}{
+(\forall \ i,j \selec [0..|cs|), i \neq j) \ \neg combosIguales(cs_i, cs_j)
+}
+
+\subsection{Local}
+% los aux del tipo local
+\aux{atendioEmpleado}{l:Local}{[Empleado]}{
+[atendio(p) \ \vert \ p \leftarrow ventas(l), atendio(p) \in empleado(l)]
+}
+\aux{subventas}{l:Local}{[Empleado]}{
+atendioEmpleado[0.. \vert empelados(l) \vert )
+}
+
+\aux{empleadosConMasVentas}{l:Local}{[Empleado]}{ 
+[ \ e \  \vert \ e \leftarrow sacarRepeticiones(atendioEmpleado(l)),  \\ ( \forall \ e2 \leftarrow sacarRepeticiones(atendioEmpleado(l))) \ cuenta(e,atendioEmpleado(l)) \geq cuenta(e2,atendioEmpleado(l)) ]
+}
+
+\aux{cantidadDeCombosDeEmpleado}{e:Empleado, l:Local}{ \ent }{
+ \\ \vert [ \ c \ \vert \ p \leftarrow ventas(l), \ c \leftarrow combos(p), \ atendio(p) == e] \vert
+}
+
+\aux{numVentaL}{l:Local}{[\ent]}{ 
+[ \ numero(m) \  \vert \ m \leftarrow ventas(l)]
+}
+
+\aux{ventaN}{l:Local, n: \ent}{Pedido}{ 
+cab([\ m \  \vert \ m \leftarrow ventas(l), numero(m) == n])
+}
+
+\aux{bebidasN}{l:Local, n:\ent}{[Bebida]}{
+[bebida(i) \vert i \leftarrow combos(ventaN(l,n))]
+}
+
+\aux{bebidasUsadasN}{l:Local, n:\ent}{[Bebida]}{
+sacarRepeticiones(bebidasN(l, n))
+}
+
+\aux{sandwichesN}{l:Local, n:\ent}{[Hamburguesa]}{
+[sandwich(i) \vert i \leftarrow combos(ventaN(l,n)]
+}
+
+\aux{sandwichUsadosN}{l:Local, n:\ent}{[Hamburguesa]}{
+sacarRepeticiones(sandwichesN(l, n))
+}
+
+\aux{ventasMenosN}{l:Local, n:\ent}{[Pedido]}{ 
+[ p \vert p \leftarrow ventas(l), numero(p) \neq n]
+}
+
+\aux{mismosVenta}{l1:[Pedido], l2:[Pedido]}{\bool}{ 
+|l1| == |l2| \wedge (\forall i \leftarrow l1) cuentaVenta(i, l1) == cuentaVenta(i, l2));
+}
+
+\aux{cuentaVenta}{x:Pedido, y:[Pedido]}{\ent } {
+\vert [i \vert i \selec y, atendio(i) == atendio(x) \wedge combos(i) == combos(x)] \vert
+}
+
+\aux{ventasIguales}{v1:Pedido, v2:Pedido}{\bool}{
+atendio(v1) == atendio(v2) \wedge \vert combos(v1) \vert == \vert combos(v2) \vert \wedge (\forall i \selec [0.. \vert combos(v1) \vert) \  combos(v1)_i == combos(v2)_i
+}
+
+\aux{NumeroPedidoUltimaVenta}{l:Local}{\ent}{
+maximo([numero(p) \ \vert \ p \leftarrow ventas(l)])
+}
+
+\aux{posicionDeLaVenta}{e:Empleado, v:[Pedido]}{[\ent]}{
+0:[(i+1) \ \vert \ i \selec [0..\vert v \vert), atendio(v_i) == e] ++ [\vert v \vert + 1]
+}
+
+\aux{distanciaEntreVentasDelEmpleado}{e:Empleado, v:[Pedido]}{[\ent]}{if \ \vert posicionDeLaVenta(e, v) \vert == 2 \ \\
+then \ [\vert v \vert] \
+else \ [(posicionDeLaVenta(e, v)_{i+1} - posicionDeLaVenta(e, v)_i -1) \vert i \selec [0..|posicionDeLaVenta(e, v)|-1)]}
+
+\aux{distanciaMayorEntreVentasDelEmpleado}{e:Empleado, v:[Pedido]}{\ent}{ \\
+maximo(distanciaEntreVentasDelEmpleado(e, v))
+}
+
+
+\aux{sacarVentaN}{l:Local,n:\ent}{[\ent]}{
+[numero(i) \vert i \selec (numVentaL(l), numero(i) < n] ++ [numero(i)-1 \vert i \selec numVentaL(l), numero(i) > n]
+}

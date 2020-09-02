@@ -1,0 +1,9 @@
+Para correr los test compilar dist_hashmap con 'make' y correr tester dando np como parametro
+
+EJEMPLO(np == 5):
+
+./tester 5
+
+LOS TEST TARDAN EN CORRER. NO SON INMEDIATOS
+
+REQ: bash, python, diff, echo.

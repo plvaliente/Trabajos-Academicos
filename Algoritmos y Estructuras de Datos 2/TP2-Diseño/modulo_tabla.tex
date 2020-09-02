@@ -1,0 +1,958 @@
+\section{M\'odulo Tabla}
+
+\Encabezado{Notas preliminares}
+  En todos los casos, al indicar las complejidades de los algoritmos, las variables que se utilizan corresponden a:
+  \vspace{-0.5em}\begin{itemize}
+    \item $n$: N\'umero de registros en la tabla pasada por par\'ametro.
+    \item $m$: N\'umero de registros en la tabla pasada por par\'ametro.
+    \item $L$: M\'axima longitud de un valor STRING de un registro en la tabla pasada por par\'ametro.
+  \end{itemize}
+
+\begin{Interfaz}
+  
+
+  \seExplicaCon{Tabla}
+
+  \generos{\tipo{tbl}}
+  
+    \servUsados{nombreTabla, campo, Bool, Conj, itConj, String, Nat, reg, Tupla, dat, ContenedorReg, itTablas, minMax}
+  
+  \Encabezado{Operaciones de Tabla}
+
+   \InterfazFuncion{nuevaTabla}{\In{nombre}{string}, \In{claves}{conj(campo)}, \In{columnas}{reg}}{tbl}
+  [$claves \neq \emptyset \land claves  \subseteq campos(columnas)$] % Pre
+  {$res$ $\igobs$ nuevaTabla()} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Crea una tabla Vacia] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{agregarRegistro}{\In{r}{reg}, \Inout{t}{tbl}}{}
+  [$t \igobs t_0 \land campos(r) \igobs campos(t) \wedge puedoInsertar?(r,t))$] % Pre
+  {$t \igobs agregarRegistro(r,t_0)$} % Pos
+  [$O(L + log(n))$ ] % Complejidad
+  [Agrega a la tabla el Registro $r$] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{borrarRegistro}{\In{crit}{reg}, \Inout{t}{tbl}}{}
+  [$t \igobs t_0 \land \#campos(crit) = 1 campos(t) \yluego dameUno(campos(crit)) \in claves(t)$] % Pre
+  {$t \igobs borrarRegistro(r,t_0)$} % Pos
+  [$O(n*(n+L))$ ] % Complejidad
+  [Borra un Registro de la tabla, segun el Criterio $crit$] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Indexar}{\In{c}{campo}, \Inout{t}{tbl}}{}
+  [$t \igobs t_0 \land puedeIndexar?(c,t))$] % Pre
+  {$t \igobs indexar(c,t_0)$} % Pos
+  [$O(n * (n * lg(n) + L))$ ] % Complejidad
+  [Indexa la tabla por el campo $c$] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Nombre}{\In{t}{tbl}}{string}
+  [true] % Pre
+  {$res \igobs nombre(t)$} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Retorna el nombre de la tabla] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Claves}{\In{t}{tbl}}{conj(campo)}
+  [true] % Pre
+  {$res \igobs claves(t)$} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Retorna un conjunto con las claves de la tabla] % Descripción
+  [] % Aliasing
+  
+\newpage
+  
+  \InterfazFuncion{Indices}{\In{t}{tbl}}{conj(campo)}
+  [true] % Pre
+  {$res \igobs indices(t)$} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Retorna un conjunto con los indices de la tabla] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Campos}{\In{t}{tbl}}{conj(campo)}
+  [true] % Pre
+  {$res \igobs campos(t)$} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Retorna un conjunto con los campos de la tabla] % Descripción
+  [] % Aliasing
+
+  \InterfazFuncion{esNat?}{\In{c}{campo}, \In{t}{tbl}}{bool}
+  [$c$ $\in$ campos($t$)] % Pre
+  {$res$ $\igobs$ tipoCampo($c$,$t$)} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Devuelve verdadero si el campo $c$ es de tipo nat] % Descripción
+  [] % Aliasing
+  
+  \InterfazFuncion{Registros}{\In{t}{tbl}}{conj(reg)}
+  [true] % Pre
+  {$res \igobs registros(t)$} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Retorna un conjunto con los registros de la tabla. ] % Descripción
+  [Se devuelve una referencia no modificable] % Aliasing
+  
+   \InterfazFuncion{CantidadDeAccesos}{\In{t}{tbl}}{nat}
+  [true] % Pre
+  {$res \igobs cantidadDeAccesos(t)$} % Pos
+  [$\Theta(1)$ ] % Complejidad
+  [Retorna los accesos de la tabla] % Descripción
+  [] % Aliasing
+  
+   \InterfazFuncion{PuedoInsertar?}{\In{r}{reg}, \In{t}{tbl}}{bool}
+   [true] % Pre
+   {$res \igobs puedoInsertar?(r,t)$} % Pos
+   [$O(n*L)$ ] % Complejidad
+   [Devuelve verdadero si el registro $r$ es insertable] % Descripción
+   [] % Aliasing
+  
+   \InterfazFuncion{Compatible}{\In{r}{reg}, \In{t}{tbl}}{bool}
+   [true] % Pre
+   {$res \igobs compatible(r,t)$} % Pos
+   [$\Theta(1)$ ] % Complejidad
+   [Devuelve verdadero si el registro $r$ tiene los mismo campos y tipos que la tabla] % Descripción
+   [] % Aliasing
+   
+   \InterfazFuncion{hayCoincidencia}{\In{r}{reg}, \In{cc}{conj(campo)}, \In{cr}{conj(reg)}}{bool}
+   [true] % Pre
+   {$res \igobs hayCoincidencia(r,cc,cr)$} % Pos
+   [$O(Cardinal(cr)*Cardinal(cc)*L)$ ] % Complejidad
+   [Devuelve verdadero si en $r$ y un registro de $cr$ coincide en campo y dato para algun campo de $cc$ ] % Descripción
+   [] % Aliasing
+
+   \InterfazFuncion{MismosTipos}{\In{r}{reg}, \In{t}{tbl}}{bool}
+   [$ campos(r) \subseteq campos(t) $] % Pre
+   {$res \igobs mismosTipos(r,t)$} % Pos
+   [$O((\#Campos(r) + \#Campos(t)) * L$ ] % Complejidad
+   [Devuelve verdadero si el registro tienen los mismos campos y tipo para cada uno de ellos] % Descripción
+   [] % Aliasing
+   
+   \InterfazFuncion{minimo}{\In{c}{campo}, \In{t}{tbl}}{dat}
+   [$\neg \emptyset ?(registros(t)) \land c \in indices(t)$] % Pre
+   {$res \igobs minimo(r,t)$} % Pos
+   [$O(1)$ ] % Complejidad
+   [Devuelve el minimo  de los datos correspondientes al campo $c$] % Descripción
+   [res es una referencia] % Aliasing
+  
+   \InterfazFuncion{maximo}{\In{c}{campo}, \In{t}{tbl}}{dat}
+   [$\neg \emptyset ?(registros(t)) \land c \in indices(t)$] % Pre
+   {$res \igobs maximo(r,t)$} % Pos
+   [$O(1)$ ] % Complejidad
+   [Devuelve el maximo  de los datos correspondientes al campo $c$] % Descripción
+   [res es una referencia] % Aliasing
+  
+   \InterfazFuncion{puedoIndexar}{\In{c}{campo}, \In{t}{tbl}}{bool}
+   [true] % Pre
+   {$res \igobs puedoIndexar(c,t)$} % Pos
+   [$\Theta(L)$ ] % Complejidad
+   [Devuelve verdadero si se puede indexar la tabla por el campo $c$] % Descripción
+   [] % Aliasing
+  
+   \InterfazFuncion{coincidencias}{\In{r}{reg}, \In{cr}{conj(reg)}}{conj(reg)}
+   [true] % Pre
+   {$res \igobs coincidencias(r,cr)$} % Pos
+   [$O(\#cr * L)$ ] % Complejidad
+   [Devuelve un conjunto con los registros de $cr$ que coincidan en campo y dato para cada campo de $r$] % Descripción
+   [] % Aliasing
+  
+   \InterfazFuncion{coincidenciasRap}{\In{r}{reg}, \In{t}{tbl}}{conj(reg)}
+   [true] % Pre
+   {$res \igobs coincidencias(r,registros(t))$} % Pos
+   [$O(\#cr * L)$ en peor caso, si algun campo del registro es un campo indice y clave en la tabla la complejidad es $O(log(n) + L)$ ] % Complejidad
+   [Devuelve un conjunto con los registros de $t$ que coincidan en campo y dato para cada campo de $r$ utilizando los campos indexados de t (en caso de existir) para poder encontrar las coincidencias en menor tiempo] % Descripción
+   [] % Aliasing
+  
+   \InterfazFuncion{combinarRegistros}{\In{c}{campo}, \In{cr1}{conj(reg)}, \In{cr2}{conj(reg)}}{conj(reg)}
+   [true] % Pre
+   {$res \igobs combinarRegistros(c,cr1,cr2)$} % Pos
+   [$O(n * m * L * min\{n,m\})$ ] % Complejidad
+   [Devuelve un conjunto el cual es el resultado de la UNION de aplicar combinarTodos($c$,$cr1_i$,$cr2$) para todo $cr1_i$ registro de $cr1$ ] % Descripción
+   [] % Aliasing
+   
+   \InterfazFuncion{combinarRegistrosRap}{\In{c}{campo}, \In{cr1}{conj(reg)}, \In{t}{tbl}}{conj(reg)}
+   [true] % Pre
+   {$res \igobs combinarRegistros(c,cr1,registros(t))$} % Pos
+   [S\'i c es \'indice y clave, entonces $O(n*((log(m) + L)))$. Sino, en peor caso, $O(n*m*L*min\lbrace m, n \rbrace)$] % Complejidad
+   [Este metodo esta pensado para utilizar cuando los conjuntos de registros que se reciben son los registros de una tabla. Y, estos, en el caso de que algun campo sea indice, permiten buscar algun registro, dentro del conjunto, mas rapido. Por eso se recibe un conjunto arbitrario y una tabla. Esto nos permite buscar, para cada registro del conjunto $cr1$, en los registros de la tabla en un tiempo igual o menor a que si fuera un conjunto arbitrario, ya que usamos los indices de la tabla, si existen. Y, si ademas, el campo es clave de la tabla, entonces podemos asegurar que la complejidad del algoritmo es todavia mejor, ya que sabemos que para cada registro de $cr1$ solo va a existir un \'unico registro en los registros de la tabla. ]% Descripción
+   [] % Aliasing
+  
+   \InterfazFuncion{dameColumna}{\In{c}{campo}, \In{cr}{conj(reg)}}{conj(dat)}
+   [true] % Pre
+   {$res \igobs dameColumna(c,cr)$} % Pos
+   [$O((\#cr)²*L)$ ] % Complejidad
+   [Devuelve un conjunto con los datos del campo $c$ para cada registro de la tabla] % Descripción
+   [] % Aliasing
+  
+  
+\end{Interfaz}
+
+\begin{Representacion}
+
+  \begin{Estructura}{tabla}[estrTabla]
+
+    \begin{Tupla}[estrTabla]
+	\tupItem{Nombre}{nombreTabla}
+	\tupItem{CantAccesos}{Nat}
+	\tupItem{HayIndiceNat?}{Bool}
+
+	\tupItem{CampoIndiceNat}{campo}
+	\tupItem{HayIndiceString?}{Bool}
+
+	\tupItem{CampoIndiceString}{campo}
+    \tupItem{Columnas}{reg}
+    
+	\tupItem{Claves}{Conj<campo>}
+	\tupItem{Registros}{ContenedorReg}
+    
+	\tupItem{Propiedades}{Dicc<campo, minMax>}
+	\end{Tupla}
+
+  \end{Estructura}
+  
+\textbf{Invariante de representaci\'on en castellano:}
+
+    \begin{enumerate} 
+		\item Si HayIndiceNat? es falso, CampoIndiceNat es $""$. Sino, pertenece a los Campos de Columnas.
+		\item Si HayIndiceString? es falso, CampoIndiceString es $""$. Sino, pertenece a los  Campos de columnas.
+        \item Claves esta incluido en los Campos de Columnas.
+        \item CantAccesos es mayor o igual a la cantidad de registros.
+        \item Claves no es vacio.
+        \item Las claves de propiedades son los campos indexados.
+        \item Todos los registros tienen los mismos campos que el registro Columnas.
+        \item Todos los registros tienen el mismo tipo en cada campo que el registro Columnas.
+        \item Para cada campo indexado, los minimos y maximos en propiedades, son el mismo tipo de dato que en los registros.
+		\item Para todo campo indexado, los valores de ese campo en todos los registros estan acotados ente el min y max, y estos pertenecen.
+        \item En cada campo que es clave, todos los registros tienen distintos valores.
+        \item Si hay indice NAT, en Registros, las claves del diccionario IndiceNat son los datos de los registros en el CampoIndiceNat, y su significado es un conjunto de tuplas cuyo primer elemento es un iterador que apuntan a un registro del conjunto Registros, con ese dato en el campo indexado, y, si hay indice STRING, el segundo elemento es un iterador que apunta a una tupla en indiceString, cuyo primer elemento es un iterador que apunta al mismo registro. Si no hay indice STRING, este iterador apunta a NULL. 
+        \item Si no hay indice nat, IndiceNat es un diccionario vacio.
+        \item Si hay indice STRING, en Registros, las claves del diccionario IndiceString son los datos de los registros en el CampoIndiceString, y su significado es un conjunto de iteradores que apuntan a un registro del conjunto Registros, con ese dato en el campo indexado, y, si hay indice NAT, el segundo elemento es un iterador que apunta a una tupla en IndiceNat cuyo primer elemento es un iterador que apunta al mismo registro. Si no hay indice NAT, este iterador apunta a NULL. 
+        \item Si no hay indice string, IndiceString es un diccionario vacio.
+        
+    \end{enumerate}
+  \RepFc[Tabla][e]{ 
+  \begin{enumerate}  
+      \item $\neg$ e.HayIndiceNat? $\Rightarrow$ e.CampoIndiceNat $=$ $""$ $\land$ e.HayIndiceNat? $\Rightarrow$ e.CampoIndiceNat $\in$ campos(e.Columnas) $\land$
+      \item $\neg$ e.HayIndiceString? $\Rightarrow$ e.CampoIndiceString $= "" \land$ e.HayIndiceString? $\Rightarrow$ e.CampoIndiceString $\in$ campos(e.Columnas) $\land$
+      \item e.Claves $\subseteq$ campos(e.Columnas) $\yluego$
+      \item cardinal(e.Registros.Registros) $\leq$ e.CantAccesos $\land$
+      \item e.Claves $\neq \emptyset \ \yluego$
+      \item Claves(e.Propiedades) $=$ Indices(t)  $\yluego$
+      \item ($\forall$ r $\in$ e.Registros.Registros) campos(r) $=$ campos(e.Columnas) $\yluego$
+      \item ($\forall$ r $\in$ e.Registros.Registros) ($\forall$ c $\in$ e.Campos) mismoTipo(Significado(r,c),Significado(e.Columnas,c)) $\yluego$
+      \item ($\forall$ c $\in$ Indices(t)) mismoTipo(Significado(e.Propiedades, c).Min, Significado(e.Columnas, c)) $\land$ mismoTipo(Significado(e.Propiedades, c).Max, Significado(e.Columnas, c)) $\yluego$
+      \item ($\forall$ r $\in$ e.Registros.Registros)($\forall$ c $\in$ Indices(t)) Significado(e.Propiedades, c).Min $\leq$ Significado(r, c) $\leq$ Significado(e.Propiedades, c).Max $\land$
+      \item ($\forall$ c $\in$ indices(t)) Significado(e.Propiedades, c).Min $\in$ dameColumna(c, e.Registros.Registros) $\land$ Significado(e.Propiedades, c).Max $\in$ dameColumna(c, e.Registros.Registros) $\land$
+      \item ($\forall$ r1, r2 $\in$ e.Registros.Registros) r1 $\neq$ r2 $\Rightarrow$ ($\forall$ c $\in$ e.Claves) Significado(r1, c) $\neq$ Significado(r2,c) $\land$
+      \item e.HayIndiceNat? $\Rightarrow$ (Claves(e.Registros.IndiceNat) $=$ dameColumna(e.CampoIndiceNat, e.Registros.Registros) $\yluego$ ($\forall$ n $\in$ Claves(e.Registros.IndiceNat))(($\forall$ tupIt $\in$ Obtener(e.Registros.IndiceNat, n)) Obtener(Siguiente(tupIt.Reg), e.CampoIndiceNat) $=$ n $\land$ (e.HayIndiceString? $\Rightarrow$ Obtener(Siguiente(Siguiente(tupIt.OtroIndice).Reg), e.CampoIndiceNat) $=$ n) $\land$ ($\neg$ e.HayIndiceString? $\Rightarrow$ Siguiente(tupIt.OtroIndice) $=$ NULL) $\land$
+      \item $\neg$ e.HayIndiceNat? $\Rightarrow$ Claves(e.Registros.IndiceNat) $=$ $\emptyset $ $\land$
+      \item e.HayIndiceString? $\Rightarrow$ (Claves(e.Registros.IndiceString) $=$ dameColumna(e.CampoIndiceString, e.Registros.Registros) $\yluego$ ($\forall$ s $\in$ Claves(e.Registros.IndiceNat))($\forall$ tupIt $\in$ Obtener(e.Registros.IndiceString, s)) Obtener(Siguiente(tupIt.Reg), e.CampoIndiceString) $=$ s) $\land$ (e.HayIndiceNat? $\Rightarrow$ Obtener(Siguiente(Siguiente(tupIt.OtroIndice).Reg), e.CampoIndiceString) $=$ s) $\land$ ($\neg$ e.HayIndiceNat? $\Rightarrow$ Siguiente(tupIt.OtroIndice) $=$ NULL)$\land$
+      \item $\neg$ e.HayIndiceString? $\Rightarrow$ Claves(e.Registros.IndiceString) $=$ $\emptyset$ $\land$
+      \end{enumerate}
+    }
+    
+
+  \AbsFc[estrDato]{Tabla}[e]{t: Tabla | 
+	\begin{enumerate}
+		\item e.Nombre $=$ nombre(t) $\land$
+        \item e.CantAccesos $=$ cantidadDeAccesos(t) $\land$
+        \item e.HayIndiceNat? $\Leftrightarrow$ ($\exists$ c $\in$ indices(t)) tipoCampo(c,t) $=$ true $\land$
+        \item e.HayIndiceString? $\Leftrightarrow$ ($\exists$ c $\in$ indices(t)) tipoCampo(c,t) $=$ false $\land$
+        \item e.CampoIndiceNat $\in$ indices(t)$\land$
+        \item e.CampoIndiceString $\in$ indices(t)$\land$
+        \item campos(e.Columnas) $=$ campos(t) $\land$
+        \item e.Claves $=$ claves(t) $\land$
+        \item e.Registros.Registros $=$ registros(t)
+        \item esNat?(e.columnas,c) $=$ tipoCampo(c,t)
+	\end{enumerate} }
+  
+  ~
+
+ % \textbf{Funciones Auxiliares:}
+
+  ~
+    
+ % \tadOperacion{...}{...}{...}{}
+ % \tadAxioma{...}{...}
+  
+\end{Representacion}
+
+
+\begin{Algoritmos}
+
+  % \nuevoAlgo
+  \begin{algoritmo}{inuevaTabla}{\In{nombre}{string}, \In{claves}{conj(campo)}, \In{columnas}{reg}}{estrTabla}
+	registros $\leftarrow$ <Vacio(), Vacio(), Vacio()> \com*{$O(3)$}
+    res $\leftarrow$ $\langle$ nombre, 0, false, $""$, false, $""$, columnas, claves, registros, Vacio() $\rangle$ \com*{$O(10 + |L|)$}
+  
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Como los nombres de los campos son acotados $O(9 + |L|)$ = $O(10)$ donde |L| es la longitud del nombre de campo mas largo. Por algebra de ordenes $O(3)$ + $O(10)$ = $O(1)$} % Justificación  
+  
+  \begin{algoritmo}{agregarRegistro}{\In{r}{reg}, \Inout{t}{estrTabla}}{}
+  	itReg $\leftarrow$ AgregarRapido(t.Registros.registros, r) \com*{$O(L)$} 
+	\If(\com*[f]{$O(1)$}){t.HayIndiceNat?}{
+    	\eIf(\com*[f]{$O(lg(n))$}){Definido?(valorN(Significado(r, t.CampoIndiceNat)),t.Registros.IndiceNat)}{
+			itTupNat $\gets$ AgregarRapido(Obtener(valorN(Significado(r, t.CampoIndiceNat)), t.Registros.IndiceNat),$<$itReg, NULL$>$) \com*{$O(lg(n))$}
+        }{
+        	nuevoConjN $\leftarrow$ Vacio() \com*{$O(1)$} 
+            itTupNat $\gets$ AgregarRapido(nuevoConjN, $<$itReg, NULL$>$)) \com*{$O(1)$} 
+        	Definir(valorN(Significado(r, t.CampoIndiceNat)), nuevoConjN) \com*{$O(lg(n))$}
+        }
+    }
+	\If(\com*[f]{$O(1)$}){t.HayIndiceString?}{
+    	\eIf(\com*[f]{$O(|L|)$}){Definido?(valorS(Significado(r, t.CampoIndiceString)),t.Registros.IndiceString)}{
+        	itTupStr $\gets$ AgregarRapido(Obtener(valorS(Significado(r, t.CampoIndiceString)), t.Registros.IndiceString),$<$itReg, NULL$>$)) \com*{$O(|L|)$}
+        }{
+        	nuevoConjS $\leftarrow$ Vacio() \com*{$O(1)$}
+            itTupStr $\gets$ AgregarRapido(nuevoConjS, $<$itReg, NULL$>$)) \com*{$O(1)$}
+        	Definir(valorS(Significado(r, t.CampoIndiceString)), nuevoConjS) \com*{$O(|L|)$}
+        }
+    }
+    \If(\com*[f]{$O(1)$}){HayIndiceNat? $\land$ HayIndiceString?}{
+    	Siguiente(itTupNat).OtroIndice $\gets$ itTupString \com*{$O(1)$}
+        Siguiente(itTupStr).OtroIndice $\gets$ itTupNat \com*{$O(1)$}
+    }
+\If(\com*[f]{$O(1)$}){HayIndiceNat?}{
+	\If(\com*[f]{$O(1)$}){Significado(r, campoIndiceNat) $<$ Significado(t.Propiedades, campoIndiceNat).Min}{
+    	actualMax $\gets$ Significado(t.Propiedades, campoIndiceNat).Max \com*{$O(1)$}
+        nuevoMin $\gets$ Significado(r, campoIndiceNat) \com*{$O(1)$}
+		Definir(t.Propiedades, campoIndiceNat, $<$nuevoMin, actualMax$>$) \com*{$O(1)$}
+	}
+	\If(\com*[f]{$O(1)$}){Significado(r, campoIndiceNat) $>$ Significado(t.Propiedades, campoIndiceNat).Max}{
+    	actualMin $\gets$ Significado(t.Propiedades, campoIndiceNat).Min \com*{$O(1)$}
+        nuevoMax $\gets$ Significado(r, campoIndiceNat) \com*{$O(1)$}
+		Definir(t.Propiedades, campoIndiceNat, $<$actualMin, nuevoMax$>$) \com*{$O(1)$}
+	}
+}
+\If(\com*[f]{$O(1)$}){HayIndiceString?}{
+	\If(\com*[f]{$O(1)$}){Significado(r, campoIndiceString) $<$ Significado(t.Propiedades, campoIndiceString).Min}{
+    	actualMax $\gets$ Significado(t.Propiedades, campoIndiceString).Max \com*{$O(1)$}
+        nuevoMin $\gets$ Significado(r, campoIndiceString) \com*{$O(1)$}
+		Definir(t.Propiedades, campoIndiceString, $<$nuevoMin, actualMax$>$) \com*{$O(1)$}
+	}
+	\If(\com*[f]{$O(1)$}){Significado(r, campoIndiceString) $>$ Significado(t.Propiedades, campoIndiceString).Max}{
+    	actualMin $\gets$ Significado(t.Propiedades, campoIndiceString).Min \com*{$O(1)$}
+        nuevoMax $\gets$ Significado(r, campoIndiceString) \com*{$O(1)$}
+		Definir(t.Propiedades, campoIndiceString, $<$actualMin, nuevoMax$>$) \com*{$O(1)$}
+	}
+}
+    
+    t.CantAccesos $\leftarrow$ t.CantAccesos + 1 \com*{$O(1)$}
+    
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L+lg(n))$} % Complejidad
+ {Como la cantidad de campos de una tabla es acotada $O(Cardinal(campos(r)))$ $=$ $O(1)$  En el caso de no haber indices los if de las lineas 2 y 12 cuestan $O(1)$.Si hay indice String el if de la linea 12 cuesta $O(2|L|)$ $=$ $O(|L|)$. Si hay indice nat el if de la linea 2 cuesta $O(2lg(n))$ $=$ $O(lg(n))$.La unica operacion que no tiene complejidad $O(1)$ dentro del $while$  es la comparacion $\leq$ que cuesta $O(|L|)$ . Por lo tanto aplicando algebra de ordenes si no hay indices la complejidad es $O(|L|)$, si solo hay indice string la complejidad tambien es $O(|L|)$, si solo hay indice nat o ambos indices la complejidad es $O(|L| + lg(n))$} % Justificacion
+  
+
+
+  \begin{algoritmo}{iborrarRegistro}{\In{crit}{reg}, \Inout{t}{tbl}}{}
+    itCamp $\leftarrow$ CrearIt(Campos(crit)) \com*{$O(1)$}
+    campoBorr $\leftarrow$ Siguiente(itCamp) \com*{$O(1)$}
+    valorBorr $\leftarrow$ Significado(crit, campoBorr) \com*{$O(1)$} %porque estan acotados los campos
+
+    \If(\com*[f]{$O(1)$}){t.HayIndiceString? $\land$ campoBorr = t.CampoIndiceString}{
+    	valorIndiceString $\gets$ valorBorr \com*{$O(1)$}
+    	itRegBS $\leftarrow$ CrearIt(Obtener(t.Registros.IndiceString, valorBorr)) \com*{$O(|L|)$}
+%        \While(\com*[f]{$O(Cardinal(t.Registros.Registros))$}){HaySiguiente(itRegBS)}{
+            t.CantAccessos $\leftarrow$ t.CantAccesos + 1 \com*{$O(1)$}
+            \If(\com*[f]{$O(1)$}){t.HayIndiceNat?}{
+	            valorIndiceNat $\gets$ Significado(Siguiente(Siguiente(itRegBS).Reg), t.CampoIndiceNat)\com*{$O(1)$}
+                EliminarSiguiente(Siguiente(itRegBs).OtroIndice)\com*{$O(1)$}
+				\If(\com*[f]{$O(log(n)) + O(1)$}){Cardinal(Obtener(t.Registros.IndiceNat, valorIndiceNat)) $=$ 0}{
+                	Borrar(t.Registros.IndiceNat, valorIndiceNat)\com*{$O(n) \ o \ O(log(n))$ en promedio}
+                }
+            }
+            EliminarSiguiente(Siguiente(itRegBS).Reg) \com*{$O(1)$}
+%            Avanzar(itRegBS) \com*{$O(1)$}
+%        }
+        Borrar(t.Registros.IndiceString, valorBorr) \com*{$O(|L|)$}
+    }\Else{
+        \If(\com*[f]{$O(1)$}){t.HayIndiceNat? $\land$ campoBorr $=$ t.CampoIndiceNat}{
+    	valorIndiceNat $\gets$ valorBorr \com*{$O(1)$}
+        itRegBN $\leftarrow$ CrearIt(Obtener(t.Registros.IndiceNat, valorBorr)) \com*{$O(n) \ o \ O(log(n))$ en promedio}
+%        \While(\com*[f]{$O(Cardinal(t.Registros.IndiceNat))$}){HaySiguiente(itRegBN)}{
+            \If(\com*[f]{$O(1)$}){t.HayIndiceString?}{
+	            valorIndiceString $\gets$ Significado(Siguiente(Siguiente(itRegBS).Reg), t.CampoIndiceString)\com*{$O(1)$}
+                EliminarSiguiente(Siguiente(itRegBs).OtroIndice)\com*{$O(1)$}
+				\If(\com*[f]{$O(|L|) + O(1)$}){Cardinal(Obtener(t.Registros.IndiceString, valorIndiceString)) $=$ 0}{
+                	Borrar(t.Registros.IndiceString, valorIndiceString)\com*{$O(L)$}
+                }
+            }
+            EliminarSiguiente(Siguiente(itRegBN)) \com*{$O(2)$}
+            t.CantAccessos $\leftarrow$ t.CantAccesos + 1 \com*{$O(1)$}
+%            Avanzar(itRegBN) \com*{$O(1)$}
+%        }
+        Borrar(t.Registros.IndiceNat, valorBorr)  \com*{$O(n) \ o \ O(log(n))$ en promedio}
+        }
+    }
+    
+\end{algoritmo}
+\begin{algoritmo}{iborrarRegistro}{...continua}{}
+    
+    \If(\com*[f]{$O(1)$}){($\neg$ (t.HayIndiceString? $\vee$ t.HayIndiceNat?)) $\vee$ $\neg$ ((t.HayIndiceString? $\yluego$ campoBorr = CampoIndiceString) $\vee$ (t.HayIndiceNat? $\yluego$ campoBorr = CampoIndiceNat))}{
+    itReg $\leftarrow$ CrearIt(t.Registros.registros) \com*{$O(1)$}
+    \While(\com*[f]{$O(Cardinal(t.Registros.registros))$}){HaySiguiente(itReg)}{
+    	\If(\com*[f]{$O(|L|)$}){valorBorr = Significado(Siguiente(itReg), campoBorr)}{
+        \If(\com*[f]{$O(1)$}){t.HayIndiceNat?}{
+        valorIndiceNat $\gets$ Significado(Siguiente(itReg), CampoIndiceNat) \com*{$O(1)$}
+        itBorr $\leftarrow$ CrearIt(Obtener(t.Registros.IndiceNat, valorIndiceNat )) \com*{$O(n) \ o \ O(log(n))$ en promedio}
+        \While(\com*[f]{$O(1)$}){HaySiguiente(itBorr)}{
+        \If(\com*[f]{$O(|L|)$}){Siguiente(Siguiente(itBorr).Reg) = Siguiente(itReg)}{
+			\If(\com*[f]{$O(1)$}){t.HayIndiceString?}{
+				valorIndiceString $\gets$ Significado(Siguiente(Siguiente(itBorr).Reg), t.CampoIndiceString)\com*{$O(1)$} 
+				EliminarSiguiente(Siguiente(itBorr).OtroIndice) \com*{$O(1)$}
+				\If(\com*[f]{$O(|L|) + O(1)$}){Cardinal(Obtener(t.Registros.IndiceString, valorIndiceString)) $=$ 0}{
+                	Borrar(t.Registros.IndiceString, valorIndiceString)\com*{$O(|L|)$}
+               	}
+            }
+            EliminarSiguiente(itBorr) \com*{$O(1)$}
+        }
+        Avanzar(itBorr) \com*{$O(1)$}
+        }
+        }
+        \If(\com*[f]{$O(1)$}){t.HayIndiceString?}{
+        valorIndiceString $\gets$ Significado(Siguiente(itReg), CampoIndiceString) \com*{$O(1)$}
+        itBorr $\leftarrow$ CrearIt(Obtener(t.Registros.IndiceString, valorIndiceString )) \com*{$O(|L|)$}
+        \While(\com*[f]{$O(1)$ en promedio}){HaySiguiente(itBorr)}{
+        \If(\com*[f]{$O(|L|)$}){Siguiente(Siguiente(itBorr)) = Siguiente(itReg)}{
+			\If(\com*[f]{$O(1)$}){t.HayIndiceNat?}{
+				valorIndiceNat $\gets$ Significado(Siguiente(Siguiente(itBorr).Reg), t.CampoIndiceNat)\com*{$O(1)$} 
+				EliminarSiguiente(Siguiente(itBorr).OtroIndice) \com*{$O(1)$}
+				\If(\com*[f]{$O(|L|) + O(1)$}){Cardinal(Obtener(t.Registros.IndiceNat, valorIndiceNat)) $=$ 0}{
+                	Borrar(t.Registros.IndiceNat, valorIndiceNat)\com*{$O(|L|)$}
+               	}
+            }
+        	EliminarSiguiente(itBorr) \com*{$O(1)$}
+        }
+        Avanzar(itBorr) \com*{$O(1)$}
+        }
+        }
+        EliminarSiguiente(itReg) \com*{$O(1)$}
+        t.CantAccessos $\leftarrow$ t.CantAccesos + 1 \com*{$O(1)$}
+        
+        }
+        Avanzar(itReg) \com*{$O(1)$}
+    }    
+}     
+\end{algoritmo}
+
+\begin{algoritmo}{iborrarRegistro}{...continua}{}
+\If(\com*[f]{$O(1)$}){HayIndiceNat?}{
+	\If(\com*[f]{$O(1)$}){valorIndiceNat $=$ Significado(t.Propiedades, campoIndiceNat).Min}{
+    	actualMax $\gets$ Significado(t.Propiedades, campoIndiceNat).Max \com*{$O(1)$}
+        nuevoMin $\gets$ minimaClave(t.IndiceNat) \com*{$O(log(n))$}
+		Definir(t.Propiedades, campoIndiceNat, $<$nuevoMin, actualMax$>$) \com*{$O(1)$}
+	}
+	\If(\com*[f]{$O(1)$}){valorIndiceNat $=$ Significado(t.Propiedades, campoIndiceNat).Max}{
+    	actualMin $\gets$ Significado(t.Propiedades, campoIndiceNat).Min \com*{$O(1)$}
+        nuevoMax $\gets$ maximaClave(t.IndiceNat) \com*{$O(log(n))$}
+		Definir(t.Propiedades, campoIndiceNat, $<$actualMin, nuevoMax$>$) \com*{$O(1)$}
+	}
+}
+\If(\com*[f]{$O(1)$}){HayIndiceString?}{
+	\If(\com*[f]{$O(1)$}){valorIndiceString $=$ Significado(t.Propiedades, campoIndiceString).Min}{
+    	actualMax $\gets$ Significado(t.Propiedades, campoIndiceString).Max \com*{$O(1)$}
+        nuevoMin $\gets$ minimaClave(t.IndiceString) \com*{$O(L)$}
+		Definir(t.Propiedades, campoIndiceString, $<$nuevoMin, actualMax$>$) \com*{$O(1)$}
+	}
+	\If(\com*[f]{$O(1)$}){valorIndiceString $=$ Significado(t.Propiedades, campoIndiceString).Max}{
+    	actualMin $\gets$ Significado(t.Propiedades, campoIndiceString).Min \com*{$O(1)$}
+        nuevoMax $\gets$ maximaClave(t.IndiceString) \com*{$O(L)$}
+		Definir(t.Propiedades, campoIndiceString, $<$actualMin, nuevoMax$>$) \com*{$O(1)$}
+	}
+}
+\end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n*(n+L))$} % Complejidad
+  {Obviando las operaciones constantes, tanto si entra en el primer if (linea 4 primer pagina) como el segundo (linea 19 primer pagina): $O(L)$ + $O(log(n))$ + $O(n)$
+  
+  + $O(n)$ * ($O(n)$ + 6*$O(L)$) Si entra en el tercer if (linea 1 segunda pagina)
+  
+  + $O(L) + O(log(n))$ (actualizar maximos y minimos)
+  Por \'algebra de ordenes, en peor caso: = $O(n*(n+L))$.
+
+Si el criterio de borrado es indice sobre campo tipo nat, no entra nunca al if de la segunda pagina, entonces en promedio:
+
+$O(log(n))$ + $O(L)$ + $O(log(n))$ + $O(L)$ + $O(log(n))$ = $O(log(n) + L)$
+} % Justificación
+  
+  
+\begin{algoritmo}{Indexar}{\In{c}{campo}, \Inout{t}{estrTabla}}{}
+     itReg $\leftarrow$ CrearIt(t.Registros.registros) \com*{$O(1)$}
+     \If(\com*[f]{$O(|L|)$}){esNat?(Significado(t.Columnas, c))}{
+     	t.HayIndiceNat? $\leftarrow$ true \com*{$O(1)$}
+        t.CampoIndiceNat $\leftarrow$ c \com*{$O(1)$}
+         \While(\com*[f]{$O(Cardinal(t.Registros.registros))$}){HaySiguiente(itReg)}{
+         	itTupStr $\leftarrow$ NULL \com*{$O(1)$}
+            \If(\com*[f]{$O(1)$}){t.HayIndiceString}{
+            	itOtroInd $\leftarrow$ CrearIt(Obtener(t.Registros.IndiceString, valorS(Significado(Siguiente(itReg), t.CampoIndiceString)))) \com*{$O(2|L|)$}
+                \While(\com*[f]{$O(C)$}){ (Siguiente(itOtroInd).Reg $\neq$ itReg) $\yluego$ HaySiguiente(itOtroInd)}{
+                	itTupStr $\leftarrow$ Siguiente(itOtroInd) \com*{$O(1)$}
+                	Avanzar(itOtroInd) \com*{$O(1)$}
+                }
+            }
+         	\eIf(\com*[f]{$O(n + |L|)$}){Definido?(valorN(Significado(Siguiente(itReg), c)), t.Registros.IndiceNat)}{
+             	itTupNat $\leftarrow$ AgregarRapido(Obtener(t.Registros.IndiceNat, valorN(Significado(Siguiente(itReg), c))),<itReg, itTupStr>) \com*{$O(n + |L|)$}
+             }{
+               conjAux $\leftarrow$ Vacio() \com*{$O(1)$}
+               itTupNat $\leftarrow$ AgregarRapido(conjAux, <itReg, itTupStr>) \com*{$O(1)$}
+               Definir(valorN(Significado(Siguiente(itReg), c))), conjAux, t.Registros.IndiceNat) \com*{$O(n + |L|)$}
+             }
+            \If(\com*[f]{$O(1)$}){Significado(Siguiente(itReg), c) $<$ Significado(t.Propiedades, campoIndiceNat).Min}{
+                actualMax $\gets$ Significado(t.Propiedades, campoIndiceNat).Max \com*{$O(1)$}
+                nuevoMin $\gets$ Significado(Siguiente(itReg), c) \com*{$O(1)$}
+                Definir(t.Propiedades, campoIndiceNat, $<$nuevoMin, actualMax$>$) \com*{$O(1)$}
+            }
+            \If(\com*[f]{$O(1)$}){Significado(Siguiente(itReg), c) $>$ Significado(t.Propiedades, campoIndiceNat).Max}{
+                actualMin $\gets$ Significado(t.Propiedades, campoIndiceNat).Min \com*{$O(1)$}
+                nuevoMax $\gets$ Significado(Siguiente(itReg) \com*{$O(1)$}
+                Definir(t.Propiedades, campoIndiceNat, $<$actualMin, nuevoMax$>$) \com*{$O(1)$}
+            }
+             Avanzar(itReg) \com*{$O(1)$}
+         }
+     }
+\end{algoritmo}
+\begin{algoritmo}{Indexar}{...continua}{}
+
+     \Else{
+     	t.HayIndiceString? $\leftarrow$ true \com*{$O(1)$}
+        t.CampoIndiceString $\leftarrow$ c \com*{$O(1)$}
+         \While(\com*[f]{$O(Cardinal(t.Registros.registros))$}){HaySiguiente(itReg)}{
+         itTupNat $\leftarrow$ NULL \com*{$O(1)$}
+         \If(\com*[f]{$O(1)$}){t.HayIndiceNat}{
+            	itOtroInd $\leftarrow$ CrearIt(Obtener(t.Registros.IndiceNat, valorN(Significado(Siguiente(itReg), t.CampoIndiceNat)))) \com*{$O(lg(n) + |L|)$}
+                \While(\com*[f]{$O(C)$}){ (Siguiente(itOtroInd) $\neq$ itReg) $\yluego$ HaySiguiente(itOtroInd)}{
+                	itTupNat $\leftarrow$ Siguiente(itOtroInd).OtroIndice \com*{$O(1)$}
+                	Avanzar(itOtroInd) \com*{$O(1)$}
+                }
+                
+            }
+         	\eIf(\com*[f]{$O(2|L|)$}){Definido?(valorS(Significado(Siguiente(itReg), c)), t.Registros.IndiceString)}{
+             	itTupStr $\leftarrow$ AgregarRapido(Obtener(t.Registros.IndiceString, valorS(Significado(Siguiente(itReg), c))),<itReg, NULL>) \com*{$O(|L|)$}
+             }{
+               conjAux $\leftarrow$ Vacio() \com*{$O(1)$}
+               itTupStr $\leftarrow$ AgregarRapido(conjAux, <itReg, NULL>) \com*{$O(1)$}
+               Definir(valorS(Significado(Siguiente(itReg), c))), conjAux, t.Registros.IndiceString) \com*{$O(2|L|)$}
+             }
+            \If(\com*[f]{$O(1)$}){Significado(Siguiente(itReg), c) $<$ Significado(t.Propiedades, campoIndiceString).Min}{
+                actualMax $\gets$ Significado(t.Propiedades, campoIndiceString).Max \com*{$O(1)$}
+                nuevoMin $\gets$ Significado(Siguiente(itReg), c) \com*{$O(1)$}
+                Definir(t.Propiedades, campoIndiceString, $<$nuevoMin, actualMax$>$) \com*{$O(1)$}
+            }
+            \If(\com*[f]{$O(1)$}){Significado(Siguiente(itReg), c) $>$ Significado(t.Propiedades, campoIndiceString).Max}{
+                actualMin $\gets$ Significado(t.Propiedades, campoIndiceString).Min \com*{$O(1)$}
+                nuevoMax $\gets$ Significado(Siguiente(itReg) \com*{$O(1)$}
+                Definir(t.Propiedades, campoIndiceString, $<$actualMin, nuevoMax$>$) \com*{$O(1)$}
+            }
+             Avanzar(itReg)   \com*{$O(1)$}
+     }
+     }
+   \end{algoritmo}
+   \datosAlgoritmo{} % Descripción
+   {} % Pre
+   {} % Post
+   {$O(n * (n * lg(n) + L))$} % Complejidad
+   {C es el cardinal del conjunto de iteradores que estoy recorriendo. n es la cantidad de registros que tiene mi tabla, los cuales voy a recorrer para agregar un iterador a cada registro en el indice que estoy creando. C esta acotado por n ya que mi peor caso sucederia si tengo que recorrer en la linea 8 o 27 un conjunto de iteradores que tiene a todos los iteradores a los registros por lo que su cardinal seria n.  \\ En el caso de que no habia otro indice creado previamente (no entraria en los $IF$ de las lineas 6 y 26 por lo que me costarian $O(1)$) mis complejidades son las siguientes: Si el indice es nat, como las datos nat se insertan uniformemente las complejidades de definir y definido? son $O(lg(n))$ por lo que sumando $O(|L|)$ de la operacion Significado, si el indice es nat mi complejidad final sera $O(n*(lg(n) + L))$. Si el indice es string, definir y definido? me cuestan $O(L)$ por lo que mi complejidad final sera $O(n*(4*L))$ = $O(n*(L))$ \\ En el caso de que ya tenia un indice creado mis complejidades son las siguientes: Si el indice es nat, como las datos nat se insertan uniformemente las complejidades de definir y definido? son $O(lg(n))$ por lo que sumando $O(L)$ de la operacion Significado y una C por la busqueda que hago en la linea 8 o 28 en el otro indice (acoto cada C por n), si el indice a crear es nat mi complejidad final sera $O(n*(n + lg(n) + L))$. Si el indice es string, definir y definido? me cuestan $O(L)$ y por cada registro que indexo le sumo una C por la busqueda que hago en la linea 8 o 28 en el otro indice (acoto cada C por n) por lo que mi complejidad final sera $O(n*(n + 4*L))$ = $O(n*(n + L))$} % Justificación
+  
+  
+\begin{algoritmo}{iNombre}{\In{t}{estrTabla}}{string}
+    res $\leftarrow$ t.Nombre \com*{$O(1)$}
+\end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Se realiza una sola operacion que cuesta $O(1)$} % Justificación
+
+  \begin{algoritmo}{iClaves}{\In{t}{estrTabla}}{conj(campo)}
+    res $\leftarrow$ t.Claves \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+ {Se copia el conjunto de claves de la tabla, este conjunto esta acotado porque la cantidad de campos de una tabla esta acotado, por lo tanto el costo de esta operacion es $O(1)$} % Justificación
+  
+  \begin{algoritmo}{iIndices}{\In{t}{estrTabla}}{conj(campo)}
+    ccampo $\leftarrow$ Vacio() \com*{$O(1)$}
+    \If(\com*[f]{$O(1)$}){t.HayIndiceNat?}{
+    	AgregarRapido(ccampo, t.CampoIndiceNat) \com*{$O(1)$}
+    }
+    \If(\com*[f]{$O(1)$}){t.HayIndiceString?}{
+    	AgregarRapido(ccampo, t.CampoIndiceString) \com*{$O(1)$}
+    }
+    res $\leftarrow$ ccampo \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Solo se ejecutan operaciones con costo $O(1)$ por lo que por algebra de ordenes la complejidad es $O(1)$ + $O(1)$ + $O(1)$ +$O(1)$ = $O(4)$ = $O(1)$ } % Justificación
+
+  \begin{algoritmo}{iCampos}{\In{t}{estrTabla}}{conj(campo)}
+    res $\leftarrow$ Campos(t.Columnas) \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Solo se ejecuta una operacion con costo $O(1)$} % Justificación
+
+  \begin{algoritmo}{iesNat?}{\In{c}{campo}, \In{t}{estrTabla}}{bool}
+	$res \gets esNat?(Significado(t.Columnas, c))$ \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(L)$} % Complejidad
+  {Ya que es una busqueda sobre diccionario lineal, pero la cantidad de claves son acotadas y campo es un string acotado} % Justificación
+
+  \begin{algoritmo}{iRegistros}{\In{t}{estrTabla}}{conj(reg)}
+    res $\leftarrow$ t.Registros.registros \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Solo se ejecuta una operacion con costo $O(1)$ } % Justificación
+
+  \begin{algoritmo}{iCantidadDeAccesos}{\In{t}{estrTabla}}{nat}
+    res $\leftarrow$ t.CantAccesos \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(1)$} % Complejidad
+  {Se ejecuta una sola operacion con costo $O(1)$} % Justificación
+
+ \begin{algoritmo}{iPuedoInsertar?}{\In{r}{reg}, \In{t}{estrTabla}}{bool}
+	res $\leftarrow$ (Compatible(r,t) $\wedge$ $\neg$ HayCoincidencia(r, Claves(t), Registros(t))) \com*{$O(1) + O(Cardinal(cr) * (Cardinal(cc) * |L|))$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(n*L)$} % Complejidad
+  {$O(Cardinal(cr) * (Cardinal(cc) * |L|))$, siendo cr los registros de t, y cc los campos de t. Como t tiene cantidad acotada de campos:
+  $O(Cardinal(cr) * (Cardinal(cc) * |L|))$} % Justificación
+
+  \begin{algoritmo}{iCompatible}{\In{r}{reg}, \In{t}{estrTabla}}{bool}
+    \eIf(\com*[f]{$O(|L|)$}){Campos(r) = Campos(t)}{
+    	res $\leftarrow$ MismosTipos(r,t) \com*{$O(mtip)$}
+    }{
+    	res $\leftarrow$ false \com*{$O(1)$}
+    }
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$\Theta(1)$} % Complejidad
+  {} % Justificación
+
+  \begin{algoritmo}{hayCoincidencia}{\In{r}{reg}, \In{cc}{conj(campo)}, \In{cr}{conj(reg)}}{bool}
+  itReg $\leftarrow$ CrearIt(cr) \com*{$O(1)$}
+  encCoinc $\leftarrow$ false \com*{$O(1)$}
+  \While(\com*[f]{$O(Cardinal(cr))$}){HaySiguiente(itReg) $\wedge$ $\neg$ encCoinc}{
+  	encCoinc $\leftarrow$ CoincideAlguno(r, cc, Siguiente(itReg)) \com*{$O(Cardinal(cc) * |L|)$}
+    Avanzar(itReg) \com*{$O(1)$}
+  }
+    res $\leftarrow$ encCoinc
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(Cardinal(cr) * (Cardinal(cc) * |L|))$} % Complejidad
+  {} % Justificación
+
+  \begin{algoritmo}{imismosTipos}{\In{r}{reg}, \In{t}{estrTabla}}{bool}
+  $itRc \gets CrearIt(campos(r))$ \com*{$O(\#Claves($r$)*copy(d))$}
+  $res \gets true $ \com*{$O(1)$}
+  \While(\com*[f]{$O(1)$}){HaySiguiente($itRc$) $\land$ $res$}{
+  	$c \gets Siguiente(itRc) $ \com*{$O(1)$, lo asigna por referencia}
+  	$f \gets Significado(r,Siguiente(itRc)) $ \com*{$O(\sum_{k' \in K}equal(Sig(itRc),k'))$}
+  	$res \gets esNat?(f) = esNat?(c,t)$   \com*{$O(\sum_{t' \in T}equal(c,t'))$}
+  	$Avanzar(itRc) $ \com*{$O(1)$}
+  }
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O((K + T) * L)$} % Complejidad
+  {donde $K$ $=$ campos($r$), $T$ $=$ campos($t$), $d$ es un dato, copy(d) $=$ 1 si $d$ es nat o largo de string sino, llamemoslo $L$, equal entre Campos tambien tiene complejidad largo de string, por lo que abusando de la notacion llamemos $L$ tambien a este mismo} % Justificación
+
+  \begin{algoritmo}{iminimo}{\In{c}{campo}, \In{t}{estrTabla}}{dat}
+  	$res \gets Significado(t.Propiedades,c).Min$ \com*{$O(\#t.Propiedades*equal(c,k) k \in claves(t.Propiedades))$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$ O(1)$} % Complejidad
+  {ya que los campos son string acotados y las $\#$claves(t.Propiedades) $\leq$ 2, ademas $res$ se asigna por Referencia } % Justificación
+
+  \begin{algoritmo}{imaximo}{\In{c}{campo}, \In{t}{estrTabla}}{dat}
+    $res \gets Significado(t.Propiedades,c).Max$ \com*{$O(\#t.Propiedades*equal(c,k) k \in claves(t.Propiedades))$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$ O(1)$} % Complejidad
+  {ya que los campos son string acotados y las $\#$claves(t.Propiedades) $\leq$ 2, ademas $res$ se asigna por Referencia} % Justificación
+
+
+  \begin{algoritmo}{ipuedoIndexar}{\In{c}{campo}, \In{t}{estrTabla}}{bool}
+  $r \gets Pertenece?(campos(t), c) $ \com*{$O(\sum_{k' \in K}equal(c,k'))$}
+  $e \gets \neg Pertenece?(indices(t), c) $ \com*{$O(\sum_{i' \in I}equal(c,i'))$}
+  \eIf(\com*[f]{$O(\sum_{k' \in K}equal(c,k'))$}){esNat?(c,t)}{
+    	$s \gets \neg t.HayIndiceNat?$ \com*{$O(1)$}
+    }{
+    	$s \gets \neg t.HayIndiceString?$ \com*{$O(1)$}
+    }
+    $res \gets r \land e \land s $ \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(K* L)$} % Complejidad
+  {donde K $=$ campos(t), I $=$ indices(t), ademas \#I $\leq$ 2 entoces K*equal(..) es igual a (K+2)*equal(..), equal entre Campos tiene complejidad largo de string, llamemos L a este mismo} % Justificación
+
+  \begin{algoritmo}{icoincidencias}{\In{r}{reg}, \In{cr}{conj(reg)}}{conj(reg)}
+  itR $\gets$ CrearIt(cr) \com*{$O(1)$}
+  res $\gets$ Vacio()  \com*{$O(1)$}
+  \While(\com*[f]{$O(1)$}){HaySiguiente($itR$)}{
+  	\If(\com*[f]{$O(\#campos(r)*(\#campos(r)+\#campos(Sig(itR))+L))$}){coincidenTodosAux($r$,campos($r$),Siguiente($itR$))}{
+    	$AgregarRapido(res, Siguiente(itR))$ \com*{$O(copy(Sig(itR)))$}
+    }
+  	$Avanzar(itR) $ \com*{$O(1)$}
+  }
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$O(\#cr * L)$} % Complejidad
+  {coincidenTodosAux tiene dicha complejidad , ya que equal entre Datos tiene complejidad del orden 1 si es nat o largo de string, llamemos $L$ a este mismo y ademas el conjunto que se usa para llamarlo son los campos de r. $MR$ es MAX($\#$campos($reg$)), $reg$ $\in$ cr
+
+$O(\#cr*\#campos(r)*(\#campos(r)+MR+L)) = O(\#cr * L)$
+Ya que en el contexto de las tablas los registros tienen cantidad acotada de campos.} % Justificación
+  
+% POR LO QUE BUSCAR SERIA LITERALMENTE<coicidenciasRap(dameTabla(t,b),criterio)>
+
+  \begin{algoritmo}{icoincidenciasRap}{\In{t}{estrTabla}, \In{r}{reg}}{conj(reg)}
+  \eIf(\com*[f]{$O(1)$}){$\neg$(t.HayIndiceNat? $\lor$ t.HayIndiceString?)}{
+  	$res \gets coincidencias(r, registros(t))$ \com*{$O(\#regristros(t)*\#campos(r)*(\#campos(r)+MR+L))$}
+  }{
+  	$itR \gets CrearIt(r)$ \com*{$O(1)$}
+  	$res \gets Vacio()$ \com*{$O(1)$}
+  	$continue \gets true$ \com*{$O(1)$}
+    $matchS \gets false$ \com*{$O(1)$}
+    $matchN \gets false$ \com*{$O(1)$}
+    $keyN \gets false$ \com*{$O(1)$}
+    $keyS \gets false$ \com*{$O(1)$}
+  	\While(\com*[f]{$O(1)$}){HaySiguiente($itR$) $\land$ continue}{
+    	\If(\com*[f]{$O(L)$}){SiguienteClave(itR) $=$ t.CampoIndiceNat $\land$ esNat?(SiguienteSignificado($itR$))}{
+  			\eIf(\com*[f]{$O(\#claves(t)*L)$}){Pertenece?(claves(t),SiguienteClave(itR)}{
+            		$continue \gets false$ \com*{$O(1)$}
+            		$matchN \gets true$ \com*{$O(1)$}
+					$keyN \gets true$ \com*{$O(1)$}
+            }{
+            		$matchN \gets true$ \com*{$O(1)$}
+            		$v \gets ValorN(SiguienteSignificado(itR))$ \com*{$O(1)$} 
+            }
+  		}
+  		\If(\com*[f]{$O(L)$}){SiguienteClave(itR) $=$ t.CampoIndiceString $\land$ esString?(SiguienteSignificado($itR$))}{
+  			\eIf(\com*[f]{$O(\#claves(t)*L)$}){Pertenece?(claves(t),SiguienteClave(itR)}{
+            	$continue \gets false$ \com*{$O(1)$}
+            	$matchS \gets true$ \com*{$O(1)$}
+				$keyS \gets true$ \com*{$O(1)$}
+            }{
+            	$matchS \gets true$ \com*{$O(1)$}
+            	$s \gets ValorS(SiguienteSignificado(itR))$ \com*{$O(L)$} 
+            }
+		}   
+  		\If(\com*[f]{$O(1)$}){continue}{
+  			$Avanzar(itR) $ \com*{$O(1)$}
+  		}
+  	}
+    \If(\com*[f]{$O(1)$}){keyN}{
+    	$v \gets ValorN(SiguienteSignificado(itR))$ \com*{$O(1)$}
+  		$itC \gets CrearIt(Obtener(v,t.Registros.IndiceNat))$ \com*{$O(n)$}			 %obtener de dicNat
+  		\If(\com*[f]{$O(1)$}){HaySiguiente($itC$)}{							 	 %si es clave hay un solo elemento
+  			\If(\com*[f]{$O(sub$)}){Sub?(r,Siguiente(Siguiente(itC).Reg))}{
+  				$AgregarRapido(res,Siguiente(Siguiente(itC).Reg))$ \com*{$O(1)$}
+  			}
+  		}
+	}        
+  	\If(\com*[f]{$O(1)$}){keyS}{ 
+    	$s \gets ValorS(SiguienteSignificado(itR))$ \com*{$O(L)$}
+        $itC \gets CrearIt(Obtener(s,t.Registros.IndiceString))$ \com*{$O(|s|)$} 	  %obtener de dicStr
+        \If(\com*[f]{$O(1)$}){HaySiguiente($itC$)}{								  %si es clave hay un solo elemento
+        	\If(\com*[f]{$O(sub$)}){Sub?(r,Siguiente(Siguiente(itC).Reg))}{
+        		$AgregarRapido(res,Siguiente(Siguiente(itC).Reg))$ \com*{$O(1)$}
+        	}
+        }
+	}
+  $\textbf{NOTA: el Algoritmo no termina aca, sigue abajo, como si estuviera en esta parte, osea}$
+  $\textbf{todavia adentro del ELSE}$
+  }
+  \end{algoritmo}
+  \begin{algoritmo}{Continuacion de coincidenciasRap}{}{}
+  $\textbf{Aca pongo este ELSE para que se note que sigo adento del anterior}$
+  \Else{
+  	\If(\com*[f]{$O(1)$}){matchN $\land$ $\neg$(keyS $\lor$ keyN)}{
+  		$itC \gets CrearIt(Obtener(v,t.Registros.IndiceNat))$ \com*{$O(n)$}			 %obtener de dicNat
+  		\While(\com*[f]{$O(1)$}){HaySiguiente($itC$)}{							 	 
+  			\If(\com*[f]{$O(sub$)}){Sub?(r,Siguiente(Siguiente(itC).Reg))}{
+  				$AgregarRapido(res,Siguiente(Siguiente(itC).Reg))$ \com*{$O(1)$}
+  			}
+  			$Avanzar(itC) $ \com*{$O(1)$}
+  		}
+	}        
+  	\If(\com*[f]{$O(1)$}){matchS $\land$ $\neg$(keyS $\lor$ keyN)}{ 
+        $itC \gets CrearIt(Obtener(s,t.Registros.IndiceString))$ \com*{$O(|s|)$} 	  %obtener de dicStr
+        \While(\com*[f]{$O(1)$}){HaySiguiente($itC$)}{								 
+        	\If(\com*[f]{$O(sub$)}){Sub?(r,Siguiente(Siguiente(itC).Reg))}{
+        		$AgregarRapido(res,Siguiente(Siguiente(itC).Reg))$ \com*{$O(1)$}
+        	}
+        	$Avanzar(itC)$ \com*{$O(1)$}
+        }
+	}
+   } 
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {}  %Pre 
+  {}  %Post
+  {$O(\#campos(t)*\#campos(r)*(\#campos(r)+MR+L)+\#campos(r)*(n+(CN*sub)+L+(CS*sub) + \#indices(t)*L))$} % Complejidad
+  { 
+  	\begin{enumerate}
+		\item donde sub $=$ $\#$campos(r)*($\#$campos($r$)*$L$ + $\#$campos(t)*$L$ + $L$), $MR$ es $\#$campos($t$), $n$ $=$ $\#$registros(t), $CN$ es la cantidad de registros que tienen el mismo valor que $r$ para el campo Ind. Nat de $t$, $CS$ es la cantidad de registros que tienen el mismo valor que $r$ para el campo Ind. String de $t$, $|s|$ $\leq$ $L$, esa es la complejidad dada en peor caso, la primera parte la hereda de coincidencias de t y la segunda $n$ y $L$ es la complejidad de buscar en un DicNat y en un DicStr respectivamente, mas la complejidad de iterar el conjunto($CN$ o $CS$) y la heredada de Sub. 
+    	\item en el caso de que el criterio de busqueda sea un campo $\textbf{indice}$ y $\textbf{clave}$, la primera parte queda descartada ya que hay indice, tambien como los campos son acotados pasan a ser una constante, por lo que sub pasa a tener complejidad $L$ y $CN$, $CS$ tambien pasan a estar acotadas, mas precisamente son igual a 1, por ser clave el indice, entonces la complejidad queda de la forma $\textbf{O(n + L)}$, pero nosotros sabemos que los datos nat estan bien distribuidos por lo que queda $\textbf{O(log(n) + L)}$, ya que buscar en un DicNat sobre datos bien distribuidos es logaritmico sobre cantidad de elementos.   
+	\end{enumerate}
+% Sub? tiene dicha complejidad, ya que la cantidad de campos de registros(t) y $r$ es acotada, por lo tanto pasa a ser una constante y equal entre Datos tiene complejidad del orden 1 si es nat o largo de string, llamemos $L$ a este mismo
+	}
+    
+\begin{algoritmo}{icombinarRegistros}{\In{c}{campo}, \In{cr1}{conj(reg)}, \In{cr2}{conj(reg)}}{conj(reg)}
+	$itRegs \gets CrearIt(cr1)$ \com*{$O(1)$}  	
+	$regRes \gets Vacio()$ \com*{$O(1)$}   
+	\While(\com*[f]{$O(\#cr1)$}){HaySiguiente(itRegs)}{
+        $reg1 \gets Siguiente(itRegs) $ \com*{$O(1)$}   
+    	$regsComb \gets CombinarTodos(c,reg1, cr2) $ \com*{$O(combinarTodos(c,r,cr2))$}   
+        $itRegsComb \gets CrearIt(regsComb)$ \com*{$O(1)$}  	
+        \While(\com*[f]{$O(\#regsComb)$}){HaySiguiente(itRegsComb)}{
+        	$regComb \gets Siguiente(itRegsComb)$ \com*{$O(1)$}   
+        	$Agregar(regRes, regComb) $ \com*{$O(\#regRes * L)$}   
+			$Avanzar(itRegsComb) $ \com*{$O(1)$}
+        }
+		$Avanzar(itRegs) $ \com*{$O(1)$}
+    }
+    $res \gets regRes $ \com*{$O(1)$}
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre 
+  {} % Post
+  {$O(n*m*L*min\lbrace m, n \rbrace)$} % Complejidad
+  {\begin{enumerate}
+  	\item $\#$regsComb puede ser como maximo \#cr2. Luego lo podemos acotar por dicho valor y lo renombramos $m$
+    \item $\#$cr1 lo renombramos $n$
+    \item $\#$regRes esta acotado por el minimo entre $m$ y $n$
+    \item $L$ es la longitud m\'as larga de alg\'un string en alg\'un registro de cualquiera de los dos conjuntos.
+  	\item Para cada registro en el conjunto cr1 hacemos:
+    \item Llamamos a combinarTodos con el campo, el registro y el otro conjunto de registros. La complejidad en peor caso es O(m*L)
+    \item Luego para cada registro Combinado hacemos:
+    \item Lo agregamos al conjunto resultado. Esto necesita recorrerlo y determinar si pertenece o no. Para no agregar Repetidos.
+    \item Por lo tanto la complejidad del loop anterior es $O(m*(min\lbrace m,n \rbrace*L))$
+    \item Entonces. La complejidad del algoritmo, en el peor caso, es  $O(n*(m*L + (m*min\lbrace m,n \rbrace *L))))$
+    \item Por algebra de ordenes, se deduce que esa complejidad $ \in O(n*m*L*(1+min\lbrace m, n \rbrace)) $
+    \item Siguiendo, se llega a $ O(n*m*L*min\lbrace m, n \rbrace) $ 
+	\end{enumerate} 
+    } % Justificación
+
+\begin{algoritmo}{icombinarRegistrosRap}{\In{c}{campo}, \In{cr1}{conj(reg)},\In{t}{estrTabla}}{conj(reg)}
+	\eIf(\com*[f]{$O(1)$}){Pertenece?(Indices(t), c)}{
+    	$itRegs \gets CrearIt(cr1)$ \com*{$O(1)$}  	
+		$regsComb \gets Vacio()$ \com*{$O(1)$}   
+		\While(\com*[f]{$O(\#cr1)$}){HaySiguiente(itRegs)}{
+    		$reg1 \gets Siguiente(itRegs) $ \com*{$O(1)$}   
+	        \eIf(\com*[f]{$O(1)$}){esNat?(c,t)}{
+		       	\If(\com*[f]{$O(log(registros(t)))$}){Definido?(Significado(reg1, c), t.Registros.IndiceNat)}{
+					$regs2 \gets Obtener(Significado(reg1, c), t.Registros.IndiceNat) $ \com*{$O(log(registros(t))$}
+                    $itRegs2 \gets CrearIt(regs2) $ \com*{$O(1)$}
+					\While(\com*[f]{$O(\#regs2)$}){HaySiguiente(itRegs2)}{
+                    	$reg2 \gets Siguiente(itRegs2).Reg $ \com*{$O(1)$}
+                        $regComb \gets AgregarCampos(reg1, reg2) $ \com*{$O(L)$}
+						$Agregar(regsComb, regComb) $ \com*{$O(\#regsComb*L)$}
+						$Avanzar(itRegs2) $ \com*{$O(1)$}
+                    }						        	
+       			}
+        	}{
+        		\If(\com*[f]{$O(L)$}){Definido?(Significado(reg2, c), t.Registros.IndiceString)}{
+					$regs2 \gets Obtener(Significado(reg1, c), t.Registros.IndiceString) $ \com*{$O(L)$}
+                    $itRegs2 \gets CrearIt(regs2) $ \com*{$O(1)$}
+					\While(\com*[f]{$O(\#regs2)$}){HaySiguiente(itRegs2)}{
+                    	$reg2 \gets Siguiente(itRegs2).Reg $ \com*{$O(1)$}
+                        $regComb \gets AgregarCampos(reg1, reg2) $ \com*{$O(L)$}
+						$Agregar(regsComb, regComb) $ \com*{$O(\#regsComb*L)$}
+						$Avanzar(itRegs2) $ \com*{$O(1)$}
+                    }
+       			}
+        	}
+			$Avanzar(itRegs) $ \com*{$O(1)$}
+    	}
+        $res \gets regsComb $ \com*{$O(1)$}   
+    }{
+    	$res \gets combinarRegistros(c,cr1, registros(t)) $ \com*{$O(combinarRegistros(c,cr1, cr2))$}   
+    }
+	
+\end{algoritmo}
+\datosAlgoritmo{} % Descripción
+  {} % Pre 
+  {} % Post
+  {$O(n*m*L*min\lbrace m, n \rbrace)$ Y, s\'i c es \'Indice, $O(n*((log(m) + L)*m*min\lbrace m,n\rbrace*L))$. Y, s\'i adem\'as c es clave, $O(n*((log(m) + L)))$} % Complejidad
+  {\begin{enumerate}
+	\item $\#registros(t)$ lo renombramos $m$
+    \item $\#$cr1 lo renombramos $n$
+    \item $L$ es la longitud m\'as larga de alg\'un string en alg\'un registro de cualquiera de los dos conjuntos.
+  	\item En el peor caso, este algoritmo se comporta como CombinarRegistros(c,cr1,cr2)
+    \item Pero si el campo por el cual se pide combinar fuese indice de la tabla. Entonces se puede mejorar la complejidad. A continuaci\'on se detalla como:
+  	\item Para cada registro en el conjunto cr1 hacemos:
+    \item Lo buscamos en el \'indice de la tabla. Esta operaci\'on est\'a acotada por la siguiente complejidad O(log(m) + L). Porque siempre realiza alguna de las dos. O sea, s\'i lo busca en el DiccNat la complejidad ser\'ia O(log m) y s\'i lo busca en el DiccStr la complejidad ser\'ia O(L)
+    \item Luego para cada registro Combinado hacemos:
+    \item Llamamos a la operacion AgregarCampos(r1,r2) cuya complejidad es O(L)
+    \item Lo agregamos al conjunto resultado. Esta Operacion tiene una complejidad O(min(m,n)*L) 
+    \item Por lo tanto la complejidad del loop anterior es $O(m*(min\lbrace m,n \rbrace*L))$
+    \item Entonces. La complejidad del algoritmo, en el peor caso, es  $O(n*((log(m)+L) + (m*min\lbrace m,n \rbrace *L)))$
+    \item Si el campo adem\'as fuera clave. Entonces la complejidad en el peor caso ser\'ia $O(n*((log(m)+L)))$. Porque el conjunto de resultados de buscar en los indices ser\'ia de un elemento.
+    \end{enumerate} 
+    } % Justificación
+
+\begin{algoritmo}{idameColumna}{\In{c}{campo}, \In{cr}{conj(reg)}}{conj(dat)}
+    $itRegs \gets CrearIt(cr)$ \com*{$O(1)$}  	
+    $columna \gets Vacio()$ \com*{$O(1)$}
+    \While(\com*[f]{$O(\#cr)$}){HaySiguiente(itRegs)}{
+		$dato \gets Significado(Siguiente(itRegs), c)$ \com*{$O(1)$}
+    	\If(\com*[f]{$O(\#cr*L)$}){$\neg$ Pertenece?(columna,dato)}{
+	        $AgregarRapido(columna, dato) $ \com*{$O(copy(L))$}
+    	    
+        }
+        $Avanzar(itRegs) $ \com*{$O(1)$}
+    }
+	$res \gets columna $ \com*{$O(1)$}
+  \end{algoritmo}
+  \datosAlgoritmo{} % Descripción
+  {} % Pre
+  {} % Post
+  {$ (O(\#cr)*O(\#cr*L)) \in O(((\#cr)^2)*L)$} % Complejidad
+  {
+	  \begin{enumerate}
+		\item Recorre todos los elementos del conjunto de registros recibido por parametro. Esto tiene una complejidad $O(\#cr)$
+		\item Para cada elemento del conjunto se pregunta si ya pertenece al conjunto que esta construyendo. Esto tiene una complejidad $O(\#cr*L)$. Porque si el tipo del campo fuera String. El costo de comparar dos string depende del largo de la string. Y entonces, el peor caso queda acotado superiormente por esa complejidad. Donde L representa la longitud del mayor Dato String en el conjunto de registros.
+        \item Luego agrega el dato al conjunto. El peor caso ser\'ia si el dato fuera String. En ese caso, la complejidad de agregar queda acotada superiormente por la complejidad de copiar el string. 
+        \item Por los items anteriores y usando algebra de ordenes se obtiene la complejidad $O(((\#cr)^2)*L)$
+    \end{enumerate}
+  } % Justificación
+  
+\end{Algoritmos}

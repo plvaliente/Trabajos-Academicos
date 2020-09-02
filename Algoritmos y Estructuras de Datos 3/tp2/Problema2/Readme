@@ -1,0 +1,3 @@
+Primero compilar todo con make all
+Testeo.py corre los test de rendimiento y los coloca en Resultados
+Para valores de n grandes usé ulimit -s unlimited sino no andaba

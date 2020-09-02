@@ -1,0 +1,80 @@
+
+\documentclass[a4paper,10pt, spanish]{article}
+\usepackage{caratula}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+%\usepackage{algorithm}
+\usepackage[spanish,onelanguage]{algorithm2e}
+\usepackage[noend]{algpseudocode}
+%\selectlanguage{spanish}
+%% The graphicx package provides the includegraphics command.
+\usepackage{graphicx}
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+\usepackage{caption}
+
+\usepackage[T1]{fontenc}
+\usepackage{selinput}
+\SelectInputMappings{%
+  aacute={á},
+  ntilde={ñ},
+}
+
+% Espaciado entre parrafos
+\setlength{\parskip}{1mm}
+  
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers after \end{frontmatter}.
+\usepackage{lineno}
+
+\author{}
+\date{}
+\title{Trabajo pr\'actico III}
+
+\def\Materia{Algoritmos y Estructuras de Datos III}
+\def\Titulo{Trabajo pr\'actico III}
+
+
+\integrante{Delger, Agust\'in}{274/14}{agusdel\_94@hotmail.com}
+\integrante{Delmagro, Nicolás Agust\'in}{596/14}{agustin.delmagro@gmail.com}
+\integrante{Lopez Valiente, Patricio}{457/15}{patricio454@gmail.com}
+\integrante{Zar Abad, Ciro Román}{129/15}{ciromanzar@gmail.com}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+\input{0Introduccion.tex}
+\newpage
+
+\section{Situación real modelada con CMF}
+\input{1SituacionReal.tex}
+\newpage
+
+\section{Solución exacta}
+\input{2Backtracking.tex}
+\newpage
+
+\section{Heurísticas golosas}
+\input{3Golosas.tex}
+\newpage
+
+\section{Heurísticas de búsqueda local}
+\input{4BusquedaLocal.tex}
+\newpage
+
+\section{Metaheurísticas}
+\input{5Metaheuristicas.tex}
+\newpage
+
+\section{Experimentación}
+\input{6Experimentacion.tex}
+\newpage
+
+\section{Conclusión}
+\input{7Conclusion.tex}
+\end{document}
